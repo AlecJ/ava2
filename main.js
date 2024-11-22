@@ -5,8 +5,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 fetch('./ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countries =>
 	{
-		let camera, scene, raycaster, renderer;
+		let camera, scene, raycaster, renderer, controls;
 		let INTERSECTED;
+
+		let storedCountries;
+
 
 		const mouse = new THREE.Vector2();
 
@@ -17,7 +20,7 @@ fetch('./ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countr
 			camera = new THREE.PerspectiveCamera();
 			camera.aspect = window.innerWidth/ window.innerHeight;
 			camera.updateProjectionMatrix();
-			camera.position.z = 500;
+			camera.position.z = 300;
 
 			scene = new THREE.Scene();
 			scene.add(new THREE.AmbientLight(0xcccccc, Math.PI));
@@ -31,22 +34,31 @@ fetch('./ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countr
 				.polygonStrokeColor(() => '#111');
 			scene.add(Globe);
 
+			// TESTING
+
+			storedCountries = Globe.polygonGeoJsonGeometry();
+			console.log(storedCountries);
+
+			// END TESTING
+
 			// setTimeout(() => Globe.polygonAltitude(() => Math.random()), 4000);
 
 
-			// raycaster = new THREE.Raycaster();
+			raycaster = new THREE.Raycaster();
 
 
 			renderer = new THREE.WebGLRenderer();
 			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setAnimationLoop( animate );
 			document.getElementById('globeViz').appendChild(renderer.domElement);
 
 
-			// Add camera controls
-			// const tbControls = new OrbitControls(camera, renderer.domElement);
-			// tbControls.minDistance = 101;
-			// tbControls.rotateSpeed = 5;
-			// tbControls.zoomSpeed = 0.8;
+			// Camera controls
+			controls = new OrbitControls(camera, renderer.domElement);
+			controls.minDistance = 150;
+			controls.maxDistance = 500;
+			controls.rotateSpeed = 0.5;
+			controls.zoomSpeed = 0.8;
 
 			document.addEventListener( 'mousemove', onMouseMove );
 
@@ -78,32 +90,36 @@ fetch('./ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countr
 
 		function render() {
 
-			// tbControls.update();
+			controls.update();
 
-			// raycaster.setFromCamera( pointer, camera );
+			raycaster.setFromCamera( mouse, camera );
 
-			// const intersects = raycaster.intersectObjects( scene.children, false );
+			console.log(INTERSECTED);
+			INTERSECTED = null;
 
-			// if ( intersects.length > 0 ) {
+			if ( INTERSECTED != null && INTERSECTED.material ) {
+				// console.log(INTERSECTED);
+				// INTERSECTED.material.color.set( 'rgba(0, 200, 0, 0.1)' );
+				// INTERSECTED = null;
+			}
 
-			// 	if ( INTERSECTED != intersects[ 0 ].object ) {
+			const intersects = raycaster.intersectObjects( scene.children );			
 
-			// 		if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-			// 		INTERSECTED = intersects[ 0 ].object;
-			// 		INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-			// 		INTERSECTED.material.emissive.setHex( 0xff0000 );
-
-			// 	}
-
-			// } else {
-
-			// 	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-			// 	INTERSECTED = null;
-
-			// }
+			if ( intersects.length > 0 &&
+				intersects[0].object.type !== "LineSegments" &&
+				intersects[0].object?.__globeObjType !== "globe" ) {
+				INTERSECTED = intersects[0];
+				// INTERSECTED.object.material.color.set( 'rgba(0, 0, 200, 0.1)' );
+			}
+			else if ( intersects.length > 1 &&
+				intersects[1].object.type !== "LineSegments" &&
+				intersects[1].object?.__globeObjType !== "globe"  ) {
+				INTERSECTED = intersects[1];
+				// INTERSECTED.object.material.color.set( 'rgba(0, 0, 200, 0.1)' );
+			}
 
 			renderer.render( scene, camera );
+
 		}
+
 	});
