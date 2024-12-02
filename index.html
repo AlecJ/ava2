@@ -1,38 +1,26 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>    
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AvA</title>
-        <!-- <link rel="stylesheet" href="css/main.css"> -->
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AvA</title>
+		<!-- <link rel="stylesheet" href="css/main.css"> -->
 
-        <style>
-            body {
-                margin: 0;
-            }
-        </style>
+		<style>
+			body {
+				margin: 0;
+			}
+		</style>
 
-        <script type="importmap">
-            {
-                "imports": {
-                    "three": "https://unpkg.com/three/build/three.module.js",
-                    "three/addons/": "https://unpkg.com/three/examples/jsm/",
-                    "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
-                }
-            }
-        </script>
+		<script type="module">
+			import * as THREE from "three";
+			window.THREE = THREE;
+		</script>
+	</head>
+	<body>
+		<div id="globeViz"></div>
 
-        <script src=""></script>
-
-        <script type="module">
-            import * as THREE from 'three';
-            window.THREE = THREE;
-        </script>
-    </head>
-    <body>
-        <div id="globeViz"></div>
-
-        <script type="module" src="main.js"></script>
-    </body>
+		<script type="module" src="./src/main.js"></script>
+	</body>
 </html>
