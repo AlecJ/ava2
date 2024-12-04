@@ -3,42 +3,118 @@ import earcut from "earcut";
 
 export function createGlobe(scene) {
 	const globeRadius = 100;
-	const geometry = new THREE.SphereGeometry(globeRadius, 64, 64);
+	const geometry = new THREE.SphereGeometry(globeRadius - 1, 64, 64);
 	const material = new THREE.MeshBasicMaterial({
 		color: 0x660000,
 		wireframe: false,
 	});
 	const globe = new THREE.Mesh(geometry, material);
-	// scene.add(globe);
+	scene.add(globe);
 	// d3.json("../public/ne_110m_admin_0_countries.geojson").then((geoData) => {
-	d3.json("../public/ne_110m_admin_0_countries.geojson").then((geoData) => {
+	d3.json("../public/triangles.json").then((geoData) => {
 		// console.log(geoData.features);
 
 		const group = new THREE.Group();
 
-		// Process each country into a mesh
-		geoData.features.forEach((feature) => {
-			const geometry = feature.geometry;
-			const countryGroup = new THREE.Group(); // Group for the country mesh
+		// console.log(geoData);
 
-			if (geometry.type === "Polygon") {
-				// Process single Polygon
-				geometry.coordinates.forEach((ring) =>
-					processCountry(ring, feature, countryGroup)
+		// geoData.forEach((country) => {
+		Object.entries(geoData)
+			// .slice(0, 1)
+			.forEach(([countryName, countryData]) => {
+				const { vertices, polygons, triangles } = countryData;
+
+				const normalizedVertices = [];
+				for (let i = 0; i < vertices.length; i += 2) {
+					const lon = vertices[i];
+					const lat = vertices[i + 1];
+					const point = latLongToVector3(lat, lon, globeRadius);
+					normalizedVertices.push(point.x, point.y, point.z);
+				}
+
+				console.log("Vertices length:", vertices.length);
+				console.log("Triangles length:", triangles.length);
+
+				console.log("Transformed Vertices:", normalizedVertices);
+				console.log("Triangle Indices:", triangles);
+
+				// Function to convert lat/lon to 3D spherical coordinates
+				function latLongToVector3(lat, lon, radius) {
+					const phi = (90 - lat) * (Math.PI / 180); // Latitude to phi (polar angle)
+					const theta = (lon + 180) * (Math.PI / 180); // Longitude to theta (azimuthal angle)
+
+					// Spherical to Cartesian conversion
+					const x = -(radius * Math.sin(phi) * Math.cos(theta));
+					const y = radius * Math.cos(phi);
+					const z = radius * Math.sin(phi) * Math.sin(theta);
+
+					if (isNaN(x) || isNaN(y) || isNaN(z)) {
+						console.error(
+							"NaN encountered during transformation:",
+							{
+								x,
+								y,
+								z,
+							}
+						);
+					}
+
+					return new THREE.Vector3(x, y, z);
+				}
+
+				// Create the BufferGeometry
+				const geometry = new THREE.BufferGeometry();
+				geometry.setAttribute(
+					"position",
+					new THREE.Float32BufferAttribute(normalizedVertices, 3)
 				);
-			} else if (geometry.type === "MultiPolygon") {
-				// Process each Polygon in MultiPolygon
-				geometry.coordinates.forEach((polygon) => {
-					polygon.forEach((ring) =>
-						processCountry(ring, feature, countryGroup)
-					);
-				});
-			} else {
-				console.warn("Unsupported geometry type:", geometry.type);
-			}
+				geometry.setIndex(triangles);
 
-			group.add(countryGroup);
-		});
+				geometry.computeBoundingSphere();
+				console.log("Bounding Sphere:", geometry.boundingSphere);
+				console.log(
+					"Geometry Position:",
+					geometry.getAttribute("position")
+				);
+
+				// Create a material for the country
+				const material = new THREE.MeshBasicMaterial({
+					color: Math.random() * 0xffffff,
+					side: THREE.DoubleSide,
+					polygonOffset: true, // Prevent z-fighting
+					polygonOffsetFactor: -1,
+					polygonOffsetUnits: -1,
+				});
+
+				// Create the mesh
+				const mesh = new THREE.Mesh(geometry, material);
+
+				// Add the mesh to the country group
+				group.add(mesh);
+
+				// Process each country into a mesh
+				// geoData.features.forEach((feature) => {
+				// 	const geometry = feature.geometry;
+				// 	const countryGroup = new THREE.Group(); // Group for the country mesh
+
+				// 	if (geometry.type === "Polygon") {
+				// 		// Process single Polygon
+				// 		geometry.coordinates.forEach((ring) =>
+				// 			processCountry(ring, feature, countryGroup)
+				// 		);
+				// 	} else if (geometry.type === "MultiPolygon") {
+				// 		// Process each Polygon in MultiPolygon
+				// 		geometry.coordinates.forEach((polygon) => {
+				// 			polygon.forEach((ring) =>
+				// 				processCountry(ring, feature, countryGroup)
+				// 			);
+				// 		});
+				// 	} else {
+				// 		console.warn("Unsupported geometry type:", geometry.type);
+				// 	}
+
+				// group.add(countryGroup);
+			});
 
 		// Create a 3d mesh from a ring, or array of coordinates
 		function processCountry(ring, feature, countryGroup) {
