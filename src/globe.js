@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import earcut from "earcut";
 
 export function createGlobe(scene) {
 	const globeRadius = 100;
@@ -9,6 +10,7 @@ export function createGlobe(scene) {
 	});
 	const globe = new THREE.Mesh(geometry, material);
 	// scene.add(globe);
+	// d3.json("../public/ne_110m_admin_0_countries.geojson").then((geoData) => {
 	d3.json("../public/ne_110m_admin_0_countries.geojson").then((geoData) => {
 		// console.log(geoData.features);
 
@@ -42,26 +44,22 @@ export function createGlobe(scene) {
 		function processCountry(ring, feature, countryGroup) {
 			const points = convertRingToPoints(ring);
 
-			// Create a BufferGeometry to store the country geometry
-			const geometry = new THREE.BufferGeometry();
-			const vertices = [];
-			const indices = [];
-
-			// Add points to the vertices array
+			// Flatten the points for Earcut
+			const flatPoints = [];
 			points.forEach(([x, y, z]) => {
-				vertices.push(x, y, z); // x, y, z coordinates for each point
+				flatPoints.push(x, y, z);
 			});
 
-			// Triangulate the points (we'll need to create triangles from these points)
-			const numPoints = points.length;
-			for (let i = 1; i < numPoints - 1; i++) {
-				indices.push(0, i, i + 1); // Create a triangle using points[0], points[i], and points[i+1]
-			}
+			// Use Earcut to generate the indices for triangulation
+			// const indices = earcut(flatPoints, null, 3); // Use 3 for 3D coordinates
+
+			// Create a BufferGeometry to store the country geometry
+			const geometry = new THREE.BufferGeometry();
 
 			// Set the geometry's vertices and indices
 			geometry.setAttribute(
 				"position",
-				new THREE.Float32BufferAttribute(vertices, 3)
+				new THREE.Float32BufferAttribute(flatPoints, 3)
 			);
 			geometry.setIndex(indices);
 
@@ -69,6 +67,9 @@ export function createGlobe(scene) {
 			const material = new THREE.MeshBasicMaterial({
 				color: Math.random() * 0xffffff,
 				side: THREE.DoubleSide, // Both sides of the polygon will be visible
+				polygonOffset: true, // Prevent z-fighting
+				polygonOffsetFactor: -1,
+				polygonOffsetUnits: -1,
 			});
 
 			// Store the original color to reset it later
