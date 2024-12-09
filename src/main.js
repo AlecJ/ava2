@@ -1,34 +1,25 @@
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createGlobe } from "./globe.js";
+import { gsap } from "gsap";
 
-// Scene
-const scene = new THREE.Scene();
-// scene.add(new THREE.AmbientLight(0xcccccc, Math.PI));
-// scene.add(new THREE.DirectionalLight(0xffffff, 0.6 * Math.PI));
+import { createGlobe, createCountries } from "./globe.js";
+import {
+	scene,
+	camera,
+	renderer,
+	controls,
+} from "./sceneCameraRendererControls.js";
 
-// Camera
-const camera = new THREE.PerspectiveCamera(
-	75,
-	window.innerWidth / window.innerHeight,
-	0.1,
-	1000
-);
-camera.position.z = 300;
+const globe = createGlobe();
+const countries = createCountries();
 
-// Renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setAnimationLoop(animate);
-document.body.appendChild(renderer.domElement);
+const globeAndCountries = new THREE.Group();
 
-// Camera controls
-const controls = new OrbitControls(camera, renderer.domElement);
-// controls.minDistance = 0;
-controls.maxDistance = 500;
-controls.rotateSpeed = 0.5;
-controls.zoomSpeed = 0.8;
+globeAndCountries.add(globe);
+globeAndCountries.add(countries);
 
-const globe = createGlobe(scene);
+// scene.add(globe);
+// scene.add(countries);
+
+scene.add(globeAndCountries);
 
 // Add raycasting logic
 const raycaster = new THREE.Raycaster();
@@ -40,6 +31,9 @@ function onPointerMove(event) {
 	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
 	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
+
+let selectedCountry = null;
+let prevZoom = null;
 
 function onClick(event) {
 	// Use raycasting to find the clicked country
@@ -54,12 +48,56 @@ function onClick(event) {
 
 		// Log the country name
 		console.log("Clicked country:", country.userData.name);
+
+		if (country.userData.name && !prevZoom) {
+			// rotate to the country
+			// get coordinates of pointer click on sphere
+			const intersectionPoint = intersects[0].point.clone();
+
+			prevZoom = Math.round(camera.position.length());
+
+			const targetPosition = intersectionPoint
+				.normalize()
+				.multiplyScalar(150);
+
+			gsap.to(camera.position, {
+				x: targetPosition.x,
+				y: targetPosition.y,
+				z: targetPosition.z,
+				duration: 1.5, // Duration of the animation in seconds
+				onUpdate: () => {
+					controls.update(); // Ensure controls update during animation
+				},
+			});
+		} else if (prevZoom) {
+			const targetPosition = camera.position
+				.clone()
+				.normalize()
+				.multiplyScalar(200);
+
+			gsap.to(camera.position, {
+				x: targetPosition.x,
+				y: targetPosition.y,
+				z: targetPosition.z,
+				duration: 1.5, // Duration of the animation in seconds
+				onUpdate: () => {
+					controls.update(); // Ensure controls update during animation
+				},
+			});
+			console.log(prevZoom);
+
+			prevZoom = null;
+		}
 	}
+
+	// to do -- zoom in a little? add dialogue ui
+
+	// click out zooms out and removes dialogue
 }
 
 function checkForPointerTarget() {
 	// Find objects intersecting the ray
-	const intersects = raycaster.intersectObjects(scene.children);
+	const intersects = raycaster.intersectObjects(countries.children);
 
 	// If a country is hovered
 	if (intersects.length > 0) {
@@ -105,6 +143,8 @@ function onWindowResize() {
 window.addEventListener("pointermove", onPointerMove, false);
 window.addEventListener("click", onClick, false);
 window.addEventListener("resize", onWindowResize);
+
+renderer.setAnimationLoop(animate);
 
 function animate() {
 	controls.update();

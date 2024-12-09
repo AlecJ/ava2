@@ -1,178 +1,31 @@
 import * as d3 from "d3";
-import earcut from "earcut";
 
-export function createGlobe(scene) {
-	const globeRadius = 100;
-	const geometry = new THREE.SphereGeometry(globeRadius - 1, 64, 64);
-	const material = new THREE.MeshBasicMaterial({
-		color: 0x660000,
+function createGlobe(globeRadius = 100) {
+	const geometry = new THREE.SphereGeometry(globeRadius - 0.5, 64, 64);
+	const sphereMaterial = new THREE.MeshBasicMaterial({
+		color: 0x529ef7,
 		wireframe: false,
 	});
-	const globe = new THREE.Mesh(geometry, material);
-	scene.add(globe);
-	// d3.json("../public/ne_110m_admin_0_countries.geojson").then((geoData) => {
-	d3.json("../public/triangles.json").then((geoData) => {
-		// console.log(geoData.features);
+	const globe = new THREE.Mesh(geometry, sphereMaterial);
 
+	return globe;
+}
+
+function createCountries(globeRadius = 100) {
+	const countriesGroup = new THREE.Group();
+
+	d3.json("../triangles.json").then((geoData) => {
 		const group = new THREE.Group();
 
-		// console.log(geoData);
+		Object.entries(geoData).forEach(([countryName, countryData]) => {
+			const { vertices, polygons, triangles } = countryData;
 
-		// geoData.forEach((country) => {
-		Object.entries(geoData)
-			// .slice(0, 1)
-			.forEach(([countryName, countryData]) => {
-				const { vertices, polygons, triangles } = countryData;
-
-				const normalizedVertices = [];
-				for (let i = 0; i < vertices.length; i += 2) {
-					const lon = vertices[i];
-					const lat = vertices[i + 1];
-					const point = latLongToVector3(lat, lon, globeRadius);
-					normalizedVertices.push(point.x, point.y, point.z);
-				}
-
-				console.log("Vertices length:", vertices.length);
-				console.log("Triangles length:", triangles.length);
-
-				console.log("Transformed Vertices:", normalizedVertices);
-				console.log("Triangle Indices:", triangles);
-
-				// Function to convert lat/lon to 3D spherical coordinates
-				function latLongToVector3(lat, lon, radius) {
-					const phi = (90 - lat) * (Math.PI / 180); // Latitude to phi (polar angle)
-					const theta = (lon + 180) * (Math.PI / 180); // Longitude to theta (azimuthal angle)
-
-					// Spherical to Cartesian conversion
-					const x = -(radius * Math.sin(phi) * Math.cos(theta));
-					const y = radius * Math.cos(phi);
-					const z = radius * Math.sin(phi) * Math.sin(theta);
-
-					if (isNaN(x) || isNaN(y) || isNaN(z)) {
-						console.error(
-							"NaN encountered during transformation:",
-							{
-								x,
-								y,
-								z,
-							}
-						);
-					}
-
-					return new THREE.Vector3(x, y, z);
-				}
-
-				// Create the BufferGeometry
-				const geometry = new THREE.BufferGeometry();
-				geometry.setAttribute(
-					"position",
-					new THREE.Float32BufferAttribute(normalizedVertices, 3)
-				);
-				geometry.setIndex(triangles);
-
-				geometry.computeBoundingSphere();
-				console.log("Bounding Sphere:", geometry.boundingSphere);
-				console.log(
-					"Geometry Position:",
-					geometry.getAttribute("position")
-				);
-
-				// Create a material for the country
-				const material = new THREE.MeshBasicMaterial({
-					color: Math.random() * 0xffffff,
-					side: THREE.DoubleSide,
-					polygonOffset: true, // Prevent z-fighting
-					polygonOffsetFactor: -1,
-					polygonOffsetUnits: -1,
-				});
-
-				// Create the mesh
-				const mesh = new THREE.Mesh(geometry, material);
-
-				// Add the mesh to the country group
-				group.add(mesh);
-
-				// Process each country into a mesh
-				// geoData.features.forEach((feature) => {
-				// 	const geometry = feature.geometry;
-				// 	const countryGroup = new THREE.Group(); // Group for the country mesh
-
-				// 	if (geometry.type === "Polygon") {
-				// 		// Process single Polygon
-				// 		geometry.coordinates.forEach((ring) =>
-				// 			processCountry(ring, feature, countryGroup)
-				// 		);
-				// 	} else if (geometry.type === "MultiPolygon") {
-				// 		// Process each Polygon in MultiPolygon
-				// 		geometry.coordinates.forEach((polygon) => {
-				// 			polygon.forEach((ring) =>
-				// 				processCountry(ring, feature, countryGroup)
-				// 			);
-				// 		});
-				// 	} else {
-				// 		console.warn("Unsupported geometry type:", geometry.type);
-				// 	}
-
-				// group.add(countryGroup);
-			});
-
-		// Create a 3d mesh from a ring, or array of coordinates
-		function processCountry(ring, feature, countryGroup) {
-			const points = convertRingToPoints(ring);
-
-			// Flatten the points for Earcut
-			const flatPoints = [];
-			points.forEach(([x, y, z]) => {
-				flatPoints.push(x, y, z);
-			});
-
-			// Use Earcut to generate the indices for triangulation
-			// const indices = earcut(flatPoints, null, 3); // Use 3 for 3D coordinates
-
-			// Create a BufferGeometry to store the country geometry
-			const geometry = new THREE.BufferGeometry();
-
-			// Set the geometry's vertices and indices
-			geometry.setAttribute(
-				"position",
-				new THREE.Float32BufferAttribute(flatPoints, 3)
-			);
-			geometry.setIndex(indices);
-
-			// Create a material for the country (random color)
-			const material = new THREE.MeshBasicMaterial({
-				color: Math.random() * 0xffffff,
-				side: THREE.DoubleSide, // Both sides of the polygon will be visible
-				polygonOffset: true, // Prevent z-fighting
-				polygonOffsetFactor: -1,
-				polygonOffsetUnits: -1,
-			});
-
-			// Store the original color to reset it later
-			material.userData = { originalColor: material.color.getHex() };
-
-			// Create the mesh using the geometry and material
-			const mesh = new THREE.Mesh(geometry, material);
-			mesh.userData = { name: feature.properties.NAME }; // Store country name
-
-			// Add the mesh to the country group
-			countryGroup.add(mesh);
-
-			// Function to convert lat/lon to 3D vector on the globe's surface
-			function convertRingToPoints(ring) {
-				const listOfPoints = [];
-
-				ring.forEach(([lon, lat]) => {
-					// Convert lat/lon to 3D spherical coordinates on the globe surface
-					const point = latLongToVector3(
-						lat,
-						lon,
-						globeRadius + 0.01
-					); // Slightly offset from the sphere surface
-					listOfPoints.push([point.x, point.y, point.z]); // Store the x, y, z coordinates
-				});
-
-				return listOfPoints;
+			const normalizedVertices = [];
+			for (let i = 0; i < vertices.length; i += 2) {
+				const lon = vertices[i];
+				const lat = vertices[i + 1];
+				const point = latLongToVector3(lat, lon, globeRadius);
+				normalizedVertices.push(point.x, point.y, point.z);
 			}
 
 			// Function to convert lat/lon to 3D spherical coordinates
@@ -185,10 +38,55 @@ export function createGlobe(scene) {
 				const y = radius * Math.cos(phi);
 				const z = radius * Math.sin(phi) * Math.sin(theta);
 
+				if (isNaN(x) || isNaN(y) || isNaN(z)) {
+					console.error("NaN encountered during transformation:", {
+						x,
+						y,
+						z,
+					});
+				}
+
 				return new THREE.Vector3(x, y, z);
 			}
-		}
 
-		scene.add(group);
+			// Create the BufferGeometry
+			const geometry = new THREE.BufferGeometry();
+			geometry.setAttribute(
+				"position",
+				new THREE.Float32BufferAttribute(normalizedVertices, 3)
+			);
+			geometry.setIndex(triangles);
+
+			geometry.computeBoundingSphere();
+
+			// Create a material for the country
+			const material = new THREE.MeshBasicMaterial({
+				color: Math.random() * 0xffffff,
+				side: THREE.DoubleSide,
+				polygonOffset: true, // Prevent z-fighting
+				polygonOffsetFactor: -1,
+				polygonOffsetUnits: -1,
+			});
+
+			// Store the original color to reset it later
+			material.userData = {
+				originalColor: material.color.getHex(),
+				name: countryName,
+			};
+
+			// Create the mesh
+			const mesh = new THREE.Mesh(geometry, material);
+
+			mesh.userData = { name: countryName }; // Store country name
+
+			// Add the mesh to the country group
+			group.add(mesh);
+		});
+
+		countriesGroup.add(group);
 	});
+
+	return countriesGroup;
 }
+
+export { createGlobe, createCountries };

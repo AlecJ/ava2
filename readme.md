@@ -1,13 +1,19 @@
-# ava
+# AVA
 
 Tactical Espionage Strategy?
 
-## install
+## Installation
 
 install node 23
 
-## run
+## Run
 
 run with
 `npm install`
 `npm run dev`
+
+## To Do
+
+-   countries group by team
+-   countries colored by team
+-   home base 3d object on home countries (capitals?)
