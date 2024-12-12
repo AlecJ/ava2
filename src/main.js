@@ -8,6 +8,8 @@ import {
 	controls,
 } from "./sceneCameraRendererControls.js";
 
+import initListeners from "./eventListeners.js";
+
 const globe = createGlobe();
 const countries = createCountries();
 
@@ -25,12 +27,6 @@ scene.add(globeAndCountries);
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let currentHoveredCountry = null; // Track currently hovered country
-
-function onPointerMove(event) {
-	// Calculate pointer position in normalized device coordinates (-1 to +1)
-	pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-}
 
 let selectedCountry = null;
 let prevZoom = null;
@@ -60,13 +56,26 @@ function onClick(event) {
 				.normalize()
 				.multiplyScalar(150);
 
+			// disable country during animation
+			// toggleOrbitControls(controls, false);
+
 			gsap.to(camera.position, {
 				x: targetPosition.x,
 				y: targetPosition.y,
 				z: targetPosition.z,
 				duration: 1.5, // Duration of the animation in seconds
+				onStart: () => {
+					// Disable OrbitControls when animation starts
+					controls.enabled = false;
+				},
+				onComplete: () => {
+					// Re-enable OrbitControls when animation is complete
+					controls.enabled = true;
+					controls.update();
+				},
 				onUpdate: () => {
-					controls.update(); // Ensure controls update during animation
+					// controls.update(); // Ensure controls update during animation
+					// toggleOrbitControls(controls, true); // reenable controls
 				},
 			});
 		} else if (prevZoom) {
@@ -75,13 +84,25 @@ function onClick(event) {
 				.normalize()
 				.multiplyScalar(200);
 
+			// disable country during animation
+			// toggleOrbitControls(controls, false);
+
 			gsap.to(camera.position, {
 				x: targetPosition.x,
 				y: targetPosition.y,
 				z: targetPosition.z,
 				duration: 1.5, // Duration of the animation in seconds
+				onStart: () => {
+					// Disable OrbitControls when animation starts
+					controls.enabled = false;
+				},
+				onComplete: () => {
+					// Re-enable OrbitControls when animation is complete
+					controls.enabled = true;
+				},
 				onUpdate: () => {
-					controls.update(); // Ensure controls update during animation
+					// controls.update(); // Ensure controls update during animation
+					// toggleOrbitControls(controls, true); // reenable controls
 				},
 			});
 			console.log(prevZoom);
@@ -127,22 +148,7 @@ function checkForPointerTarget() {
 	}
 }
 
-// Add this function to handle resizing
-function onWindowResize() {
-	// Update camera aspect ratio and projection matrix
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-
-	// Update renderer size
-	renderer.setSize(window.innerWidth, window.innerHeight);
-
-	// Optionally, update any other elements dependent on screen size
-}
-
-// Event Listeners for mouse and window
-window.addEventListener("pointermove", onPointerMove, false);
-window.addEventListener("click", onClick, false);
-window.addEventListener("resize", onWindowResize);
+initListeners(camera, renderer);
 
 renderer.setAnimationLoop(animate);
 
