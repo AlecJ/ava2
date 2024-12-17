@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // Scene
@@ -15,7 +16,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 200;
 
 // Renderer
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
