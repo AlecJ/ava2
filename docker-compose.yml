@@ -3,11 +3,24 @@ version: "3.8"
 services:
     web:
         build:
-            context: ./app
+            context: ./src
             dockerfile: Dockerfile.dev
+        container_name: ava_app
         ports:
             - "5050:5000"
         volumes:
-            - ./app/src:/app
+            - ./src/app:/app/app
         environment:
-            FLASK_ENV: development
+            MONGO_URI: mongodb://mongodb:27017/ava
+
+    mongodb:
+        image: mongo:latest
+        container_name: mongodb
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo-data:/data/db
+        restart: "unless-stopped"
+
+volumes:
+    mongo-data:
