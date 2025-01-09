@@ -1,15 +1,15 @@
 <template>
-	<div id="globeViz"></div>
+	<div id="globe"></div>
 </template>
 
 <script>
 import * as THREE from "three";
+import { markRaw } from "vue";
+import { gsap } from "gsap";
 import { useGlobe } from "../composables/globe.js";
 import { useScene } from "../composables/scene.js";
-import { useSessionStore } from "@/stores/session";
 import initListeners from "../composables/eventListeners.js";
-import { gsap } from "gsap";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { useSessionStore } from "@/stores/session";
 
 export default {
 	name: "GlobalView",
@@ -55,20 +55,32 @@ export default {
 			this.controls = controls;
 
 			const { createGlobe, createCountries } = useGlobe();
-			this.globe = createGlobe();
-			this.countries = createCountries();
-			// this.scene.add(this.globe, this.countries);
+			const globe = createGlobe();
+			const countries = createCountries();
 
-			this.globeAndCountries = new THREE.Group();
-			this.globeAndCountries.add(this.globe, this.countries);
+			this.globeAndCountries = markRaw(new THREE.Group());
+			this.globeAndCountries.add(globe, countries);
 			this.scene.add(this.globeAndCountries);
-			// this.scene.add(globe);
-			// this.scene.add(countries);
 
 			this.raycaster = new THREE.Raycaster();
 			this.pointer = new THREE.Vector2();
 		},
-		onClick(event) {
+		moveCameraToTarget(targetPosition) {
+			gsap.to(this.camera.position, {
+				x: targetPosition.x,
+				y: targetPosition.y,
+				z: targetPosition.z,
+				duration: 1.5,
+				onStart: () => {
+					this.controls.enabled = false;
+				},
+				onComplete: () => {
+					this.controls.enabled = true;
+					this.controls.update();
+				},
+			});
+		},
+		onClick() {
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
 			const intersects = this.raycaster.intersectObjects(
@@ -89,81 +101,64 @@ export default {
 						.normalize()
 						.multiplyScalar(150);
 
-					gsap.to(this.camera.position, {
-						x: targetPosition.x,
-						y: targetPosition.y,
-						z: targetPosition.z,
-						duration: 1.5,
-						onStart: () => {
-							this.controls.enabled = false;
-						},
-						onComplete: () => {
-							this.controls.enabled = true;
-							this.controls.update();
-						},
-					});
+					this.moveCameraToTarget(targetPosition);
 				} else if (this.prevZoom) {
 					const targetPosition = this.camera.position
 						.clone()
 						.normalize()
 						.multiplyScalar(200);
 
-					gsap.to(this.camera.position, {
-						x: targetPosition.x,
-						y: targetPosition.y,
-						z: targetPosition.z,
-						duration: 1.5,
-						onStart: () => {
-							this.controls.enabled = false;
-						},
-						onComplete: () => {
-							this.controls.enabled = true;
-						},
-					});
+					this.moveCameraToTarget(targetPosition);
 					this.prevZoom = null;
 				}
 			}
 		},
+		resetHoveredCountry() {
+			if (this.currentHoveredCountry) {
+				this.currentHoveredCountry.material.color.set(
+					this.currentHoveredCountry.material.userData.originalColor
+				);
+				this.currentHoveredCountry = null;
+			}
+		},
 		checkForPointerTarget() {
 			const intersects = this.raycaster.intersectObjects(
-				this.globeAndCountries.children
+				this.scene.children
 			);
 
 			if (intersects.length > 0) {
 				const country = intersects[0].object;
+				console.log(country.userData.name);
 
-				if (country !== this.currentHoveredCountry) {
-					if (this.currentHoveredCountry) {
-						this.currentHoveredCountry.material.color.set(
-							this.currentHoveredCountry.material.userData
-								.originalColor
-						);
-					}
+				if (
+					country.userData?.name &&
+					country !== this.currentHoveredCountry
+				) {
+					this.resetHoveredCountry();
 
 					country.material.color.set(0xff0000);
 					this.currentHoveredCountry = country;
+				} else {
+					this.resetHoveredCountry();
 				}
 			} else {
-				if (this.currentHoveredCountry) {
-					this.currentHoveredCountry.material.color.set(
-						this.currentHoveredCountry.material.userData
-							.originalColor
-					);
-					this.currentHoveredCountry = null;
-				}
+				this.resetHoveredCountry();
 			}
 		},
 		animate() {
 			this.controls.update();
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 			this.checkForPointerTarget();
-			this.globeAndCountries.rotation.y -= 0.003;
+
+			// if (!this.sessionId) {
+			// 	this.globeAndCountries.rotation.y -= 0.003;
+			// }
+
 			this.renderer.render(this.scene, this.camera);
 		},
 	},
 	created() {
 		this.sessionStore = useSessionStore(); // Initialize the session store
-		// this.animate = this.animate.bind(this);
 		this.initScene();
 	},
 	mounted() {

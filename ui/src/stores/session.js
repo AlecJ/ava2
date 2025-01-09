@@ -5,7 +5,6 @@ export const useSessionStore = defineStore("session", {
 	state: () => ({
 		sessionId: null,
 	}),
-	getters: {},
 	actions: {
 		async getSession(sessionId) {
 			try {
