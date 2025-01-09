@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import GlobeView from "../views/GlobeView.vue";
+import GameView from "@/views/GameView.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,7 +7,7 @@ const router = createRouter({
 		{
 			path: "/:sessionId?",
 			name: "home",
-			component: GlobeView,
+			component: GameView,
 		},
 	],
 });

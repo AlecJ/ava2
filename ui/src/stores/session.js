@@ -19,11 +19,11 @@ export const useSessionStore = defineStore("session", {
 				console.error("API Error:", error.message);
 			}
 		},
-		async createSession() {
+		async createSession(router) {
 			try {
 				const response = await API.post(`/session/create`);
-				console.log();
 				this.sessionId = response.data.session_id;
+				router.push({ path: `/${this.sessionId}` });
 			} catch (error) {
 				console.error("API Error:", error.message);
 			}

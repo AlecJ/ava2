@@ -85,3 +85,10 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+canvas {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+}

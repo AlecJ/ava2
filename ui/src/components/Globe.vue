@@ -1,18 +1,15 @@
-<template>
-	<div id="globe"></div>
-</template>
+<template></template>
 
 <script>
 import * as THREE from "three";
 import { markRaw } from "vue";
 import { gsap } from "gsap";
-import { useGlobe } from "../composables/globe.js";
-import { useScene } from "../composables/scene.js";
-import initListeners from "../composables/eventListeners.js";
+import { useGlobe } from "@/composables/globe.js";
+import { useScene } from "@/composables/scene.js";
+import initListeners from "@/composables/eventListeners.js";
 import { useSessionStore } from "@/stores/session";
 
 export default {
-	name: "GlobalView",
 	data() {
 		return {
 			globeAndCountries: null,
@@ -28,25 +25,6 @@ export default {
 		},
 	},
 	methods: {
-		async fetchSession() {
-			const sessionId = this.$route.params.sessionId;
-
-			if (sessionId) {
-				try {
-					await this.sessionStore.getSession(sessionId);
-					console.log("Session data:", this.sessionStore.session);
-				} catch (error) {
-					console.error("Failed to fetch session:", error);
-				}
-			} else {
-				console.warn("No session ID provided in the route.");
-				try {
-					await this.sessionStore.createSession();
-				} catch (error) {
-					console.error("Failed to create session:", error);
-				}
-			}
-		},
 		initScene() {
 			const { scene, camera, renderer, controls } = useScene();
 			this.scene = scene;
@@ -80,6 +58,7 @@ export default {
 				},
 			});
 		},
+		// checks if the user selecting a country and zooms in/out
 		onClick() {
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
@@ -92,7 +71,7 @@ export default {
 
 				console.log("Clicked country:", country.userData.name);
 
-				if (country.userData.name && !this.prevZoom) {
+				if (country.userData?.name && !this.prevZoom) {
 					const intersectionPoint = intersects[0].point.clone();
 
 					this.prevZoom = Math.round(this.camera.position.length());
@@ -121,6 +100,7 @@ export default {
 				this.currentHoveredCountry = null;
 			}
 		},
+		// highlights the country the user is hovering over
 		checkForPointerTarget() {
 			const intersects = this.raycaster.intersectObjects(
 				this.scene.children
@@ -128,14 +108,12 @@ export default {
 
 			if (intersects.length > 0) {
 				const country = intersects[0].object;
-				console.log(country.userData.name);
 
 				if (
 					country.userData?.name &&
 					country !== this.currentHoveredCountry
 				) {
 					this.resetHoveredCountry();
-
 					country.material.color.set(0xff0000);
 					this.currentHoveredCountry = country;
 				} else {
@@ -148,24 +126,26 @@ export default {
 		animate() {
 			this.controls.update();
 			this.raycaster.setFromCamera(this.pointer, this.camera);
-			this.checkForPointerTarget();
 
-			// if (!this.sessionId) {
-			// 	this.globeAndCountries.rotation.y -= 0.003;
-			// }
+			if (!this.sessionId) {
+				this.globeAndCountries.rotation.y -= 0.003;
+			} else {
+				this.checkForPointerTarget();
+			}
 
 			this.renderer.render(this.scene, this.camera);
 		},
 	},
 	created() {
-		this.sessionStore = useSessionStore(); // Initialize the session store
+		this.sessionStore = useSessionStore();
 		this.initScene();
 	},
 	mounted() {
-		// this.fetchSession();
-
 		initListeners(this.camera, this.renderer, this.pointer);
-		window.addEventListener("click", this.onClick, false);
+
+		if (!this.sessionId) {
+			window.addEventListener("click", this.onClick, false);
+		}
 
 		this.renderer.setAnimationLoop(this.animate);
 	},

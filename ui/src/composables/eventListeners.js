@@ -3,11 +3,9 @@
 export default function initListeners(camera, renderer, pointer) {
 	function onWindowResize() {
 		// Update camera aspect ratio and projection matrix
+		renderer.setSize(window.innerWidth, window.innerHeight);
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
-
-		// Update renderer size
-		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
 	function onPointerMove(event) {
@@ -17,6 +15,5 @@ export default function initListeners(camera, renderer, pointer) {
 	}
 
 	window.addEventListener("pointermove", onPointerMove, false);
-	// window.addEventListener("click", onClick, false);
 	window.addEventListener("resize", onWindowResize);
 }
