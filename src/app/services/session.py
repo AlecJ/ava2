@@ -1,6 +1,5 @@
-from uuid import uuid4
 from app.extensions import mongo
-from models.session import Session
+from app.models.session import Session
 
 
 """
@@ -36,8 +35,16 @@ def create_session():
     return session
 
 
-def join_session():
+def join_session(session_id, name, country):
     """
     Join a session.
     """
-    pass
+    # get session
+    session = get_session_by_session_id(session_id, convert_to_class=True)
+
+    # add player
+    try:
+        session.join_game(name, country)
+        return True
+    except:
+        return False

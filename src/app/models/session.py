@@ -1,6 +1,8 @@
 from uuid import uuid4
 from enum import Enum
 
+from app.models.player import Player
+
 """
 A Session is a:
 
@@ -21,21 +23,18 @@ Germany
 Japan
 
 """
+valid_countries = ['USA', 'USSR', 'UK', 'Germany', 'Japan']
 
 
 class SessionStatus(Enum):
-    STARTING = 'starting'
+    TEAM_SELECT = 'team_select'
     ACTIVE = 'active'
     COMPLETE = 'complete'
 
 
-valid_countries = ['USA', 'USSR', 'UK', 'Germany', 'Japan']
-
-
 class Session:
-    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.STARTING, current_turn=0):
+    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, current_turn=0):
         self.session_id = str(session_id)
-        # list of uuid representing their player_id, same they will use for joining the game
         self.players = players
         self.status = status
         self.current_turn = current_turn
@@ -53,14 +52,38 @@ class Session:
             f"current_turn={self.current_turn})>"
         )
 
+    def to_dict(self):
+        """
+        Converts the Session object to a dictionary for JSON serialization.
+        """
+        return {
+            'session_id': self.session_id,
+            'players': [player.to_dict() for player in self.players],
+            'status': self.status.name,
+            'current_turn': self.current_turn
+        }
+
     @classmethod
     def from_dict(cls, data):
         """
         Creates a Session object from a dictionary.
-        """
-        return cls(session_id=data.get('session_id'), players=data.get('players', []))
 
-    def join_game(self, country=None):
+        This should only be used on existing data, not for creating new sessions.
+
+        If a session is missing values, this will raise an error.
+        """
+        try:
+            return cls(session_id=data['session_id'],
+                       players=data['players'],
+                       status=SessionStatus(data['status']),
+                       current_turn=data['current_turn']
+                       )
+        except KeyError as e:
+            # TODO log error
+            raise ValueError(
+                f"Failed to cast Session json to class. Missing required key: {e}")
+
+    def join_game(self, name=None, country=None):
         """
         Adds a player to the game. The user provides a country
         """
@@ -77,10 +100,13 @@ class Session:
         if self.players.length > 4:
             raise ValueError("Game is full.")
 
-        new_player = {
-            'id': str(uuid4()),
-            'country': country
-        }
+        # player must have a name TODO add validation
+        if name is None:
+            raise ValueError("Name is required.")
+
+        # return result
+        new_player = Player(session_id=self.session_id,
+                            name=name, country=country)
         self.players.append(new_player)
 
         return new_player

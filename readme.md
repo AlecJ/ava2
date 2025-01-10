@@ -16,7 +16,9 @@ run with
 
 ## To Do
 
--   add game is started to session model
+-   figure out postman + python debugger
+-   fix create_session route
+
 -   add other game data to session model (names, teams, invite links)
 -   team select lobby
 
@@ -35,6 +37,7 @@ run with
 
 -   home base 3d object on home countries (capitals?)
 
+-   add logging
 -   decide game actions
 -   backend actions
 -   backend tests

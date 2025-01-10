@@ -4,6 +4,9 @@ import { API } from "@/services/api";
 export const useSessionStore = defineStore("session", {
 	state: () => ({
 		sessionId: null,
+		status: null,
+		players: [],
+		currentTurn: null,
 	}),
 	actions: {
 		async getSession(sessionId) {
@@ -15,6 +18,9 @@ export const useSessionStore = defineStore("session", {
 				const response = await API.get(`/session/${sessionId}`);
 				console.log("API Response:", response.data); // Debugging log
 				this.sessionId = response.data.id;
+				this.status = response.data.status;
+				this.players = response.data.players;
+				this.currentTurn = response.data.current_turn;
 			} catch (error) {
 				console.error("API Error:", error.message);
 			}
