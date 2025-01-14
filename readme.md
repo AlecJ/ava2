@@ -16,17 +16,10 @@ run with
 
 ## To Do
 
--   figure out postman + python debugger
--   fix create_session route
-
--   add other game data to session model (names, teams, invite links)
+-   cannot interact while game is not started
 -   team select lobby
-
+-   add other game data to session model (names, teams, invite links)
 -   game invites
-
--   hints for saving bookmark to return to game
--   hints for invite button
-
 -   game start (creator approves)
 
 -   left sidebar
@@ -41,3 +34,9 @@ run with
 -   decide game actions
 -   backend actions
 -   backend tests
+
+-   remove console logs
+-   check TODOs
+
+-   hints for saving bookmark to return to game
+-   hints for invite button

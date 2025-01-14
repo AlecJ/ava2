@@ -10,8 +10,7 @@ session_route = Blueprint('session_route', __name__)
 
 @session_route.route('/<string:session_id>', methods=['GET'])
 def handle_get_session(session_id):
-    # get session from db
-    # returned as .... json? class?
+    # returned as json row from db
     result = get_session_by_session_id(session_id)
 
     if not result:
@@ -19,8 +18,8 @@ def handle_get_session(session_id):
 
     response = {
         'status': 'Session found.',
-        'session_id': result.session_id,
-        'data': result.to_dict(),
+        'session_id': result['session_id'],
+        'data': result,
     }
 
     return jsonify(response), 200
@@ -30,7 +29,7 @@ def handle_get_session(session_id):
 def handle_create_session():
     session = create_session()
 
-    return jsonify({'status': 'Session created.', 'session_id': session.session_id, 'session': session}), 201
+    return jsonify({'status': 'Session created.', 'session_id': session.session_id, 'session': session.to_dict()}), 201
 
 
 @session_route.route('/join/<string:session_id>', methods=['POST'])

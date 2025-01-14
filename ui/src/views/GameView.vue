@@ -32,7 +32,6 @@ export default {
 			if (sessionId) {
 				try {
 					await this.sessionStore.getSession(sessionId);
-					console.log("Session data:", this.sessionStore.session);
 				} catch (error) {
 					console.error("Failed to fetch session:", error);
 				}

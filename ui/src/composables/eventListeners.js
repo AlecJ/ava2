@@ -1,6 +1,6 @@
 // Event Listeners for mouse and window
 
-export default function initListeners(camera, renderer, pointer) {
+export function createWindowResizeListener(camera, renderer) {
 	function onWindowResize() {
 		// Update camera aspect ratio and projection matrix
 		renderer.setSize(window.innerWidth, window.innerHeight);
@@ -8,12 +8,23 @@ export default function initListeners(camera, renderer, pointer) {
 		camera.updateProjectionMatrix();
 	}
 
+	return {
+		enable: () => window.addEventListener("resize", onWindowResize),
+		disable: () => window.removeEventListener("resize", onWindowResize),
+	};
+}
+
+export function createPointerMoveListener(pointer) {
 	function onPointerMove(event) {
 		// Calculate pointer position in normalized device coordinates (-1 to +1)
 		pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
 		pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 	}
 
-	window.addEventListener("pointermove", onPointerMove, false);
-	window.addEventListener("resize", onWindowResize);
+	return {
+		enable: () =>
+			window.addEventListener("pointermove", onPointerMove, false),
+		disable: () =>
+			window.removeEventListener("pointermove", onPointerMove, false),
+	};
 }

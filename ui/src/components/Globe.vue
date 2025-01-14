@@ -6,7 +6,10 @@ import { markRaw } from "vue";
 import { gsap } from "gsap";
 import { useGlobe } from "@/composables/globe.js";
 import { useScene } from "@/composables/scene.js";
-import initListeners from "@/composables/eventListeners.js";
+import {
+	createWindowResizeListener,
+	createPointerMoveListener,
+} from "@/composables/eventListeners.js";
 import { useSessionStore } from "@/stores/session";
 
 export default {
@@ -22,6 +25,21 @@ export default {
 	computed: {
 		sessionId() {
 			return this.sessionStore.sessionId;
+		},
+		status() {
+			return this.sessionStore.status;
+		},
+		controlsEnabled() {
+			return this.sessionId && this.status === "test";
+		},
+	},
+	watch: {
+		controlsEnabled(newVal) {
+			if (newVal) {
+				this.enableListeners();
+			} else {
+				this.disableListeners();
+			}
 		},
 	},
 	methods: {
@@ -42,6 +60,18 @@ export default {
 
 			this.raycaster = new THREE.Raycaster();
 			this.pointer = new THREE.Vector2();
+		},
+		enableListeners() {
+			this.windowResizeListener.enable();
+			this.pointerMoveListener.enable();
+			window.addEventListener("click", this.onClick, false);
+			this.controls.enabled = true;
+		},
+		disableListeners() {
+			this.windowResizeListener.disable();
+			this.pointerMoveListener.disable();
+			window.removeEventListener("click", this.onClick, false);
+			this.controls.enabled = false;
 		},
 		moveCameraToTarget(targetPosition) {
 			gsap.to(this.camera.position, {
@@ -139,15 +169,21 @@ export default {
 	created() {
 		this.sessionStore = useSessionStore();
 		this.initScene();
+		this.windowResizeListener = createWindowResizeListener(
+			this.camera,
+			this.renderer
+		);
+		this.pointerMoveListener = createPointerMoveListener(this.pointer);
 	},
 	mounted() {
-		initListeners(this.camera, this.renderer, this.pointer);
-
-		if (!this.sessionId) {
-			window.addEventListener("click", this.onClick, false);
+		if (this.controlsEnabled) {
+			this.enableListeners();
 		}
 
 		this.renderer.setAnimationLoop(this.animate);
+	},
+	beforeUnmount() {
+		this.disableListeners();
 	},
 };
 </script>

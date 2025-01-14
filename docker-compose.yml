@@ -12,6 +12,8 @@ services:
             - ./src/app:/app/app
         environment:
             MONGO_URI: mongodb://mongodb:27017/ava
+        stdin_open: true
+        tty: true
 
     mongodb:
         image: mongo:latest

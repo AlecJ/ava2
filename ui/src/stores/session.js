@@ -17,10 +17,11 @@ export const useSessionStore = defineStore("session", {
 				);
 				const response = await API.get(`/session/${sessionId}`);
 				console.log("API Response:", response.data); // Debugging log
-				this.sessionId = response.data.id;
-				this.status = response.data.status;
-				this.players = response.data.players;
-				this.currentTurn = response.data.current_turn;
+				const { status, players, current_turn } = response.data.data;
+				this.sessionId = response.data.session_id;
+				this.status = status;
+				this.players = players;
+				this.currentTurn = current_turn;
 			} catch (error) {
 				console.error("API Error:", error.message);
 			}

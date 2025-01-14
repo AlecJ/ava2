@@ -17,6 +17,9 @@ def get_session_by_session_id(session_id, convert_to_class=False):
     """
     result = mongo.db.session.find_one({'session_id': session_id})
 
+    # remove mongo ObjectID
+    del result['_id']
+
     if not result:
         return None
 
