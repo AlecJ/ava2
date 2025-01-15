@@ -23,13 +23,13 @@ Germany
 Japan
 
 """
-valid_countries = ['USA', 'USSR', 'UK', 'Germany', 'Japan']
+valid_countries = ['USA', 'UK', 'USSR', 'Germany', 'Japan']
 
 
 class SessionStatus(Enum):
-    TEAM_SELECT = 'team_select'
-    ACTIVE = 'active'
-    COMPLETE = 'complete'
+    TEAM_SELECT = 'TEAM_SELECT'
+    ACTIVE = 'ACTIVE'
+    COMPLETE = 'COMPLETE'
 
 
 class Session:
@@ -74,8 +74,9 @@ class Session:
         """
         try:
             return cls(session_id=data['session_id'],
-                       players=data['players'],
-                       status=SessionStatus(data['status']),
+                       players=[Player.from_dict(player)
+                                for player in data['players']],
+                       status=SessionStatus[data['status']],
                        current_turn=data['current_turn']
                        )
         except KeyError as e:
@@ -83,7 +84,7 @@ class Session:
             raise ValueError(
                 f"Failed to cast Session json to class. Missing required key: {e}")
 
-    def join_game(self, name=None, country=None):
+    def join_game(self, country=None):
         """
         Adds a player to the game. The user provides a country
         """
@@ -91,28 +92,24 @@ class Session:
         if country not in valid_countries:
             raise ValueError(f"Country {country} is not a valid country.")
 
-        taken_countries = [player['country'] for player in self.players]
+        taken_countries = [player.country for player in self.players]
 
         if country in taken_countries:
             raise ValueError(f"Country {country} is already taken.")
 
         # ensure game is not full
-        if self.players.length > 4:
+        if len(self.players) > 4:
             raise ValueError("Game is full.")
-
-        # player must have a name TODO add validation
-        if name is None:
-            raise ValueError("Name is required.")
 
         # return result
         new_player = Player(session_id=self.session_id,
-                            name=name, country=country)
+                            country=country)
         self.players.append(new_player)
 
         return new_player
 
     def next_turn(self):
-        self.current_turn = (self.current_turn + 1) % len(self.players)
+        self.current_turn += 1
         pass
 
     def complete_turn(self):

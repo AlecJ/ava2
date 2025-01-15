@@ -2,13 +2,12 @@ from uuid import uuid4
 
 
 class Player:
-    def __init__(self, player_id=uuid4(), session_id=None, name=None, country=None):
+    def __init__(self, player_id=uuid4(), session_id=None, country=None):
         self.player_id = str(player_id)
-        self.session_id = session_id
-        self.name = name
+        self.session_id = str(session_id)
         self.country = country
 
-        if name is None or country is None or session_id is None:
+        if country is None or session_id is None:
             raise ValueError(
                 "Cannot instatiate Player Class: Invalid data: missing required values.")
 
@@ -16,13 +15,12 @@ class Player:
         # session cannot be null, neither name nor country
 
     def __str__(self):
-        return f"Player {self.player_id} (Name: {self.name}, Country: {self.country})"
+        return f"Player {self.player_id} (Country: {self.country})"
 
     def __repr__(self):
         return (
             f"<Player(player_id={self.player_id}, "
             f"session_id={self.session_id}, "
-            f"name={self.name}, "
             f"country={self.country})>"
         )
 
@@ -33,7 +31,6 @@ class Player:
         return {
             'player_id': self.player_id,
             'session_id': self.session_id,
-            'name': self.name,
             'country': self.country
         }
 
@@ -46,7 +43,6 @@ class Player:
             return cls(
                 player_id=data['player_id'],
                 session_id=data['session_id'],
-                name=data['name'],
                 country=data['country']
             )
         except KeyError as e:

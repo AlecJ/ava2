@@ -16,11 +16,17 @@ run with
 
 ## To Do
 
--   cannot interact while game is not started
+-   get available countries
+-   do not allow players to pick the same country
+-   polling (socketio?)
+
 -   team select lobby
+
 -   add other game data to session model (names, teams, invite links)
 -   game invites
--   game start (creator approves)
+-   game start (creator approves) -- how does the backend know who the player is? second ID just for main?
+
+-   pending actions (to backend), grey out actions (frontend)
 
 -   left sidebar
 -   right sidebar (drawer)

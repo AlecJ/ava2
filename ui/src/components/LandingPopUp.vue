@@ -2,7 +2,7 @@
 export default {
 	props: {
 		createSession: {
-			type: Function, // Ensure the prop is a function
+			type: Function,
 			required: true,
 		},
 	},

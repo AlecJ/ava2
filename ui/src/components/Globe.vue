@@ -31,7 +31,7 @@ export default {
 			return this.sessionStore?.status;
 		},
 		controlsEnabled() {
-			return this.sessionId && this.status === "TEAM_SELECT";
+			return this.sessionId && this.status === "!TEAM_SELECT";
 		},
 	},
 	watch: {
@@ -166,7 +166,7 @@ export default {
 			this.controls.update();
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
-			if (!this.sessionId) {
+			if (!this.controlsEnabled) {
 				this.globeAndCountries.rotation.y -= 0.003;
 			} else {
 				this.checkForPointerTarget();

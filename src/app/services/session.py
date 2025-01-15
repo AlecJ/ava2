@@ -38,16 +38,35 @@ def create_session():
     return session
 
 
-def join_session(session_id, name, country):
+def update_session(session):
     """
-    Join a session.
+    Update a session.
+
+    Returns None.
     """
-    # get session
+    mongo.db.session.update_one(
+        # Filter to find the session by its unique identifier
+        {'session_id': session.session_id},
+        {'$set': session.to_dict()}  # Update the session with the new data
+    )
+
+
+def join_session(session_id, country):
+    """
+    Join a game session.
+
+    User must provide a valid and available country name.
+
+    Player object is returned, if valid.
+    """
     session = get_session_by_session_id(session_id, convert_to_class=True)
 
-    # add player
     try:
-        session.join_game(name, country)
-        return True
+        # breakpoint()
+        player = session.join_game(country)
     except:
         return False
+
+    update_session(session)
+
+    return player
