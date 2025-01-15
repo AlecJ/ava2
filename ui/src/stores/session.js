@@ -17,11 +17,7 @@ export const useSessionStore = defineStore("session", {
 				);
 				const response = await API.get(`/session/${sessionId}`);
 				console.log("API Response:", response.data); // Debugging log
-				const { status, players, current_turn } = response.data.data;
-				this.sessionId = response.data.session_id;
-				this.status = status;
-				this.players = players;
-				this.currentTurn = current_turn;
+				this.setSession(response.data.data);
 			} catch (error) {
 				console.error("API Error:", error.message);
 			}
@@ -30,10 +26,17 @@ export const useSessionStore = defineStore("session", {
 			try {
 				const response = await API.post(`/session/create`);
 				this.sessionId = response.data.session_id;
+				this.setSession(response.data);
 				router.push({ path: `/${this.sessionId}` });
 			} catch (error) {
 				console.error("API Error:", error.message);
 			}
+		},
+		setSession(data) {
+			this.sessionId = data.session_id;
+			this.status = data.status;
+			this.players = data.players;
+			this.currentTurn = data.current_turn;
 		},
 	},
 });

@@ -20,17 +20,18 @@ export default {
 			selectedCountry: null,
 			prevZoom: null,
 			sessionStore: null,
+			clickTimeout: null,
 		};
 	},
 	computed: {
 		sessionId() {
-			return this.sessionStore.sessionId;
+			return this.sessionStore?.sessionId;
 		},
 		status() {
-			return this.sessionStore.status;
+			return this.sessionStore?.status;
 		},
 		controlsEnabled() {
-			return this.sessionId && this.status === "test";
+			return this.sessionId && this.status === "TEAM_SELECT";
 		},
 	},
 	watch: {
@@ -62,16 +63,20 @@ export default {
 			this.pointer = new THREE.Vector2();
 		},
 		enableListeners() {
-			this.windowResizeListener.enable();
 			this.pointerMoveListener.enable();
+			window.addEventListener("mousedown", this.onMouseDown, false);
 			window.addEventListener("click", this.onClick, false);
 			this.controls.enabled = true;
 		},
 		disableListeners() {
-			this.windowResizeListener.disable();
 			this.pointerMoveListener.disable();
+			window.removeEventListener("mousedown", this.onMouseDown, false);
 			window.removeEventListener("click", this.onClick, false);
 			this.controls.enabled = false;
+		},
+		// used with onClick to ensure user is not performing a drag
+		onMouseDown() {
+			this.clickTimeout = Date.now();
 		},
 		moveCameraToTarget(targetPosition) {
 			gsap.to(this.camera.position, {
@@ -88,8 +93,12 @@ export default {
 				},
 			});
 		},
-		// checks if the user selecting a country and zooms in/out
+		// zooms in on the country the user clicked on (out after second click)
 		onClick() {
+			if (Date.now() - this.clickTimeout > 200) {
+				return;
+			}
+
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
 			const intersects = this.raycaster.intersectObjects(
@@ -173,6 +182,7 @@ export default {
 			this.camera,
 			this.renderer
 		);
+		this.windowResizeListener.enable();
 		this.pointerMoveListener = createPointerMoveListener(this.pointer);
 	},
 	mounted() {
@@ -183,6 +193,7 @@ export default {
 		this.renderer.setAnimationLoop(this.animate);
 	},
 	beforeUnmount() {
+		this.windowResizeListener.disable();
 		this.disableListeners();
 	},
 };
