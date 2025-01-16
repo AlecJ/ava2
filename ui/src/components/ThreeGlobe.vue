@@ -13,25 +13,32 @@ import {
 import { useSessionStore } from "@/stores/session";
 
 export default {
+	props: {
+		sessionId: {
+			type: String,
+			required: false,
+		},
+		status: {
+			type: String,
+			required: false,
+		},
+		focusCountry: {
+			type: Function,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			globeAndCountries: null,
 			currentHoveredCountry: null,
-			selectedCountry: null,
 			prevZoom: null,
 			sessionStore: null,
 			clickTimeout: null,
 		};
 	},
 	computed: {
-		sessionId() {
-			return this.sessionStore?.sessionId;
-		},
-		status() {
-			return this.sessionStore?.status;
-		},
 		controlsEnabled() {
-			return this.sessionId && this.status === "!TEAM_SELECT";
+			return this.status === "ACTIVE";
 		},
 	},
 	watch: {
@@ -83,7 +90,7 @@ export default {
 				x: targetPosition.x,
 				y: targetPosition.y,
 				z: targetPosition.z,
-				duration: 1.5,
+				duration: 0.8,
 				onStart: () => {
 					this.controls.enabled = false;
 				},
@@ -111,6 +118,9 @@ export default {
 				console.log("Clicked country:", country.userData.name);
 
 				if (country.userData?.name && !this.prevZoom) {
+					// set country as the user's focused country
+					this.focusCountry(country.userData.name);
+
 					const intersectionPoint = intersects[0].point.clone();
 
 					this.prevZoom = Math.round(this.camera.position.length());
@@ -121,6 +131,9 @@ export default {
 
 					this.moveCameraToTarget(targetPosition);
 				} else if (this.prevZoom) {
+					// set focused country to null
+					this.focusCountry(null);
+
 					const targetPosition = this.camera.position
 						.clone()
 						.normalize()
@@ -184,6 +197,8 @@ export default {
 		);
 		this.windowResizeListener.enable();
 		this.pointerMoveListener = createPointerMoveListener(this.pointer);
+
+		this.disableListeners();
 	},
 	mounted() {
 		if (this.controlsEnabled) {

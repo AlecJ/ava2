@@ -16,12 +16,11 @@ run with
 
 ## To Do
 
--   right sidebar (drawer)
--   right sidebar slides out, shows country name when country is selected
--   right sidebar slides away, when country is deselected
-
+-   break logic into lobby and game
 -   countries group by team
 -   countries colored by team
+
+-   polling for team select lobby (if first and waiting)
 
 -   home base 3d object on home countries (capitals?)
 
@@ -34,10 +33,4 @@ run with
 -   check TODOs
 
 -   game logic
-
--
--   V1 Release
--
-
--   hints for saving bookmark to return to game
--   hints for invite button
+-   hint for saving bookmark to return to game

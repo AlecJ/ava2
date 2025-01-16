@@ -3,6 +3,7 @@ import { useSessionStore } from "@/stores/session";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
+import CommandTray from "@/components/CommandTray.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
 
 export default {
@@ -11,14 +12,12 @@ export default {
 		BackgroundStars,
 		LandingPopUp,
 		TeamSelectPopUp,
+		CommandTray,
 		ThreeGlobe,
 	},
 	data() {
 		return {
-			globeAndCountries: null,
-			currentHoveredCountry: null,
-			selectedCountry: null,
-			prevZoom: null,
+			focusedCountry: null,
 			sessionStore: null,
 		};
 	},
@@ -68,6 +67,9 @@ export default {
 		createSession() {
 			this.sessionStore.createSession(this.$router);
 		},
+		focusCountry(countryName) {
+			this.focusedCountry = countryName;
+		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
@@ -79,8 +81,13 @@ export default {
 </script>
 
 <template>
-	<ThreeGlobe />
-	<BackgroundStars />
+	<ThreeGlobe
+		:sessionId="sessionId"
+		:status="status"
+		:focusCountry="focusCountry"
+	/>
+	<CommandTray :focusedCountry="focusedCountry" />
+
 	<LandingPopUp
 		v-if="showLandingPopUp && !isLoading"
 		:createSession="createSession"
@@ -91,6 +98,7 @@ export default {
 		:selectedCountries="selectedCountries"
 		:playerCountry="playerCountry"
 	/>
+	<BackgroundStars />
 </template>
 
 <style scoped></style>
