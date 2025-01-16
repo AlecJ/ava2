@@ -1,15 +1,25 @@
 <script>
 import CountrySelect from "@/components/CountrySelect.vue";
+import InviteLinkButton from "./InviteLinkButton.vue";
 import { countries } from "@/data/countries";
 
 export default {
 	components: {
 		CountrySelect,
+		InviteLinkButton,
 	},
 	props: {
 		selectPlayer: {
 			type: Function,
 			required: true,
+		},
+		selectedCountries: {
+			type: Array,
+			required: true,
+		},
+		playerCountry: {
+			type: String,
+			required: false,
 		},
 	},
 	data() {
@@ -23,15 +33,17 @@ export default {
 <template>
 	<div id="popup">
 		<h1>Axis vs Allies</h1>
+		<InviteLinkButton />
 		<h2>Choose a Country to Play</h2>
 		<div id="countryCards">
 			<CountrySelect
 				v-for="country in countries"
 				:key="country.name"
 				:country="country"
+				:selectedCountries="selectedCountries"
+				:playerCountry="playerCountry"
 				:selectPlayer="
 					() => {
-						console.log('selected button');
 						selectPlayer(country.name);
 					}
 				"
@@ -54,7 +66,7 @@ export default {
 
 	display: grid;
 	place-items: center;
-	grid-template-rows: 1fr 1fr 2fr;
+	grid-template-rows: 1.5fr 0.25fr 1.5fr 3fr;
 
 	background-color: rgba(88, 88, 88, 0.663);
 	border: 0.15rem solid gray;

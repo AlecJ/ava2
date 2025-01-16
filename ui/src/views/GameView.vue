@@ -3,7 +3,7 @@ import { useSessionStore } from "@/stores/session";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
-import Globe from "@/components/Globe.vue";
+import ThreeGlobe from "@/components/ThreeGlobe.vue";
 
 export default {
 	name: "GameView",
@@ -11,7 +11,7 @@ export default {
 		BackgroundStars,
 		LandingPopUp,
 		TeamSelectPopUp,
-		Globe,
+		ThreeGlobe,
 	},
 	data() {
 		return {
@@ -32,11 +32,20 @@ export default {
 		countries() {
 			return this.sessionStore?.countries;
 		},
+		selectedCountries() {
+			return this.sessionStore?.players || [];
+		},
+		playerCountry() {
+			return this.sessionStore?.playerCountry;
+		},
 		showLandingPopUp() {
 			return this.sessionId === null;
 		},
 		showTeamSelectPopUp() {
 			return this.status === "TEAM_SELECT";
+		},
+		isLoading() {
+			return this.sessionStore?.isLoading;
 		},
 	},
 	methods: {
@@ -70,13 +79,17 @@ export default {
 </script>
 
 <template>
-	<Globe />
+	<ThreeGlobe />
 	<BackgroundStars />
-	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />
+	<LandingPopUp
+		v-if="showLandingPopUp && !isLoading"
+		:createSession="createSession"
+	/>
 	<TeamSelectPopUp
-		v-if="showTeamSelectPopUp"
+		v-if="showTeamSelectPopUp && !isLoading"
 		:selectPlayer="selectPlayer"
-		:countries="countries"
+		:selectedCountries="selectedCountries"
+		:playerCountry="playerCountry"
 	/>
 </template>
 

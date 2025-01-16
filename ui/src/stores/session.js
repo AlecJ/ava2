@@ -9,6 +9,7 @@ export const useSessionStore = defineStore("session", {
 		playerCountry: null,
 		status: null,
 		currentTurn: null,
+		isLoading: false,
 	}),
 	actions: {
 		setSession(session) {
@@ -23,6 +24,8 @@ export const useSessionStore = defineStore("session", {
 		},
 		async getSession(sessionId, playerId) {
 			// also send player ID
+			this.isLoading = true;
+
 			try {
 				console.log(
 					"Fetching session from API:",
@@ -38,8 +41,12 @@ export const useSessionStore = defineStore("session", {
 			} catch (error) {
 				console.error("API Error:", error.response?.data?.status);
 			}
+
+			this.isLoading = false;
 		},
 		async createSession(router) {
+			this.isLoading = true;
+
 			try {
 				const response = await API.post(`/session/create`);
 				console.log("API Response:", response.data); // Debugging log
@@ -49,10 +56,14 @@ export const useSessionStore = defineStore("session", {
 			} catch (error) {
 				console.error("API Error:", error.response?.data?.status);
 			}
+
+			this.isLoading = false;
 		},
 		// validate country can be joined for sessionId
 		// return playerId on success
 		async selectPlayer(countryName, router) {
+			this.isLoading = true;
+
 			const data = { countryName: countryName };
 
 			try {
@@ -70,7 +81,11 @@ export const useSessionStore = defineStore("session", {
 				}
 			} catch (error) {
 				console.error("API Error:", error.response?.data?.status);
+
+				// TODO dispatch getSession to see available countries
 			}
+
+			this.isLoading = false;
 		},
 	},
 });

@@ -16,20 +16,10 @@ run with
 
 ## To Do
 
--   get available countries
--   do not allow players to pick the same country
--   polling (socketio?)
-
--   team select lobby
-
--   add other game data to session model (names, teams, invite links)
--   game invites
--   game start (creator approves) -- how does the backend know who the player is? second ID just for main?
-
--   pending actions (to backend), grey out actions (frontend)
-
 -   left sidebar
 -   right sidebar (drawer)
+-   right sidebar slides out, shows country name when country is selected
+-   right sidebar slides away, when country is deselected
 
 -   countries group by team
 -   countries colored by team
@@ -43,6 +33,12 @@ run with
 
 -   remove console logs
 -   check TODOs
+
+-   game logic
+
+-
+-   V1 Release
+-
 
 -   hints for saving bookmark to return to game
 -   hints for invite button

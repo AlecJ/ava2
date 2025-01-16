@@ -5,9 +5,25 @@ export default {
 			type: Object,
 			required: true,
 		},
+		selectedCountries: {
+			type: Array,
+			required: true,
+		},
+		playerCountry: {
+			type: String,
+			required: false,
+		},
 		selectPlayer: {
 			type: Function,
 			required: true,
+		},
+	},
+	computed: {
+		isSelected() {
+			return this.selectedCountries.includes(this.country.name);
+		},
+		isPlayer() {
+			return this.playerCountry === this.country.name;
 		},
 	},
 };
@@ -19,7 +35,14 @@ export default {
 
 		<div id="countryName">{{ country.name }}</div>
 
-		<button @click="selectPlayer">Select</button>
+		<button @click="selectPlayer" v-if="!isSelected && !this.playerCountry">
+			Select
+		</button>
+		<div v-else-if="isSelected && !isPlayer">Waiting</div>
+		<div v-else-if="!isSelected && this.playerCountry && !isPlayer">
+			Open
+		</div>
+		<div v-else-if="isPlayer">You</div>
 	</div>
 </template>
 
