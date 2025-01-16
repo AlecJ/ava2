@@ -4,6 +4,9 @@ from enum import Enum
 from app.models.player import Player
 
 """
+This is the session object. It tracks the state of a game session
+including the players and current turn.
+
 A Session is a:
 
 Session ID
@@ -13,6 +16,7 @@ Current Turn
 
 A Player is:
 Player ID
+Session ID
 Country
 
 Country is one of:
@@ -97,7 +101,7 @@ class Session:
 
     def join_game(self, country=None):
         """
-        Adds a player to the game. The user provides a country
+        Adds a player to the game. The user provides a country.
         """
         # ensure country is valid
         if country not in valid_countries:
@@ -112,16 +116,20 @@ class Session:
         if len(self.players) > 4:
             raise ValueError("Game is full.")
 
-        # return result
+        # add new player
         new_player = Player(session_id=self.session_id,
                             country=country)
         self.players.append(new_player)
 
+        # if game is full, start the game
+        if len(self.players) == 5:
+            self.status = SessionStatus.ACTIVE
+
         return new_player
 
-    def next_turn(self):
+    def submit_turn(self):
+        """
+        This will handle player turn logic and increment the turn counter.
+        """
         self.current_turn += 1
-        pass
-
-    def complete_turn(self):
         pass

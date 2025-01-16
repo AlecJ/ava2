@@ -16,7 +16,6 @@ run with
 
 ## To Do
 
--   left sidebar
 -   right sidebar (drawer)
 -   right sidebar slides out, shows country name when country is selected
 -   right sidebar slides away, when country is deselected

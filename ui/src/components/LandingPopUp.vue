@@ -11,7 +11,7 @@ export default {
 
 <template>
 	<div id="popup">
-		<h1>Global Thermonuclear War</h1>
+		<h1>Axis Vs Allies</h1>
 		<p>
 			War! Pushed to the brink, the world is engulfed in chaos. Lead your
 			nation to victory and restore peace across the globe!
@@ -49,7 +49,8 @@ export default {
 	font-size: 1.25rem;
 
 	p {
-		max-width: 75%;
+		max-width: 40rem;
+		margin: 1rem;
 	}
 
 	button {

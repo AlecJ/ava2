@@ -34,7 +34,8 @@ export default {
 	<div id="popup">
 		<h1>Axis vs Allies</h1>
 		<InviteLinkButton />
-		<h2>Choose a Country to Play</h2>
+		<h2 v-if="!playerCountry">Choose a Country to Play</h2>
+		<h2 v-else>Waiting for Players to Join</h2>
 		<div id="countryCards">
 			<CountrySelect
 				v-for="country in countries"

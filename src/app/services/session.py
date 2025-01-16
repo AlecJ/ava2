@@ -62,11 +62,10 @@ def join_session(session_id, country):
     session = get_session_by_session_id(session_id, convert_to_class=True)
 
     try:
-        # breakpoint()
         player = session.join_game(country)
     except:
         return False
 
     update_session(session)
 
-    return player
+    return session, player

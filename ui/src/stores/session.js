@@ -74,7 +74,9 @@ export const useSessionStore = defineStore("session", {
 
 				console.log("API Response:", response.data); // Debugging log
 
-				// if player returned, update session ID
+				this.setSession(response.data.session);
+
+				// if player returned, update query param with player ID
 				if (response.data?.player) {
 					this.setPlayer(response.data.player);
 					router.push({ query: { pid: `${this.playerId}` } });

@@ -43,7 +43,8 @@ def handle_create_session():
     session = session.to_dict()
 
     response = {'status': 'Session created.',
-                'session_id': session['session_id'], 'session': session}
+                'session_id': session['session_id'],
+                'session': session}
 
     return jsonify(response), 201
 
@@ -55,19 +56,21 @@ def handle_join_session(session_id):
     country_name = data.get('countryName')
 
     # verify session is valid
-    session = get_session_by_session_id(session_id, convert_to_class=False)
+    session = get_session_by_session_id(session_id, convert_to_class=True)
 
     if not session:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     # attempt to add player to the session
-    player = join_session(session_id, country_name)
+    session, player = join_session(session_id, country_name)
 
     if not player:
         return jsonify({'status': 'Error joining session.'}), 400
 
     response = {'status': 'Player joined.',
-                'session_id': session_id, 'player': player.to_dict()}
+                'session_id': session_id,
+                'session': session.to_dict(),
+                'player': player.to_dict()}
 
     return jsonify(response), 200
 
