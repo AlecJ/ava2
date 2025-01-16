@@ -11,7 +11,7 @@ join_session
 """
 
 
-def get_session_by_session_id(session_id, convert_to_class=False):
+def get_session_by_session_id(session_id, convert_to_class=True):
     """
     Get a session by session ID.
     """

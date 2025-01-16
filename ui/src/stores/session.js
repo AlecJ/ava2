@@ -5,6 +5,7 @@ export const useSessionStore = defineStore("session", {
 	state: () => ({
 		sessionId: null,
 		playerId: null,
+		players: null,
 		playerCountry: null,
 		status: null,
 		currentTurn: null,
@@ -14,8 +15,9 @@ export const useSessionStore = defineStore("session", {
 			this.sessionId = session.session_id;
 			this.status = session.status;
 			this.currentTurn = session.current_turn;
+			this.players = session.players;
 		},
-		selectPlayer(player) {
+		setPlayer(player) {
 			this.playerId = player.player_id;
 			this.playerCountry = player.country;
 		},
@@ -32,9 +34,9 @@ export const useSessionStore = defineStore("session", {
 				);
 				console.log("API Response:", response.data); // Debugging log
 				this.setSession(response.data.session);
-				this.selectPlayer(response.data.player);
+				if (response.data.player) this.setPlayer(response.data.player);
 			} catch (error) {
-				console.error("API Error:", error.message);
+				console.error("API Error:", error.response?.data?.status);
 			}
 		},
 		async createSession(router) {
@@ -45,7 +47,7 @@ export const useSessionStore = defineStore("session", {
 				this.setSession(response.data.session);
 				router.push({ path: `/${this.sessionId}` });
 			} catch (error) {
-				console.error("API Error:", error.message);
+				console.error("API Error:", error.response?.data?.status);
 			}
 		},
 		// validate country can be joined for sessionId
@@ -53,17 +55,21 @@ export const useSessionStore = defineStore("session", {
 		async selectPlayer(countryName, router) {
 			const data = { countryName: countryName };
 
-			const response = await API.post(
-				`/session/join/${this.sessionId}`,
-				data
-			);
+			try {
+				const response = await API.post(
+					`/session/join/${this.sessionId}`,
+					data
+				);
 
-			console.log("API Response:", response.data); // Debugging log
+				console.log("API Response:", response.data); // Debugging log
 
-			// if player returned, update session ID
-			if (response.data?.player) {
-				this.selectPlayer(response.data.player);
-				router.push({ query: { pid: `${this.playerId}` } });
+				// if player returned, update session ID
+				if (response.data?.player) {
+					this.setPlayer(response.data.player);
+					router.push({ query: { pid: `${this.playerId}` } });
+				}
+			} catch (error) {
+				console.error("API Error:", error.response?.data?.status);
 			}
 		},
 	},

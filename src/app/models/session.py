@@ -41,6 +41,10 @@ class Session:
 
         # if the game is being created for first time, assign a uuid for the session
 
+    @property
+    def chosen_countries(self):
+        return [player.country for player in self.players]
+
     def __str__(self):
         return f"Session {self.session_id} (Status: {self.status.name}, Current Turn: {self.current_turn})"
 
@@ -83,6 +87,13 @@ class Session:
             # TODO log error
             raise ValueError(
                 f"Failed to cast Session json to class. Missing required key: {e}")
+
+    def get_player_by_id(self, player_id):
+        for player in self.players:
+            if player.player_id == player_id:
+                return player
+
+        return None
 
     def join_game(self, country=None):
         """
