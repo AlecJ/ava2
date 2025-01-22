@@ -16,9 +16,38 @@ run with
 
 ## To Do
 
--   break logic into lobby and game
+-   new world map
+    sea territories
+    1942 territories
+
+-   three js objects
+    capital city
+    AA gun
+    industrial complex
+
+    territory markers (2d)
+
+    infantry (2d)
+    artillery (2d)
+    tanks (2d)
+
+    fighters (2d)
+    bombers (2d)
+
+    battleship (2d)
+    destroyer (2d)
+    aircraft carrier (2d)
+    transport (2d)
+    submarine (2d)
+    ships?
+
 -   countries group by team
 -   countries colored by team
+    USSR (red)
+    Germany (grey)
+    UK (tan)
+    Japan (orange)
+    US (green)
 
 -   polling for team select lobby (if first and waiting)
 
@@ -34,3 +63,7 @@ run with
 
 -   game logic
 -   hint for saving bookmark to return to game
+
+Future Work:
+
+-   National Advantages Table

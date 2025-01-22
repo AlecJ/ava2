@@ -93,9 +93,11 @@ export default {
 				duration: 0.8,
 				onStart: () => {
 					this.controls.enabled = false;
+					this.controls.enableZoom = false;
 				},
 				onComplete: () => {
 					this.controls.enabled = true;
+					this.controls.enableZoom = true;
 					this.controls.update();
 				},
 			});
@@ -137,7 +139,7 @@ export default {
 					const targetPosition = this.camera.position
 						.clone()
 						.normalize()
-						.multiplyScalar(200);
+						.multiplyScalar(this.prevZoom);
 
 					this.moveCameraToTarget(targetPosition);
 					this.prevZoom = null;
