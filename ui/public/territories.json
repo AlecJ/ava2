@@ -1,0 +1,1118 @@
+{
+	"Afghanistan": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Alaska": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": ["ocean_tile_63", "Western Canada", "ocean_tile_64"]
+	},
+	"Algeria": {
+		"team": 3,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": ["ocean_tile_12", "ocean_tile_13", "Libya"]
+	},
+	"Anglo Egypt": {
+		"team": 1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": [
+			"Libya",
+			"French Equitorial Africa",
+			"Belgian Congo",
+			"Italian East Africa",
+			"ocean_tile_15",
+			"ocean_tile_34"
+		]
+	},
+	"Angola": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Antarctica": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Archangel": {
+		"team": 2,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": ["Karelia S.S.R.", "West Russia", "Russia", "ocean_tile_4"]
+	},
+	"Australia": {
+		"team": 1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": [
+			"ocean_tile_38",
+			"ocean_tile_39",
+			"ocean_tile_40",
+			"ocean_tile_46"
+		]
+	},
+	"Balkans": {
+		"team": 3,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 3,
+		"neighbors": [
+			"Southern Europe",
+			"Germany",
+			"Eastern Europe",
+			"Ukraine S.S.R.",
+			"ocean_tile_16"
+		]
+	},
+	"Belgian Congo": {
+		"team": 1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": [
+			"French Equitorial Africa",
+			"Anglo Egypt",
+			"Italian East Africa",
+			"Rhodesia",
+			"ocean_tile_23"
+		]
+	},
+	"Belorussia": {
+		"team": 3,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": [
+			"Eastern Europe",
+			"Karelia S.S.R.",
+			"West Russia",
+			"Ukraine S.S.R."
+		]
+	},
+	"Borneo": {
+		"team": 4,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 4,
+		"neighbors": ["ocean_tile_48"]
+	},
+	"Brazil": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 3,
+		"neighbors": ["ocean_tile_18", "ocean_tile_22"]
+	},
+	"Buryatia S.S.R.": {
+		"team": 2,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": [
+			"Yakut S.S.R.",
+			"Soviet Far East",
+			"Manchuria",
+			"ocean_tile_60",
+			"ocean_tile_62"
+		]
+	},
+	"Caroline Islands": {
+		"team": 4,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": ["ocean_tile_50"]
+	},
+	"Caucasus": {
+		"team": 2,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 4,
+		"neighbors": [
+			"Ukraine S.S.R.",
+			"West Russia",
+			"Russia",
+			"Kazahk S.S.R.",
+			"Persia",
+			"ocean_tile_16"
+		]
+	},
+	"Central America": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": [
+			"Eastern United States",
+			"East Mexico",
+			"ocean_tile_19",
+			"ocean_tile_20"
+		]
+	},
+	"Central United States": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": [
+			"Eastern United States",
+			"Western United States",
+			"East Mexico",
+			"West Mexico",
+			"Eastern Canada",
+			"Western Canada",
+			"ocean_tile_10"
+		]
+	},
+	"Chile": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"China": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 2,
+		"neighbors": ["Sinkiang", "Manchuria", "Kwangtung", "French Indochina"]
+	},
+	"Cyprus": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Eaastern United States": {
+		"team": 0,
+		"is_capital": true,
+		"is_ocean": false,
+		"power": 12,
+		"neighbors": [
+			"Eastern Canada",
+			"Central United States",
+			"ocean_tile_10"
+		]
+	},
+	"East Indies": {
+		"team": 4,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 4,
+		"neighbors": ["ocean_tile_37"]
+	},
+	"East Mexico": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": [
+			"West Mexico",
+			"Central America",
+			"Central United States",
+			"ocean_tile_10",
+			"ocean_tile_19",
+			"ocean_tile_20",
+			"ocean_tile_54"
+		]
+	},
+	"Eastern Canada": {
+		"team": 1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 3,
+		"neighbors": [
+			"Western Canada",
+			"Central United States",
+			"Eastern United States",
+			"ocean_tile_1",
+			"ocean_tile_9"
+		]
+	},
+	"Eastern Europe": {
+		"team": 3,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 3,
+		"neighbors": [
+			"Germany",
+			"Balkans",
+			"Belorussia",
+			"Ukraine S.S.R.",
+			"Karelia S.S.R.",
+			"ocean_tile_5"
+		]
+	},
+	"Eire": {
+		"team": -1,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Evenki National Okrug": {
+		"team": 2,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 1,
+		"neighbors": []
+	},
+	"Formosa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"French Equitorial Africa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"French Indochina": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"French Madagascar": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"French West Africa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Germany": {
+		"team": 0,
+		"is_capital": true,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Gibraltar": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Greenland": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Hawaiian Islands": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Himalaya": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Iceland": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"India": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Italian East Africa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Japan": {
+		"team": 0,
+		"is_capital": true,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Karelia S.S.R.": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Kazahk S.S.R.": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Kerguelen Islands": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Kwangtung": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Libya": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Manchuria": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Midway Island": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Mongolia": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Mozambique": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"New Guinea": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"New Zealand": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Norway": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Novosibirsk": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Okinawa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Persia": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Peru Argentina": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Philippine Islands": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Rhodesia": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Russia": {
+		"team": 0,
+		"is_capital": true,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Sahara": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Saudi Arabia": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Sinkiang": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Solomon Islands": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Southern Europe": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Soviet Far East": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Spain Portugal": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Sweden": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Switzerland": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Trans-Jordan": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Turkey": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Ukraine S.S.R.": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Union of South Africa": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"United Kingdom": {
+		"team": 0,
+		"is_capital": true,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Venezuela": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Wake Island": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"West Indies": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"West Mexico": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"West Russia": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Western Canada": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Western Europe": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Western United States": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"Yakut S.S.R.": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": false,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_1": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_10": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_11": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_12": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_13": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_14": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_15": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_16": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_17": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_18": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_19": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_2": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_20": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_21": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_22": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_23": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_24": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_25": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_27": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_28": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_29": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_3": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_30": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_31": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_32": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_33": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_34": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_35": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_36": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_37": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_38": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_39": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_4": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_40": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_41": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_42": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_43": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_44": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_45": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_46": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_47": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_48": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_49": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_5": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_50": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_51": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_52": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_53": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_54": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_55": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_56": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_57": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_58": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_59": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_6": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_60": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_61": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_62": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_63": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_64": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_7": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_7_del": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_8": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	},
+	"ocean_tile_9": {
+		"team": 0,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": []
+	}
+}

@@ -16,10 +16,6 @@ run with
 
 ## To Do
 
--   new world map
-    sea territories
-    1942 territories
-
 -   three js objects
     capital city
     AA gun
