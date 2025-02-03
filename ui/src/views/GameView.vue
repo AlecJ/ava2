@@ -1,9 +1,11 @@
 <script>
 import { useSessionStore } from "@/stores/session";
+import { useWorldStore } from "@/stores/world";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
 import CommandTray from "@/components/CommandTray.vue";
+import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
 
 export default {
@@ -13,12 +15,14 @@ export default {
 		LandingPopUp,
 		TeamSelectPopUp,
 		CommandTray,
+		PlayerBoard,
 		ThreeGlobe,
 	},
 	data() {
 		return {
 			focusedCountry: null,
 			sessionStore: null,
+			worldStore: null,
 		};
 	},
 	computed: {
@@ -37,11 +41,14 @@ export default {
 		playerCountry() {
 			return this.sessionStore?.playerCountry;
 		},
+		isTestMode() {
+			return this.sessionStore?.isTesting;
+		},
 		showLandingPopUp() {
-			return this.sessionId === null;
+			return this.sessionId === null && !this.isTestMode;
 		},
 		showTeamSelectPopUp() {
-			return this.status === "TEAM_SELECT";
+			return this.status === "TEAM_SELECT" && !this.isTestMode;
 		},
 		isLoading() {
 			return this.sessionStore?.isLoading;
@@ -70,9 +77,14 @@ export default {
 		focusCountry(countryName) {
 			this.focusedCountry = countryName;
 		},
+		captureTerritory(countryName, team) {
+			this.worldStore.captureTerritory(countryName, team);
+		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
+		this.worldStore = useWorldStore();
+		this.worldStore.initCountries();
 	},
 	mounted() {
 		this.fetchSession();
@@ -86,7 +98,12 @@ export default {
 		:status="status"
 		:focusCountry="focusCountry"
 	/>
-	<CommandTray :focusedCountry="focusedCountry" />
+	<CommandTray
+		:focusedCountry="focusedCountry"
+		:captureTerritory="captureTerritory"
+	/>
+
+	<PlayerBoard />
 
 	<LandingPopUp
 		v-if="showLandingPopUp && !isLoading"

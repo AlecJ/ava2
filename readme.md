@@ -16,6 +16,30 @@ run with
 
 ## To Do
 
+-   able to capture territories
+-   able to move a unit (2 spaces)
+-   able to end turn
+
+-   unit movement
+-   turn end
+-   territory capture
+-   moving multiple units
+-   all land units
+-   Soldier indicating territory has units
+
+Final tile fix in blender
+
+-   Ship indicating ocean territory has units
+-   ship movement
+-   loading and unloading
+-   plane movement
+
+-   combat
+
+-   player list and order
+    current country’s turn indicated
+-   current IPCs
+
 -   three js objects
     capital city
     AA gun
@@ -37,14 +61,6 @@ run with
     submarine (2d)
     ships?
 
--   countries group by team
--   countries colored by team
-    USSR (red)
-    Germany (grey)
-    UK (tan)
-    Japan (orange)
-    US (green)
-
 -   polling for team select lobby (if first and waiting)
 
 -   home base 3d object on home countries (capitals?)
@@ -63,3 +79,6 @@ run with
 Future Work:
 
 -   National Advantages Table
+-   Develop weapons stage and Research Dice
+-   Victory City
+-   Liberating Territories

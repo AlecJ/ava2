@@ -38,7 +38,7 @@ export default {
 	},
 	computed: {
 		controlsEnabled() {
-			return this.status === "ACTIVE";
+			return true; //this.status === "ACTIVE";
 		},
 	},
 	watch: {
@@ -148,9 +148,14 @@ export default {
 		},
 		resetHoveredCountry() {
 			if (this.currentHoveredCountry) {
-				this.currentHoveredCountry.material.color.set(
-					this.currentHoveredCountry.material.userData.originalColor
-				);
+				const outline = this.currentHoveredCountry.userData.outline;
+				outline.material.color.set(0xffffff);
+				outline.material.depthTest = true;
+				outline.renderOrder = 0;
+
+				// this.currentHoveredCountry.material.color.set(
+				// 	this.currentHoveredCountry.material.userData.originalColor
+				// );
 				this.currentHoveredCountry = null;
 			}
 		},
@@ -160,6 +165,8 @@ export default {
 				this.scene.children
 			);
 
+			this.resetHoveredCountry();
+
 			if (intersects.length > 0) {
 				const country = intersects[0].object;
 
@@ -167,14 +174,12 @@ export default {
 					country.userData?.name &&
 					country !== this.currentHoveredCountry
 				) {
-					this.resetHoveredCountry();
-					country.material.color.set(0xff0000);
+					const outline = country.userData.outline;
+					outline.material.color.set(0xffa000);
+					outline.material.depthTest = false;
+					outline.renderOrder = 1;
 					this.currentHoveredCountry = country;
-				} else {
-					this.resetHoveredCountry();
 				}
-			} else {
-				this.resetHoveredCountry();
 			}
 		},
 		animate() {
