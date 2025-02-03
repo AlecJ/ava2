@@ -157,7 +157,7 @@
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 1,
+		"power": 0,
 		"neighbors": [
 			"Eastern United States",
 			"East Mexico",
@@ -169,7 +169,7 @@
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
+		"power": 6,
 		"neighbors": [
 			"Eastern United States",
 			"Western United States",
@@ -273,248 +273,306 @@
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
-		"neighbors": []
+		"neighbors": ["Russia", "Novosibirsk", "Yakut S.S.R."]
 	},
 	"Formosa": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"French Equitorial Africa": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"French West Africa",
+			"Anglo Egypt",
+			"Belgian Congo",
+			"ocean_tile_23"
+		]
 	},
 	"French Indochina": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": ["China", "Kwangtung", "India", "ocean_tile_36"]
 	},
 	"French Madagascar": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"ocean_tile_33",
+			"ocean_tile_28",
+			"ocean_tile_32",
+			"ocean_tile_29"
+		]
 	},
 	"French West Africa": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["French Equitorial Africa", "ocean_tile_17"]
 	},
 	"Germany": {
-		"team": 0,
+		"team": 3,
 		"is_capital": true,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 10,
+		"neighbors": [
+			"Western Europe",
+			"Balkans",
+			"Eastern Europe",
+			"Southern Europe",
+			"ocean_tile_5"
+		]
 	},
 	"Gibraltar": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
-		"neighbors": []
+		"neighbors": ["ocean_tile_13"]
 	},
 	"Greenland": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
-		"neighbors": []
+		"neighbors": ["ocean_tile_2"]
 	},
 	"Hawaiian Islands": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["ocean_tile_52"]
 	},
 	"Himalaya": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Iceland": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"India": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": ["Persia", "French Indochina", "ocean_tile_35"]
 	},
 	"Italian East Africa": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"Anglo Egypt",
+			"Belgian Congo",
+			"Rhodesia",
+			"ocean_tile_34"
+		]
 	},
 	"Japan": {
-		"team": 0,
+		"team": 4,
 		"is_capital": true,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 8,
+		"neighbors": ["ocean_tile_60", "ocean_tile_61"]
 	},
 	"Karelia S.S.R.": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": [
+			"Norway",
+			"Archangel",
+			"Belorussia",
+			"West Russia",
+			"Eastern Europe",
+			"ocean_tile_4",
+			"ocean_tile_5"
+		]
 	},
 	"Kazahk S.S.R.": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": ["Caucasus", "Russia", "Novosibirsk", "Sinkiang", "Persia"]
 	},
 	"Kerguelen Islands": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Kwangtung": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": ["French Indochina", "China", "Manchuria", "ocean_tile_59"]
 	},
 	"Libya": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["Algeria", "Anglo Egypt", "ocean_tile_14"]
 	},
 	"Manchuria": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": ["Buryatia S.S.R.", "China", "Kwangtung", "ocean_tile_61"]
 	},
 	"Midway Island": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
-		"neighbors": []
+		"neighbors": ["ocean_tile_56"]
 	},
 	"Mongolia": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Mozambique": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"New Guinea": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["ocean_tile_47"]
 	},
 	"New Zealand": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["ocean_tile_41"]
 	},
 	"Norway": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": [
+			"Karelia S.S.R.",
+			"ocean_tile_3",
+			"ocean_tile_5",
+			"ocean_tile_6"
+		]
 	},
 	"Novosibirsk": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": [
+			"Russia",
+			"Evenki National Okrug",
+			"Kazahk S.S.R.",
+			"Sinkiang",
+			"Yakut S.S.R."
+		]
 	},
 	"Okinawa": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["ocean_tile_58"]
 	},
 	"Persia": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"Trans-Jordan",
+			"India",
+			"Kazahk S.S.R.",
+			"Caucasus",
+			"ocean_tile_34"
+		]
 	},
 	"Peru Argentina": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Philippine Islands": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": ["ocean_tile_49"]
 	},
 	"Rhodesia": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"Union of South Africa",
+			"Belgian Congo",
+			"Italian East Africa",
+			"ocean_tile_33"
+		]
 	},
 	"Russia": {
-		"team": 0,
+		"team": 2,
 		"is_capital": true,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 8,
+		"neighbors": [
+			"Archangel",
+			"Caucasus",
+			"Kazahk S.S.R.",
+			"Novosibirsk",
+			"Evenki National Okrug",
+			"West Russia"
+		]
 	},
 	"Sahara": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Saudi Arabia": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -524,183 +582,267 @@
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": ["Kazahk S.S.R.", "Novosibirsk", "China"]
 	},
 	"Solomon Islands": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
-		"neighbors": []
+		"neighbors": ["ocean_tile_45"]
 	},
 	"Southern Europe": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 6,
+		"neighbors": ["Western Europe", "Germany", "Balkans", "ocean_tile_14"]
 	},
 	"Soviet Far East": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["Yakut S.S.R.", "Buryatia S.S.R.", "ocean_tile_62"]
 	},
 	"Spain Portugal": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Sweden": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Switzerland": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Trans-Jordan": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["Anglo Egypt", "Persia", "ocean_tile_34", "ocean_tile_15"]
 	},
 	"Turkey": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Ukraine S.S.R.": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 3,
+		"neighbors": [
+			"Balkans",
+			"Belorussia",
+			"Caucasus",
+			"Eastern Europe",
+			"West Russia",
+			"ocean_tile_16"
+		]
 	},
 	"Union of South Africa": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": ["Rhodesia", "ocean_tile_27", "ocean_tile_28"]
 	},
 	"United Kingdom": {
-		"team": 0,
+		"team": 1,
 		"is_capital": true,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 8,
+		"neighbors": [
+			"ocean_tile_8",
+			"ocean_tile_2",
+			"ocean_tile_3",
+			"ocean_tile_7",
+			"ocean_tile_6"
+		]
 	},
 	"Venezuela": {
-		"team": 0,
+		"team": -1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": []
 	},
 	"Wake Island": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
-		"neighbors": []
+		"neighbors": ["ocean_tile_51"]
 	},
 	"West Indies": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": ["ocean_tile_19"]
 	},
 	"West Mexico": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": [
+			"Western United States",
+			"Central United States",
+			"East Mexico",
+			"ocean_tile_54"
+		]
 	},
 	"West Russia": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 2,
+		"neighbors": [
+			"Karelia S.S.R.",
+			"Belorussia",
+			"Caucasus",
+			"Ukraine S.S.R.",
+			"Archangel",
+			"Russia"
+		]
 	},
 	"Western Canada": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"Alaska",
+			"Western United States",
+			"Eastern Canada",
+			"Central United States",
+			"ocean_tile_63",
+			"ocean_tile_64",
+			"ocean_tile_55"
+		]
 	},
 	"Western Europe": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 6,
+		"neighbors": [
+			"Germany",
+			"Southern Europe",
+			"ocean_tile_7",
+			"ocean_tile_6",
+			"ocean_tile_5",
+			"ocean_tile_13"
+		]
 	},
 	"Western United States": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 10,
+		"neighbors": [
+			"Western Canada",
+			"Central United States",
+			"West Mexico",
+			"ocean_tile_55",
+			"ocean_tile_54"
+		]
 	},
 	"Yakut S.S.R.": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
-		"neighbors": []
+		"power": 1,
+		"neighbors": [
+			"Evenki National Okrug",
+			"Soviet Far East",
+			"Buryatia S.S.R.",
+			"Novosibirsk"
+		]
 	},
 	"ocean_tile_1": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": []
+		"neighbors": [
+			"Eastern Canada",
+			"ocean_tile_9",
+			"ocean_tile_2",
+			"ocean_tile_8"
+		]
 	},
 	"ocean_tile_10": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": []
+		"neighbors": [
+			"Eastern United States",
+			"Central United States",
+			"Central America",
+			"East Mexico",
+			"ocean_tile_19",
+			"ocean_tile_11",
+			"ocean_tile_9"
+		]
 	},
 	"ocean_tile_11": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": []
+		"neighbors": [
+			"ocean_tile_9",
+			"ocean_tile_10",
+			"ocean_tile_19",
+			"ocean_tile_18",
+			"ocean_tile_12"
+		]
 	},
 	"ocean_tile_12": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": []
+		"neighbors": [
+			"ocean_tile_7",
+			"ocean_tile_8",
+			"ocean_tile_9",
+			"ocean_tile_11",
+			"ocean_tile_18",
+			"ocean_tile_17",
+			"ocean_tile_13"
+		]
 	},
 	"ocean_tile_13": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": []
+		"neighbors": [
+			"Gibraltar",
+			"Algeria",
+			"Western Europe",
+			"ocean_tile_12",
+			"ocean_tile_14"
+		]
 	},
 	"ocean_tile_14": {
 		"team": 0,
