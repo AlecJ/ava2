@@ -16,7 +16,6 @@ run with
 
 ## To Do
 
--   able to capture territories
 -   able to move a unit (2 spaces)
 -   able to end turn
 

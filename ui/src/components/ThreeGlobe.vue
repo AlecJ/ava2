@@ -11,6 +11,7 @@ import {
 	createPointerMoveListener,
 } from "@/composables/eventListeners.js";
 import { useSessionStore } from "@/stores/session";
+import { useWorldStore } from "@/stores/world";
 
 export default {
 	props: {
@@ -29,16 +30,19 @@ export default {
 	},
 	data() {
 		return {
-			globeAndCountries: null,
 			currentHoveredCountry: null,
 			prevZoom: null,
 			sessionStore: null,
+			worldStore: null,
 			clickTimeout: null,
 		};
 	},
 	computed: {
 		controlsEnabled() {
 			return true; //this.status === "ACTIVE";
+		},
+		globeAndCountries() {
+			return this.worldStore?.threeGlobeAndCountries;
 		},
 	},
 	watch: {
@@ -62,9 +66,10 @@ export default {
 			const globe = createGlobe();
 			const countries = createCountries();
 
-			this.globeAndCountries = markRaw(new THREE.Group());
-			this.globeAndCountries.add(globe, countries);
-			this.scene.add(this.globeAndCountries);
+			const globeAndCountries = markRaw(new THREE.Group());
+			globeAndCountries.add(globe, countries);
+			this.worldStore.setThreeGlobeAndCountries(globeAndCountries);
+			this.scene.add(globeAndCountries);
 
 			this.raycaster = new THREE.Raycaster();
 			this.pointer = new THREE.Vector2();
@@ -197,6 +202,8 @@ export default {
 	},
 	created() {
 		this.sessionStore = useSessionStore();
+		this.worldStore = useWorldStore();
+
 		this.initScene();
 		this.windowResizeListener = createWindowResizeListener(
 			this.camera,

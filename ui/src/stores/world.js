@@ -1,24 +1,52 @@
 import { defineStore } from "pinia";
 
 import tileData from "@/data/territories.json" assert { type: "json" };
+import { countries } from "@/data/countries";
 
 export const useWorldStore = defineStore("world", {
 	state: () => ({
-		countries: {},
+		countries: countries,
+		territories: {},
+		threeGlobeAndCountries: null,
 	}),
 	actions: {
-		initCountries() {
-			this.countries = Object.fromEntries(
+		initTerritories() {
+			this.territories = Object.fromEntries(
 				Object.entries(tileData).filter(
 					([key, value]) => value.team !== -1 && !value.is_ocean
 				)
 			);
 		},
-		captureTerritory(territory, team) {
-			this.countries[territory].team = team;
+		getCountryColor(team) {
+			if (!this.countries) return null;
+
+			return this.countries[team].color;
+		},
+		setThreeGlobeAndCountries(threeGlobeAndCountries) {
+			this.threeGlobeAndCountries = threeGlobeAndCountries;
+		},
+		getTerritory(territoryName) {
+			return this.territories[territoryName];
+		},
+		getTerritoryMesh(territoryName) {
+			if (!this.threeGlobeAndCountries) return null;
+
+			return this.threeGlobeAndCountries.children[1].children[0].children.find(
+				(territoryMesh) => territoryMesh.userData.name === territoryName
+			);
+		},
+		captureTerritory(territoryName, team) {
+			const territoryMesh = this.getTerritoryMesh(territoryName);
+			if (!territoryMesh) {
+				console.log(territoryName + " not found.");
+				return;
+			}
+			territoryMesh.material.color.setHex(this.getCountryColor(team));
+			this.territories[territoryName].team = team;
 		},
 	},
 	getters: {
-		getCountries: (state) => state.countries,
+		getTerritories: (state) => state.territories,
+		getGlobeAndCountries: (state) => state.threeGlobeAndCountries,
 	},
 });

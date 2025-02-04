@@ -5,6 +5,10 @@ export default {
 			type: String,
 			required: false,
 		},
+		captureTerritory: {
+			type: Function,
+			required: true,
+		},
 	},
 	data() {
 		return {
@@ -33,7 +37,9 @@ export default {
 		@mousedown.prevent.stop
 	>
 		<div class="country-name">{{ countryName }}</div>
-		<button @click="() => console.log('ok!')">Action</button>
+		<button @click="() => captureTerritory(focusedCountry, 0)">
+			Capture
+		</button>
 	</div>
 </template>
 

@@ -91,4 +91,5 @@ export const useSessionStore = defineStore("session", {
 			this.isLoading = false;
 		},
 	},
+	getters: {},
 });

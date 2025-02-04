@@ -77,14 +77,14 @@ export default {
 		focusCountry(countryName) {
 			this.focusedCountry = countryName;
 		},
-		captureTerritory(countryName, team) {
-			this.worldStore.captureTerritory(countryName, team);
+		captureTerritory(territoryName, team) {
+			this.worldStore.captureTerritory(territoryName, team);
 		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
 		this.worldStore = useWorldStore();
-		this.worldStore.initCountries();
+		this.worldStore.initTerritories();
 	},
 	mounted() {
 		this.fetchSession();

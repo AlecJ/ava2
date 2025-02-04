@@ -1,26 +1,8 @@
 import * as THREE from "three";
 
-import { Line2 } from "three/examples/jsm/lines/Line2.js";
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
-import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
-
 import tileData from "@/data/territories.json" assert { type: "json" };
 import geoData from "@/data/triangles.json" assert { type: "json" };
-
-// country colors
-const german_color = 0x767a73;
-const united_states_color = 0x738326;
-const united_kingdom_color = 0xc5b99b;
-const russia_color = 0x7d4932;
-const japan_color = 0xc78940;
-
-const countryColors = [
-	united_states_color,
-	united_kingdom_color,
-	russia_color,
-	german_color,
-	japan_color,
-];
+import { countries } from "@/data/countries";
 
 export function useGlobe() {
 	function createGlobe(globeRadius = 100) {
@@ -79,7 +61,7 @@ export function useGlobe() {
 				if (team === -1) {
 					material.color.set(0xc5c6c2);
 				} else {
-					const countryColor = countryColors[team];
+					const countryColor = countries[team].color;
 					material.color.set(countryColor);
 				}
 				material.opacity = 1; // Make the mesh visible
