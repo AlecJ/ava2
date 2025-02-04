@@ -53,6 +53,14 @@ export default {
 		isLoading() {
 			return this.sessionStore?.isLoading;
 		},
+		focusedTerritoryData() {
+			const territoryData =
+				this.worldStore?.territories[this.focusedCountry];
+
+			if (!territoryData) return null;
+
+			return { ...territoryData, name: this.focusedCountry };
+		},
 	},
 	methods: {
 		async fetchSession() {
@@ -99,7 +107,7 @@ export default {
 		:focusCountry="focusCountry"
 	/>
 	<CommandTray
-		:focusedCountry="focusedCountry"
+		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
 	/>
 

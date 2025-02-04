@@ -1,8 +1,10 @@
 <script>
+import { countries } from "@/data/countries";
+
 export default {
 	props: {
-		focusedCountry: {
-			type: String,
+		territoryData: {
+			type: Object,
 			required: false,
 		},
 		captureTerritory: {
@@ -12,20 +14,27 @@ export default {
 	},
 	data() {
 		return {
-			countryName: null,
+			territoryName: null,
 		};
 	},
 	watch: {
-		focusedCountry(newVal) {
+		territoryData(newVal) {
 			if (newVal) {
 				// Show the name immediately when a country is selected
-				this.countryName = newVal;
+				this.territoryName = newVal.name;
 			} else {
 				// Delay clearing the name until after the sidebar transition ends
 				setTimeout(() => {
-					this.countryName = null;
+					this.territoryName = null;
 				}, 300);
 			}
+		},
+	},
+	methods: {
+		getCountryName() {
+			if (!this.territoryData) return null;
+
+			return countries[this.territoryData?.team].name;
 		},
 	},
 };
@@ -33,11 +42,14 @@ export default {
 
 <template>
 	<div
-		:class="['right-side-bar', { active: !!focusedCountry }]"
+		:class="['right-side-bar', { active: !!territoryData }]"
 		@mousedown.prevent.stop
 	>
-		<div class="country-name">{{ countryName }}</div>
-		<button @click="() => captureTerritory(focusedCountry, 0)">
+		<div class="country-name">{{ territoryName }}</div>
+		<div class="controlling-country">
+			Occupied by: {{ getCountryName(territoryData?.team) }}
+		</div>
+		<button @click="() => captureTerritory(territoryName, 0)">
 			Capture
 		</button>
 	</div>

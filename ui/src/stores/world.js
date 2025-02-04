@@ -13,7 +13,7 @@ export const useWorldStore = defineStore("world", {
 		initTerritories() {
 			this.territories = Object.fromEntries(
 				Object.entries(tileData).filter(
-					([key, value]) => value.team !== -1 && !value.is_ocean
+					([key, value]) => value.team !== -1
 				)
 			);
 		},

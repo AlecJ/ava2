@@ -151,6 +151,9 @@ export default {
 				}
 			}
 		},
+		isValidTerritory(territoryName) {
+			return !!this.worldStore.territories[territoryName];
+		},
 		resetHoveredCountry() {
 			if (this.currentHoveredCountry) {
 				const outline = this.currentHoveredCountry.userData.outline;
@@ -177,7 +180,8 @@ export default {
 
 				if (
 					country.userData?.name &&
-					country !== this.currentHoveredCountry
+					country !== this.currentHoveredCountry &&
+					this.isValidTerritory(country.userData.name)
 				) {
 					const outline = country.userData.outline;
 					outline.material.color.set(0xffa000);
