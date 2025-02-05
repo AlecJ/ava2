@@ -1,7 +1,11 @@
 <script>
 import { countries } from "@/data/countries";
+import UnitTray from "@/components/UnitTray.vue";
 
 export default {
+	components: {
+		UnitTray,
+	},
 	props: {
 		territoryData: {
 			type: Object,
@@ -11,10 +15,36 @@ export default {
 			type: Function,
 			required: true,
 		},
+		playerTurn: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
+		switchUnitMovementMode: {
+			type: Function,
+			required: true,
+		},
+		isMovingUnits: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		moveUnits: {
+			type: Function,
+			required: true,
+		},
+		currentPhase: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 	},
 	data() {
 		return {
 			territoryName: null,
+			teamName: null,
+			power: 0,
+			units: [],
 		};
 	},
 	watch: {
@@ -22,15 +52,24 @@ export default {
 			if (newVal) {
 				// Show the name immediately when a country is selected
 				this.territoryName = newVal.name;
+				this.teamName = this.getCountryName();
+				this.power = newVal.power;
+				this.units = newVal.units;
 			} else {
 				// Delay clearing the name until after the sidebar transition ends
 				setTimeout(() => {
-					this.territoryName = null;
+					this.resetData();
 				}, 300);
 			}
 		},
 	},
 	methods: {
+		resetData() {
+			this.territoryName = null;
+			this.teamName = null;
+			this.power = 0;
+			this.units = [];
+		},
 		getCountryName() {
 			if (!this.territoryData) return null;
 
@@ -45,13 +84,28 @@ export default {
 		:class="['right-side-bar', { active: !!territoryData }]"
 		@mousedown.prevent.stop
 	>
-		<div class="country-name">{{ territoryName }}</div>
-		<div class="controlling-country">
-			Occupied by: {{ getCountryName(territoryData?.team) }}
+		<div v-if="!isMovingUnits" class="territory-info">
+			<div class="country-name">{{ territoryName }}</div>
+			<div class="controlling-country">Occupied by: {{ teamName }}</div>
+			<div class="territory-power">Production Score: {{ power }}</div>
+			<UnitTray :playerTurn="playerTurn" :units="units" />
+			<button
+				v-if="currentPhase === 1 && units.length > 0"
+				@click="() => switchUnitMovementMode(true)"
+				class="move-units-button"
+			>
+				Move Units
+			</button>
 		</div>
-		<button @click="() => captureTerritory(territoryName, 0)">
+		<div v-else-if="isMovingUnits" class="territory-unit-movement">
+			<div>Unit Movement</div>
+			<p>Which units do you want to move</p>
+			<UnitTray selectMode :units="units" />
+			<p>then select a country to move units to</p>
+		</div>
+		<!-- <button @click="() => captureTerritory(territoryName, 0)">
 			Capture
-		</button>
+		</button> -->
 	</div>
 </template>
 
@@ -81,19 +135,21 @@ export default {
 	transform: translateX(90%);
 	transition: transform 0.3s ease-in-out;
 
+	color: white;
+
 	&.active {
 		transform: translateX(0%);
 	}
 
-	button {
-		width: 12rem;
-		padding: 10px 20px;
-		background-color: #000000;
-		color: white;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
-		font-size: 1.2rem;
-	}
+	// button {
+	// 	width: 12rem;
+	// 	padding: 10px 20px;
+	// 	background-color: #000000;
+	// 	color: white;
+	// 	border: none;
+	// 	border-radius: 5px;
+	// 	cursor: pointer;
+	// 	font-size: 1.2rem;
+	// }
 }
 </style>

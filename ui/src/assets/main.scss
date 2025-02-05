@@ -1,1 +1,23 @@
 @import "./base.css";
+
+button {
+	margin: 1.5rem;
+	padding: 10px 20px;
+	background-color: #000000;
+	color: white;
+	border: white 1px solid;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	z-index: 2;
+
+	&:hover {
+		background-color: #4a4a4a;
+	}
+
+	&:disabled {
+		color: #4a4a4a;
+		background-color: #4a4a4a;
+		cursor: not-allowed;
+	}
+}

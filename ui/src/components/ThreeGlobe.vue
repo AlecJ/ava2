@@ -124,7 +124,11 @@ export default {
 
 				console.log("Clicked country:", country.userData.name);
 
-				if (country.userData?.name && !this.prevZoom) {
+				if (
+					country.userData?.name &&
+					!this.prevZoom &&
+					this.isValidTerritory(country.userData.name)
+				) {
 					// set country as the user's focused country
 					this.focusCountry(country.userData.name);
 

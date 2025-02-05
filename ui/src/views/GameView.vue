@@ -7,6 +7,7 @@ import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
 import CommandTray from "@/components/CommandTray.vue";
 import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
+import EndTurnButton from "@/components/EndTurnButton.vue";
 
 export default {
 	name: "GameView",
@@ -17,12 +18,14 @@ export default {
 		CommandTray,
 		PlayerBoard,
 		ThreeGlobe,
+		EndTurnButton,
 	},
 	data() {
 		return {
-			focusedCountry: null,
 			sessionStore: null,
 			worldStore: null,
+			focusedCountry: null,
+			isMovingUnits: false,
 		};
 	},
 	computed: {
@@ -55,11 +58,17 @@ export default {
 		},
 		focusedTerritoryData() {
 			const territoryData =
-				this.worldStore?.territories[this.focusedCountry];
+				this.worldStore?.getTerritories[this.focusedCountry];
 
 			if (!territoryData) return null;
 
 			return { ...territoryData, name: this.focusedCountry };
+		},
+		playerTurn() {
+			return this.worldStore?.getPlayerTurn;
+		},
+		currentPhase() {
+			return this.worldStore?.getPhase;
 		},
 	},
 	methods: {
@@ -88,6 +97,15 @@ export default {
 		captureTerritory(territoryName, team) {
 			this.worldStore.captureTerritory(territoryName, team);
 		},
+		nextPhase() {
+			this.worldStore.setNextPhase();
+		},
+		switchUnitMovementMode(bool) {
+			this.isMovingUnits = bool;
+		},
+		moveUnits(territoryName, units) {
+			// this.worldStore.moveUnits(territoryName, units);
+		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
@@ -107,11 +125,25 @@ export default {
 		:focusCountry="focusCountry"
 	/>
 	<CommandTray
+		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
 		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
+		:playerTurn="playerTurn"
+		:currentPhase="currentPhase"
+		:switchUnitMovementMode="switchUnitMovementMode"
+		:isMovingUnits="isMovingUnits"
+		:moveUnits="moveUnits"
 	/>
 
-	<PlayerBoard />
+	<PlayerBoard
+		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
+	/>
+
+	<EndTurnButton
+		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
+		:nextPhase="nextPhase"
+		:currentPhase="currentPhase"
+	/>
 
 	<LandingPopUp
 		v-if="showLandingPopUp && !isLoading"

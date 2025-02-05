@@ -8,6 +8,8 @@ export const useWorldStore = defineStore("world", {
 		countries: countries,
 		territories: {},
 		threeGlobeAndCountries: null,
+		playerTurn: 0,
+		currentPhase: 1, // TODO set to 0
 	}),
 	actions: {
 		initTerritories() {
@@ -44,9 +46,14 @@ export const useWorldStore = defineStore("world", {
 			territoryMesh.material.color.setHex(this.getCountryColor(team));
 			this.territories[territoryName].team = team;
 		},
+		setNextPhase() {
+			this.currentPhase++;
+		},
 	},
 	getters: {
 		getTerritories: (state) => state.territories,
 		getGlobeAndCountries: (state) => state.threeGlobeAndCountries,
+		getPlayerTurn: (state) => state.playerTurn,
+		getPhase: (state) => state.currentPhase,
 	},
 });
