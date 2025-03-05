@@ -17,9 +17,11 @@ run with
 ## To Do
 
 -   select country for unit movement
+-   back button while performing movement
 
 -   able to move a unit (2 spaces)
 -   able to end turn
+-   able to undo turn
 
 -   unit movement
 -   turn end

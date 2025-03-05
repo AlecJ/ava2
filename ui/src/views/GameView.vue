@@ -26,6 +26,7 @@ export default {
 			worldStore: null,
 			focusedCountry: null,
 			isMovingUnits: false,
+			selectedTerritoryForMovement: null,
 		};
 	},
 	computed: {
@@ -103,8 +104,33 @@ export default {
 		switchUnitMovementMode(bool) {
 			this.isMovingUnits = bool;
 		},
-		moveUnits(territoryName, units) {
-			// this.worldStore.moveUnits(territoryName, units);
+		moveUnits(units) {
+			// subtract from focused territory
+
+			// add to selected territory
+			this.worldStore.moveUnits(
+				this.focusedCountry,
+				this.selectedTerritoryForMovement,
+				units
+			);
+		},
+		selectTerritoryForUnitMovement(territory) {
+			// TODO other validation for game rules
+
+			this.selectedTerritoryForMovement = this.areTerritoriesNeighbors(
+				this.focusedCountry,
+				territory
+			);
+		},
+		// GAME LOGIC HELPER
+		areTerritoriesNeighbors(territoryNameA, territoryNameB) {
+			// get territory by name
+			const territoryA = this.worldStore.getTerritory(territoryNameA);
+			const neighbors = territoryA.neighbors;
+			return neighbors.find(
+				(neighborTerritoryName) =>
+					neighborTerritoryName === territoryNameB
+			);
 		},
 	},
 	created() {
@@ -123,6 +149,8 @@ export default {
 		:sessionId="sessionId"
 		:status="status"
 		:focusCountry="focusCountry"
+		:isMovingUnits="isMovingUnits"
+		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
 	/>
 	<CommandTray
 		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
@@ -133,6 +161,7 @@ export default {
 		:switchUnitMovementMode="switchUnitMovementMode"
 		:isMovingUnits="isMovingUnits"
 		:moveUnits="moveUnits"
+		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 	/>
 
 	<PlayerBoard

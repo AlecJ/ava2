@@ -27,10 +27,21 @@ export default {
 			type: Function,
 			required: true,
 		},
+		isMovingUnits: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		selectTerritoryForUnitMovement: {
+			type: Function,
+			required: true,
+		},
 	},
 	data() {
 		return {
 			currentHoveredCountry: null,
+			currentClickedCountry: null,
+
 			prevZoom: null,
 			sessionStore: null,
 			worldStore: null,
@@ -107,6 +118,7 @@ export default {
 				},
 			});
 		},
+		// handles country selection, including zooming and selecting for troop movement
 		// zooms in on the country the user clicked on (out after second click)
 		onClick() {
 			if (Date.now() - this.clickTimeout > 200) {
@@ -120,17 +132,27 @@ export default {
 			);
 
 			if (intersects.length > 0) {
-				const country = intersects[0].object;
+				const territory = intersects[0].object;
+				const territoryName = territory.userData?.name;
 
-				console.log("Clicked country:", country.userData.name);
+				console.log("Clicked territory:", territoryName);
 
-				if (
-					country.userData?.name &&
-					!this.prevZoom &&
-					this.isValidTerritory(country.userData.name)
-				) {
+				// if a country is selected
+				if (!territoryName || !this.isValidTerritory(territoryName)) {
+					return;
+				}
+
+				// if we are moving units, then just return the name of the territory
+				if (this.isMovingUnits) {
+					this.selectTerritoryForUnitMovement(territoryName);
+					return;
+				}
+
+				// if not zoomed in, zoom in
+				if (!this.prevZoom) {
+					this.currentClickedCountry = territoryName;
 					// set country as the user's focused country
-					this.focusCountry(country.userData.name);
+					this.focusCountry(territoryName);
 
 					const intersectionPoint = intersects[0].point.clone();
 
@@ -141,22 +163,63 @@ export default {
 						.multiplyScalar(150);
 
 					this.moveCameraToTarget(targetPosition);
-				} else if (this.prevZoom) {
-					// set focused country to null
-					this.focusCountry(null);
-
-					const targetPosition = this.camera.position
-						.clone()
-						.normalize()
-						.multiplyScalar(this.prevZoom);
-
-					this.moveCameraToTarget(targetPosition);
-					this.prevZoom = null;
 				}
+
+				// if already zoomed in ...
+				else {
+					// if same country, zoom out
+					if (this.hasSelectedSameTerritory(territoryName)) {
+						// set focused country to null
+						this.focusCountry(null);
+
+						const targetPosition = this.camera.position
+							.clone()
+							.normalize()
+							.multiplyScalar(this.prevZoom);
+
+						this.moveCameraToTarget(targetPosition);
+
+						this.prevZoom = null;
+						this.currentClickedCountry = null;
+					}
+
+					// if different country, shift over
+					else {
+						this.currentClickedCountry = territoryName;
+						// set country as the user's focused country
+						this.focusCountry(territoryName);
+
+						const intersectionPoint = intersects[0].point.clone();
+
+						const targetPosition = intersectionPoint
+							.normalize()
+							.multiplyScalar(150);
+
+						this.moveCameraToTarget(targetPosition);
+					}
+				}
+
+				// if selecting nothing (space), back out
+			} else if (this.prevZoom) {
+				// set focused country to null
+				this.focusCountry(null);
+
+				const targetPosition = this.camera.position
+					.clone()
+					.normalize()
+					.multiplyScalar(this.prevZoom);
+
+				this.moveCameraToTarget(targetPosition);
+				this.prevZoom = null;
 			}
 		},
 		isValidTerritory(territoryName) {
 			return !!this.worldStore.territories[territoryName];
+		},
+		hasSelectedSameTerritory(territoryName) {
+			return (
+				this.prevZoom && this.currentClickedCountry === territoryName
+			);
 		},
 		resetHoveredCountry() {
 			if (this.currentHoveredCountry) {

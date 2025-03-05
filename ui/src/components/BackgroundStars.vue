@@ -10,6 +10,6 @@
 	top: 0;
 	left: 0;
 	z-index: -1;
-	background: #000 url("https://i.ibb.co/g91MwKZ/stars.png") repeat top center;
+	background: #000 url("@/assets/stars.png") repeat top center;
 }
 </style>

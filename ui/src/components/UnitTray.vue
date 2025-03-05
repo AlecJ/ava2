@@ -5,7 +5,16 @@ export default {
 			type: Array,
 			required: false,
 		},
+		selectedUnits: {
+			type: Object,
+			required: false,
+		},
 		selectMode: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		confirmedSelection: {
 			type: Boolean,
 			required: false,
 			default: false,
@@ -15,36 +24,24 @@ export default {
 			required: false,
 			default: 0,
 		},
+		getTotalUnitTypeCount: {
+			type: Function,
+			required: false,
+		},
+		addUnit: {
+			type: Function,
+			required: false,
+		},
+		minusUnit: {
+			type: Function,
+			required: false,
+		},
 	},
-	data() {
-		return {
-			selectedUnits: {},
-		};
-	},
-	methods: {
-		getTotalUnitTypeCount(unitType) {
-			const foundUnit = this.units.find(
-				(unit) =>
-					unit.type === unitType && unit.team === this.playerTurn
+	computed: {
+		confirmedUnits() {
+			return this.units.filter(
+				(unit) => this.selectedUnits[unit.type] > 0
 			);
-
-			return foundUnit ? foundUnit.count : 0;
-		},
-		addUnit(unitType) {
-			this.selectedUnits[unitType] ??= 0;
-
-			if (
-				this.selectedUnits[unitType] <
-				this.getTotalUnitTypeCount(unitType)
-			) {
-				this.selectedUnits[unitType]++;
-				this.test = true;
-			}
-		},
-		minusUnit(unitType) {
-			if (this.selectedUnits[unitType] > 0) {
-				this.selectedUnits[unitType]--;
-			}
 		},
 	},
 };
@@ -59,9 +56,13 @@ export default {
 		</div>
 	</div>
 
-	<div v-else class="unit-box">
+	<div v-else-if="!confirmedSelection" class="unit-box">
 		Units:
-		<div v-for="(unit, index) in units" :key="`${index}-${unit.type}`">
+		<div
+			class="unit-row"
+			v-for="(unit, index) in units"
+			:key="`${index}-${unit.type}`"
+		>
 			<div>{{ unit.type }}</div>
 			<div>{{ selectedUnits[unit.type] || 0 }} / {{ unit.count }}</div>
 			<button
@@ -78,6 +79,28 @@ export default {
 			</button>
 		</div>
 	</div>
+
+	<div v-else class="unit-box">
+		Units:
+		<div
+			v-for="(unit, index) in confirmedUnits"
+			:key="`${index}-${unit.type}`"
+		>
+			<div>{{ unit.type }}</div>
+			<div>x{{ selectedUnits[unit.type] }}</div>
+		</div>
+	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.unit-row {
+	display: grid;
+	align-items: center;
+	justify-items: center;
+	grid-template-columns: 3fr 1fr 1fr 1fr;
+
+	button {
+		margin: 0.25rem;
+	}
+}
+</style>

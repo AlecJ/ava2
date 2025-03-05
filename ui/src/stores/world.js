@@ -37,6 +37,12 @@ export const useWorldStore = defineStore("world", {
 				(territoryMesh) => territoryMesh.userData.name === territoryName
 			);
 		},
+		moveUnits(territoryNameA, territoryNameB, units) {
+			// send to backend, get new world
+			console.log(territoryNameA);
+			console.log(territoryNameB);
+			console.log(units);
+		},
 		captureTerritory(territoryName, team) {
 			const territoryMesh = this.getTerritoryMesh(territoryName);
 			if (!territoryMesh) {

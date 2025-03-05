@@ -38,6 +38,10 @@ export default {
 			required: false,
 			default: 0,
 		},
+		selectedTerritoryForMovement: {
+			type: String,
+			required: false,
+		},
 	},
 	data() {
 		return {
@@ -45,6 +49,8 @@ export default {
 			teamName: null,
 			power: 0,
 			units: [],
+			selectedUnits: {},
+			isSelectingTerritory: false,
 		};
 	},
 	watch: {
@@ -75,6 +81,29 @@ export default {
 
 			return countries[this.territoryData?.team].name;
 		},
+		getTotalUnitTypeCount(unitType) {
+			const foundUnit = this.units.find(
+				(unit) =>
+					unit.type === unitType && unit.team === this.playerTurn
+			);
+
+			return foundUnit ? foundUnit.count : 0;
+		},
+		addUnit(unitType) {
+			this.selectedUnits[unitType] ??= 0;
+
+			if (
+				this.selectedUnits[unitType] <
+				this.getTotalUnitTypeCount(unitType)
+			) {
+				this.selectedUnits[unitType]++;
+			}
+		},
+		minusUnit(unitType) {
+			if (this.selectedUnits[unitType] > 0) {
+				this.selectedUnits[unitType]--;
+			}
+		},
 	},
 };
 </script>
@@ -97,15 +126,43 @@ export default {
 				Move Units
 			</button>
 		</div>
-		<div v-else-if="isMovingUnits" class="territory-unit-movement">
+		<div
+			v-else-if="isMovingUnits && !isSelectingTerritory"
+			class="territory-unit-movement"
+		>
 			<div>Unit Movement</div>
 			<p>Which units do you want to move</p>
-			<UnitTray selectMode :units="units" />
-			<p>then select a country to move units to</p>
+			<UnitTray
+				selectMode
+				:units="units"
+				:selectedUnits="selectedUnits"
+				:getTotalUnitTypeCount="getTotalUnitTypeCount"
+				:addUnit="addUnit"
+				:minusUnit="minusUnit"
+			/>
+			<button @click="() => (this.isSelectingTerritory = true)">
+				Confirm Unit Selection
+			</button>
 		</div>
-		<!-- <button @click="() => captureTerritory(territoryName, 0)">
-			Capture
-		</button> -->
+		<div v-else class="territory-unit-movement">
+			<div>Unit Movement</div>
+			<p>Which units do you want to move</p>
+			<p>
+				You have selected:
+				{{
+					selectedTerritoryForMovement
+						? selectedTerritoryForMovement
+						: "No territory selected."
+				}}
+			</p>
+			<button
+				:disabled="!selectedTerritoryForMovement"
+				@click="moveUnits(selectedUnits)"
+			>
+				Accept
+			</button>
+			<button @click="">Back</button>
+		</div>
 	</div>
 </template>
 
@@ -141,15 +198,10 @@ export default {
 		transform: translateX(0%);
 	}
 
-	// button {
-	// 	width: 12rem;
-	// 	padding: 10px 20px;
-	// 	background-color: #000000;
-	// 	color: white;
-	// 	border: none;
-	// 	border-radius: 5px;
-	// 	cursor: pointer;
-	// 	font-size: 1.2rem;
-	// }
+	.territory-info,
+	.territory-unit-movement {
+		display: grid;
+		place-items: center;
+	}
 }
 </style>
