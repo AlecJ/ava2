@@ -16,8 +16,7 @@ run with
 
 ## To Do
 
--   select country for unit movement
--   back button while performing movement
+-   all territories in session (backend)
 
 -   able to move a unit (2 spaces)
 -   able to end turn

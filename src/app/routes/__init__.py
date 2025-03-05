@@ -90,3 +90,20 @@ def handle_delete_session(session_id):
     }
 
     return jsonify(response), 200
+
+
+@session_route.route('/moveunits/<string:session_id>', methods=['POST'])
+def handle_move_units(session_id):
+    session = get_session_by_session_id(session_id, convert_to_class=True)
+
+    # get territory A
+
+    # get territory B
+
+    # get units
+
+    # move units between territories
+
+    # update session
+
+    # send world as response

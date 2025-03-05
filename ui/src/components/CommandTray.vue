@@ -104,6 +104,15 @@ export default {
 				this.selectedUnits[unitType]--;
 			}
 		},
+		confirmUnitSelection() {
+			const confirmedUnits = { ...this.selectedUnits };
+			this.moveUnits(confirmedUnits);
+
+			this.switchUnitMovementMode(true);
+
+			this.selectedUnits = {};
+			this.isSelectingTerritory = false;
+		},
 	},
 };
 </script>
@@ -120,7 +129,7 @@ export default {
 			<UnitTray :playerTurn="playerTurn" :units="units" />
 			<button
 				v-if="currentPhase === 1 && units.length > 0"
-				@click="() => switchUnitMovementMode(true)"
+				@click="switchUnitMovementMode(true)"
 				class="move-units-button"
 			>
 				Move Units
@@ -140,8 +149,18 @@ export default {
 				:addUnit="addUnit"
 				:minusUnit="minusUnit"
 			/>
-			<button @click="() => (this.isSelectingTerritory = true)">
+			<button @click="isSelectingTerritory = true">
 				Confirm Unit Selection
+			</button>
+			<button
+				@click="
+					() => {
+						switchUnitMovementMode(false);
+						selectedUnits = {};
+					}
+				"
+			>
+				Back
 			</button>
 		</div>
 		<div v-else class="territory-unit-movement">
@@ -157,11 +176,11 @@ export default {
 			</p>
 			<button
 				:disabled="!selectedTerritoryForMovement"
-				@click="moveUnits(selectedUnits)"
+				@click="confirmUnitSelection"
 			>
 				Accept
 			</button>
-			<button @click="">Back</button>
+			<button @click="isSelectingTerritory = false">Back</button>
 		</div>
 	</div>
 </template>

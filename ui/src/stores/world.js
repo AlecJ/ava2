@@ -39,8 +39,10 @@ export const useWorldStore = defineStore("world", {
 		},
 		moveUnits(territoryNameA, territoryNameB, units) {
 			// send to backend, get new world
-			console.log(territoryNameA);
-			console.log(territoryNameB);
+			const territoryA = this.getTerritory(territoryNameA);
+			const territoryB = this.getTerritory(territoryNameB);
+			console.log(territoryA);
+			console.log(territoryB);
 			console.log(units);
 		},
 		captureTerritory(territoryName, team) {
