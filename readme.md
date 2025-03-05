@@ -16,6 +16,8 @@ run with
 
 ## To Do
 
+-   select country for unit movement
+
 -   able to move a unit (2 spaces)
 -   able to end turn
 
