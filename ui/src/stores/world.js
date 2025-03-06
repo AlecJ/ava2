@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { API } from "@/services/api";
 
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
@@ -37,13 +38,66 @@ export const useWorldStore = defineStore("world", {
 				(territoryMesh) => territoryMesh.userData.name === territoryName
 			);
 		},
-		moveUnits(territoryNameA, territoryNameB, units) {
-			// send to backend, get new world
-			const territoryA = this.getTerritory(territoryNameA);
-			const territoryB = this.getTerritory(territoryNameB);
-			console.log(territoryA);
-			console.log(territoryB);
-			console.log(units);
+		// This is used to reset the territories units before updating them
+		resetTerritoryUnits() {
+			Object.values(this.territories).forEach((territory) => {
+				territory.units = [];
+			});
+		},
+		async getWorldData(sessionId) {
+			// this should be triggered once the game starts and after any updates
+			this.isLoading = true;
+
+			try {
+				console.log(
+					"Fetching game state from API:",
+					`/game/${sessionId}`
+				);
+
+				const response = await API.get(`/game/${sessionId}`);
+
+				console.log("API Response:", response.data); // Debugging log
+
+				// get list of units with territories
+				const units = response.data.game_state.units;
+				console.log(units);
+
+				// reset territories units
+				this.resetTerritoryUnits();
+
+				// set territories units
+				units.forEach((unit) => {
+					this.territories[unit.territory].units.push(unit);
+				});
+			} catch (error) {
+				console.error("API Error:", error);
+			}
+
+			this.isLoading = false;
+		},
+		async moveUnits(territoryNameA, territoryNameB, units) {
+			// also send player ID
+			this.isLoading = true;
+
+			try {
+				const data = {
+					territoryA: territoryNameA,
+					territoryB: territoryNameB,
+					units: units,
+				};
+
+				const response = await API.post(
+					`/session/${sessionId}?pid=${playerId}`,
+					data
+				);
+				// console.log("API Response:", response.data); // Debugging log
+				// this.setSession(response.data.session);
+				// if (response.data.player) this.setPlayer(response.data.player);
+			} catch (error) {
+				console.error("API Error:", error.response?.data?.status);
+			}
+
+			this.isLoading = false;
 		},
 		captureTerritory(territoryName, team) {
 			const territoryMesh = this.getTerritoryMesh(territoryName);

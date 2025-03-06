@@ -81,6 +81,7 @@ export default {
 			if (sessionId) {
 				try {
 					await this.sessionStore.getSession(sessionId, playerId);
+					await this.worldStore.getWorldData(sessionId);
 				} catch (error) {
 					console.error("Failed to fetch session:", error);
 				}

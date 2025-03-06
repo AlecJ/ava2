@@ -237,7 +237,7 @@
 			"Central United States",
 			"ocean_tile_10"
 		],
-		"units": []
+		"units": [{ "type": "INFANTRY", "count": 1, "team": 0 }]
 	},
 	"East Indies": {
 		"team": 4,

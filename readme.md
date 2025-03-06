@@ -16,8 +16,6 @@ run with
 
 ## To Do
 
--   all territories in session (backend)
-
 -   able to move a unit (2 spaces)
 -   able to end turn
 -   able to undo turn

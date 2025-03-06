@@ -84,7 +84,7 @@ export default {
 		getTotalUnitTypeCount(unitType) {
 			const foundUnit = this.units.find(
 				(unit) =>
-					unit.type === unitType && unit.team === this.playerTurn
+					unit.unit_type === unitType && unit.team === this.playerTurn
 			);
 
 			return foundUnit ? foundUnit.count : 0;

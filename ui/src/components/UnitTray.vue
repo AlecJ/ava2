@@ -40,18 +40,20 @@ export default {
 	computed: {
 		confirmedUnits() {
 			return this.units.filter(
-				(unit) => this.selectedUnits[unit.type] > 0
+				(unit) => this.selectedUnits[unit.unit_type] > 0
 			);
 		},
 	},
 };
 </script>
 
+<!-- I NEED TO SUM UP THE NUMBER OF EACH UNIT TYPE AND COMPUTE unit.count -->
+
 <template>
 	<div v-if="!selectMode" class="unit-box">
 		Units:
 		<div v-for="(unit, index) in units" :key="`${index}-${unit.type}`">
-			<div>{{ unit.type }}</div>
+			<div>{{ unit.unit_type }}</div>
 			<div>x{{ unit.count }}</div>
 		</div>
 	</div>

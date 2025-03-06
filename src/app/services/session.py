@@ -61,10 +61,7 @@ def join_session(session_id, country):
     """
     session = get_session_by_session_id(session_id, convert_to_class=True)
 
-    try:
-        player = session.join_game(country)
-    except:
-        return False
+    player = session.join_game(country)
 
     update_session(session)
 

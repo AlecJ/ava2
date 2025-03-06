@@ -18,6 +18,7 @@ A Player is:
 Player ID
 Session ID
 Country
+APCs
 
 Country is one of:
 USA
@@ -27,7 +28,8 @@ Germany
 Japan
 
 """
-valid_countries = ['USA', 'UK', 'USSR', 'Germany', 'Japan']
+valid_countries = ['United States', 'United Kingdom',
+                   'Soviet Union', 'Germany', 'Japan']
 
 
 class SessionStatus(Enum):

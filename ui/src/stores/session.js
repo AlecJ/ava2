@@ -10,7 +10,7 @@ export const useSessionStore = defineStore("session", {
 		status: null,
 		currentTurn: null,
 		isLoading: false,
-		isTesting: true,
+		isTesting: false,
 	}),
 	actions: {
 		setSession(session) {
