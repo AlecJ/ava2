@@ -80,3 +80,33 @@ class GameState:
                 ))
 
         return result
+
+    def validate_unit_movement(self, player_team, territory_a, territory_b, units_to_move):
+        """
+        Validates that the unit can move to the new territory.
+        """
+        for unit in self.units:
+            if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
+                units_to_move[unit.unit_type] -= 1
+
+        # make sure there were enough of each unit type in the territory
+        for unit_count in units_to_move.values():
+            if unit_count > 0:
+                return False
+
+        # make sure territories are neighbors
+        territory_a_data = TERRITORY_DATA[territory_a]
+
+        return territory_b in territory_a_data['neighbors']
+
+    def move_units(self, player_team, territory_a, territory_b, units_to_move):
+        """
+        Moves the units from territory A to territory B.
+        """
+        for unit in self.units:
+            if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
+                units_to_move[unit.unit_type] -= 1
+                unit.territory = territory_b
+                unit.movement -= 1
+
+        return True

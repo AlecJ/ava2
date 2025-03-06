@@ -69,6 +69,22 @@ export default {
 			}
 		},
 	},
+	computed: {
+		playerUnits() {
+			return this.units.filter((unit) => unit.team === this.playerTurn);
+		},
+		summedUnits() {
+			const reducedUnits = this.playerUnits.reduce((acc, unit) => {
+				acc[unit.unit_type] = (acc[unit.unit_type] || 0) + 1;
+				return acc;
+			}, {});
+
+			return Object.entries(reducedUnits).map(([unit_type, count]) => ({
+				unit_type,
+				count,
+			}));
+		},
+	},
 	methods: {
 		resetData() {
 			this.territoryName = null;
@@ -82,15 +98,17 @@ export default {
 			return countries[this.territoryData?.team].name;
 		},
 		getTotalUnitTypeCount(unitType) {
-			const foundUnit = this.units.find(
-				(unit) =>
-					unit.unit_type === unitType && unit.team === this.playerTurn
+			const foundUnit = this.summedUnits.find(
+				(unit) => unit.unit_type === unitType
 			);
 
 			return foundUnit ? foundUnit.count : 0;
 		},
 		addUnit(unitType) {
+			console.log("add unit");
 			this.selectedUnits[unitType] ??= 0;
+
+			console.log(this.getTotalUnitTypeCount(unitType));
 
 			if (
 				this.selectedUnits[unitType] <
@@ -126,7 +144,11 @@ export default {
 			<div class="country-name">{{ territoryName }}</div>
 			<div class="controlling-country">Occupied by: {{ teamName }}</div>
 			<div class="territory-power">Production Score: {{ power }}</div>
-			<UnitTray :playerTurn="playerTurn" :units="units" />
+			<UnitTray
+				:playerTurn="playerTurn"
+				:units="units"
+				:summedUnits="summedUnits"
+			/>
 			<button
 				v-if="currentPhase === 1 && units.length > 0"
 				@click="switchUnitMovementMode(true)"
@@ -144,6 +166,7 @@ export default {
 			<UnitTray
 				selectMode
 				:units="units"
+				:summedUnits="summedUnits"
 				:selectedUnits="selectedUnits"
 				:getTotalUnitTypeCount="getTotalUnitTypeCount"
 				:addUnit="addUnit"

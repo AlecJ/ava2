@@ -66,3 +66,13 @@ def join_session(session_id, country):
     update_session(session)
 
     return session, player
+
+
+def get_player_team_by_id(session_id, player_id):
+    """
+    Get the team of a player by their player ID.
+    """
+    session = get_session_by_session_id(session_id, convert_to_class=True)
+    player = session.get_player_by_id(player_id)
+
+    return Session.get_team_num_from_country(player.country)

@@ -135,3 +135,13 @@ class Session:
         """
         self.current_turn += 1
         pass
+
+    @classmethod
+    def get_team_num_from_country(cls, country):
+        """
+        Returns the team number for a given country.
+        """
+        try:
+            return valid_countries.index(country)
+        except ValueError:
+            raise ValueError(f"Country {country} is not valid.")

@@ -5,6 +5,10 @@ export default {
 			type: Array,
 			required: false,
 		},
+		summedUnits: {
+			type: Array,
+			required: false,
+		},
 		selectedUnits: {
 			type: Object,
 			required: false,
@@ -47,12 +51,13 @@ export default {
 };
 </script>
 
-<!-- I NEED TO SUM UP THE NUMBER OF EACH UNIT TYPE AND COMPUTE unit.count -->
-
 <template>
 	<div v-if="!selectMode" class="unit-box">
 		Units:
-		<div v-for="(unit, index) in units" :key="`${index}-${unit.type}`">
+		<div
+			v-for="(unit, index) in summedUnits"
+			:key="`${index}-${unit.unit_type}`"
+		>
 			<div>{{ unit.unit_type }}</div>
 			<div>x{{ unit.count }}</div>
 		</div>
@@ -62,20 +67,22 @@ export default {
 		Units:
 		<div
 			class="unit-row"
-			v-for="(unit, index) in units"
-			:key="`${index}-${unit.type}`"
+			v-for="(unit, index) in summedUnits"
+			:key="`${index}-${unit.unit_type}`"
 		>
-			<div>{{ unit.type }}</div>
-			<div>{{ selectedUnits[unit.type] || 0 }} / {{ unit.count }}</div>
+			<div>{{ unit.unit_type }}</div>
+			<div>
+				{{ selectedUnits[unit.unit_type] || 0 }} / {{ unit.count }}
+			</div>
 			<button
-				:disabled="(selectedUnits[unit.type] ?? 0) === unit.count"
-				@click="addUnit(unit.type)"
+				:disabled="(selectedUnits[unit.unit_type] ?? 0) === unit.count"
+				@click="addUnit(unit.unit_type)"
 			>
 				+
 			</button>
 			<button
-				:disabled="(selectedUnits[unit.type] ?? 0) < 1"
-				@click="minusUnit(unit.type)"
+				:disabled="(selectedUnits[unit.unit_type] ?? 0) < 1"
+				@click="minusUnit(unit.unit_type)"
 			>
 				-
 			</button>
@@ -86,10 +93,10 @@ export default {
 		Units:
 		<div
 			v-for="(unit, index) in confirmedUnits"
-			:key="`${index}-${unit.type}`"
+			:key="`${index}-${unit.unit_type}`"
 		>
-			<div>{{ unit.type }}</div>
-			<div>x{{ selectedUnits[unit.type] }}</div>
+			<div>{{ unit.unit_type }}</div>
+			<div>x{{ selectedUnits[unit.unit_type] }}</div>
 		</div>
 	</div>
 </template>

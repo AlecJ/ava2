@@ -38,3 +38,15 @@ def get_game_state_by_session_id(session_id, convert_to_class=True):
         return GameState.from_dict(result)
 
     return result
+
+
+def update_game_state(game_state):
+    """
+    Update a game state.
+
+    Returns None.
+    """
+    mongo.db.game_state.update_one(
+        {'session_id': game_state.session_id},
+        {'$set': game_state.to_dict()}
+    )

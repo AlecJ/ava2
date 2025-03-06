@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { API } from "@/services/api";
 
+import { useSessionStore } from "@/stores/session";
+
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
 
@@ -44,31 +46,30 @@ export const useWorldStore = defineStore("world", {
 				territory.units = [];
 			});
 		},
-		async getWorldData(sessionId) {
+		updateGameWorld(units) {
+			// reset territories units
+			this.resetTerritoryUnits();
+
+			// set territories units
+			units.forEach((unit) => {
+				this.territories[unit.territory].units.push(unit);
+			});
+		},
+		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
 			this.isLoading = true;
 
 			try {
-				console.log(
-					"Fetching game state from API:",
-					`/game/${sessionId}`
-				);
+				// console.log(
+				// 	"Fetching game state from API:",
+				// 	`/game/${this.getSessionId}`
+				// );
 
-				const response = await API.get(`/game/${sessionId}`);
+				const response = await API.get(`/game/${this.getSessionId}`);
 
-				console.log("API Response:", response.data); // Debugging log
+				// console.log("API Response:", response.data); // Debugging log
 
-				// get list of units with territories
-				const units = response.data.game_state.units;
-				console.log(units);
-
-				// reset territories units
-				this.resetTerritoryUnits();
-
-				// set territories units
-				units.forEach((unit) => {
-					this.territories[unit.territory].units.push(unit);
-				});
+				this.updateGameWorld(response.data.game_state.units);
 			} catch (error) {
 				console.error("API Error:", error);
 			}
@@ -87,14 +88,13 @@ export const useWorldStore = defineStore("world", {
 				};
 
 				const response = await API.post(
-					`/session/${sessionId}?pid=${playerId}`,
+					`/game/${this.getSessionId}/moveunits?pid=${this.getPlayerId}`,
 					data
 				);
-				// console.log("API Response:", response.data); // Debugging log
-				// this.setSession(response.data.session);
-				// if (response.data.player) this.setPlayer(response.data.player);
+				console.log("API Response:", response.data); // Debugging log
+				this.updateGameWorld(response.data.game_state.units);
 			} catch (error) {
-				console.error("API Error:", error.response?.data?.status);
+				console.error("API Error:", error);
 			}
 
 			this.isLoading = false;
@@ -117,5 +117,13 @@ export const useWorldStore = defineStore("world", {
 		getGlobeAndCountries: (state) => state.threeGlobeAndCountries,
 		getPlayerTurn: (state) => state.playerTurn,
 		getPhase: (state) => state.currentPhase,
+		getSessionId() {
+			const sessionStore = useSessionStore();
+			return sessionStore.sessionId;
+		},
+		getPlayerId() {
+			const sessionStore = useSessionStore();
+			return sessionStore.playerId;
+		},
 	},
 });
