@@ -90,6 +90,11 @@ export default {
 				count,
 			}));
 		},
+		countryFlagSrc() {
+			const country = countries.find((c) => c.name === this.teamName);
+
+			return country ? country.flagIcon : "";
+		},
 	},
 	methods: {
 		resetData() {
@@ -111,7 +116,6 @@ export default {
 			return foundUnit ? foundUnit.count : 0;
 		},
 		addUnit(unitType) {
-			console.log("add unit");
 			this.selectedUnits[unitType] ??= 0;
 
 			console.log(this.getTotalUnitTypeCount(unitType));
@@ -148,11 +152,29 @@ export default {
 		:class="['right-side-bar', { active: !!territoryData }]"
 		@mousedown.prevent.stop
 	>
-		<LoadingSpinner v-if="isLoading" />
-		<div v-else-if="!isMovingUnits" class="territory-info">
-			<div class="country-name">{{ territoryName }}</div>
-			<div class="controlling-country">Occupied by: {{ teamName }}</div>
-			<div class="territory-power">Production Score: {{ power }}</div>
+		<div class="territory-name">{{ territoryName }}</div>
+		<div class="territory-info-row">
+			<div class="controlling-country">
+				<div class="left">Occupied by:</div>
+				<div class="right">
+					<img
+						:src="countryFlagSrc"
+						:alt="teamName"
+						class="flag-icon"
+					/>
+				</div>
+			</div>
+			<div class="territory-power">
+				<div class="left">Production Score:</div>
+				<div class="right">{{ power }}</div>
+			</div>
+		</div>
+
+		<div class="command-tray-content">
+			<LoadingSpinner v-if="isLoading" />
+		</div>
+
+		<!-- <div v-else-if="!isMovingUnits" class="territory-info">
 			<UnitTray
 				:playerTurn="playerTurn"
 				:units="units"
@@ -165,8 +187,9 @@ export default {
 			>
 				Move Units
 			</button>
-		</div>
-		<div
+		</div> -->
+
+		<!-- <div
 			v-else-if="isMovingUnits && !isSelectingTerritory"
 			class="territory-unit-movement"
 		>
@@ -194,8 +217,9 @@ export default {
 			>
 				Back
 			</button>
-		</div>
-		<div v-else class="territory-unit-movement">
+		</div> -->
+
+		<!-- <div v-else class="territory-unit-movement">
 			<div>Unit Movement</div>
 			<p>Which units do you want to move</p>
 			<p>
@@ -213,7 +237,8 @@ export default {
 				Accept
 			</button>
 			<button @click="isSelectingTerritory = false">Back</button>
-		</div>
+		</div> -->
+		<div class="command-tray-buttons">Move units</div>
 	</div>
 </template>
 
@@ -226,7 +251,7 @@ export default {
 	z-index: 1;
 
 	width: 30%;
-	min-width: 200px;
+	min-width: 250px;
 	max-width: 600px;
 	height: 75%;
 	padding: 1rem;
@@ -237,6 +262,7 @@ export default {
 	border-right: 0;
 
 	display: grid;
+	grid-template-rows: 1fr 1fr 5fr 1fr;
 	place-items: center;
 	pointer-events: auto;
 
@@ -249,10 +275,39 @@ export default {
 		transform: translateX(0%);
 	}
 
-	.territory-info,
-	.territory-unit-movement {
+	.territory-name {
+		font-size: clamp(1rem, 2vw, 2rem);
+	}
+
+	.territory-info-row {
+		width: 100%;
 		display: grid;
-		place-items: center;
+		grid-template-columns: 1fr 1fr;
+
+		.controlling-country,
+		.territory-power {
+			width: 100%;
+			padding: 1rem;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+
+			align-content: center;
+			justify-items: center;
+
+			.left,
+			.right {
+				text-align: right;
+				align-self: center;
+			}
+		}
+
+		.controlling-country {
+			border-right: 1px solid white;
+
+			.flag-icon {
+				width: 3rem;
+			}
+		}
 	}
 }
 </style>

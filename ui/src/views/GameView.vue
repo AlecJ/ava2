@@ -118,7 +118,7 @@ export default {
 		},
 		selectTerritoryForUnitMovement(territory) {
 			// TODO other validation for game rules
-
+			// this.selectedTerritoryForMovement = territory; // ocean_territories do not have neighbors yet
 			this.selectedTerritoryForMovement = this.areTerritoriesNeighbors(
 				this.focusedCountry,
 				territory
