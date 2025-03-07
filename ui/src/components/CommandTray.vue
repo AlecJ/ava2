@@ -1,12 +1,18 @@
 <script>
 import { countries } from "@/data/countries";
 import UnitTray from "@/components/UnitTray.vue";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 export default {
 	components: {
 		UnitTray,
+		LoadingSpinner,
 	},
 	props: {
+		isLoading: {
+			type: Boolean,
+			required: false,
+		},
 		territoryData: {
 			type: Object,
 			required: false,
@@ -126,10 +132,12 @@ export default {
 			const confirmedUnits = { ...this.selectedUnits };
 			this.moveUnits(confirmedUnits);
 
-			this.switchUnitMovementMode(true);
+			this.switchUnitMovementMode(false);
 
 			this.selectedUnits = {};
 			this.isSelectingTerritory = false;
+
+			// select new territory, move camera
 		},
 	},
 };
@@ -140,7 +148,8 @@ export default {
 		:class="['right-side-bar', { active: !!territoryData }]"
 		@mousedown.prevent.stop
 	>
-		<div v-if="!isMovingUnits" class="territory-info">
+		<LoadingSpinner v-if="isLoading" />
+		<div v-else-if="!isMovingUnits" class="territory-info">
 			<div class="country-name">{{ territoryName }}</div>
 			<div class="controlling-country">Occupied by: {{ teamName }}</div>
 			<div class="territory-power">Production Score: {{ power }}</div>

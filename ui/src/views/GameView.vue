@@ -55,7 +55,7 @@ export default {
 			return this.status === "TEAM_SELECT" && !this.isTestMode;
 		},
 		isLoading() {
-			return this.sessionStore?.isLoading;
+			return this.sessionStore?.getIsLoading;
 		},
 		focusedTerritoryData() {
 			const territoryData =
@@ -104,6 +104,7 @@ export default {
 		},
 		switchUnitMovementMode(bool) {
 			this.isMovingUnits = bool;
+			this.selectedTerritoryForMovement = null;
 		},
 		moveUnits(units) {
 			// subtract from focused territory
@@ -154,7 +155,8 @@ export default {
 		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
 	/>
 	<CommandTray
-		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:isLoading="isLoading"
 		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
 		:playerTurn="playerTurn"
@@ -165,22 +167,17 @@ export default {
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 	/>
 
-	<PlayerBoard
-		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
-	/>
+	<PlayerBoard v-if="!showLandingPopUp && !showTeamSelectPopUp" />
 
 	<EndTurnButton
-		v-if="!showLandingPopUp && !showTeamSelectPopUp && !isLoading"
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:nextPhase="nextPhase"
 		:currentPhase="currentPhase"
 	/>
 
-	<LandingPopUp
-		v-if="showLandingPopUp && !isLoading"
-		:createSession="createSession"
-	/>
+	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />
 	<TeamSelectPopUp
-		v-if="showTeamSelectPopUp && !isLoading"
+		v-if="showTeamSelectPopUp"
 		:selectPlayer="selectPlayer"
 		:selectedCountries="selectedCountries"
 		:playerCountry="playerCountry"

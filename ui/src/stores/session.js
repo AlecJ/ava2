@@ -19,6 +19,9 @@ export const useSessionStore = defineStore("session", {
 			this.currentTurn = session.current_turn;
 			this.players = session.players;
 		},
+		setIsLoading(bool) {
+			this.isLoading = bool;
+		},
 		setPlayer(player) {
 			this.playerId = player.player_id;
 			this.playerCountry = player.country;
@@ -91,5 +94,7 @@ export const useSessionStore = defineStore("session", {
 			this.isLoading = false;
 		},
 	},
-	getters: {},
+	getters: {
+		getIsLoading: (state) => state.isLoading,
+	},
 });

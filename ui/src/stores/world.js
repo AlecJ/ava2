@@ -57,7 +57,9 @@ export const useWorldStore = defineStore("world", {
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
-			this.isLoading = true;
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+			// this.isLoading = true;
 
 			try {
 				// console.log(
@@ -72,13 +74,14 @@ export const useWorldStore = defineStore("world", {
 				this.updateGameWorld(response.data.game_state.units);
 			} catch (error) {
 				console.error("API Error:", error);
+			} finally {
+				sessionStore.setIsLoading(false);
 			}
-
-			this.isLoading = false;
 		},
 		async moveUnits(territoryNameA, territoryNameB, units) {
 			// also send player ID
-			this.isLoading = true;
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
 
 			try {
 				const data = {
@@ -95,9 +98,9 @@ export const useWorldStore = defineStore("world", {
 				this.updateGameWorld(response.data.game_state.units);
 			} catch (error) {
 				console.error("API Error:", error);
+			} finally {
+				sessionStore.setIsLoading(false);
 			}
-
-			this.isLoading = false;
 		},
 		captureTerritory(territoryName, team) {
 			const territoryMesh = this.getTerritoryMesh(territoryName);
