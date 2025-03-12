@@ -67,6 +67,54 @@ export default {
 				this.teamName = this.getCountryName();
 				this.power = newVal.power;
 				this.units = newVal.units;
+
+				this.units = [
+					{
+						movement: 5,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "FIGHTER",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 0,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 0,
+						team: 1,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 3,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "TANK",
+					},
+					{
+						movement: 3,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "TANK",
+					},
+				];
+
+				// sort units by remaining movement
+				this.units.sort((a, b) => a.movement - b.movement);
 			} else {
 				// Delay clearing the name until after the sidebar transition ends
 				setTimeout(() => {
@@ -78,6 +126,9 @@ export default {
 	computed: {
 		playerUnits() {
 			return this.units.filter((unit) => unit.team === this.playerTurn);
+		},
+		nonPlayerUnits() {
+			return this.units.filter((unit) => unit.team !== this.playerTurn);
 		},
 		summedUnits() {
 			const reducedUnits = this.playerUnits.reduce((acc, unit) => {
@@ -172,22 +223,14 @@ export default {
 
 		<div class="command-tray-content">
 			<LoadingSpinner v-if="isLoading" />
-		</div>
 
-		<!-- <div v-else-if="!isMovingUnits" class="territory-info">
 			<UnitTray
+				v-else-if="!isMovingUnits"
 				:playerTurn="playerTurn"
 				:units="units"
 				:summedUnits="summedUnits"
 			/>
-			<button
-				v-if="currentPhase === 1 && units.length > 0"
-				@click="switchUnitMovementMode(true)"
-				class="move-units-button"
-			>
-				Move Units
-			</button>
-		</div> -->
+		</div>
 
 		<!-- <div
 			v-else-if="isMovingUnits && !isSelectingTerritory"
@@ -238,7 +281,15 @@ export default {
 			</button>
 			<button @click="isSelectingTerritory = false">Back</button>
 		</div> -->
-		<div class="command-tray-buttons">Move units</div>
+		<div class="command-tray-buttons">
+			<button
+				v-if="currentPhase === 1 && units.length > 0"
+				@click="switchUnitMovementMode(true)"
+				class="move-units-button"
+			>
+				Move Units
+			</button>
+		</div>
 	</div>
 </template>
 
@@ -308,6 +359,13 @@ export default {
 				width: 3rem;
 			}
 		}
+	}
+
+	.command-tray-content {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
 	}
 }
 </style>
