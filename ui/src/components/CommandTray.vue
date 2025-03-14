@@ -76,6 +76,42 @@ export default {
 						unit_type: "FIGHTER",
 					},
 					{
+						movement: 4,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "FIGHTER",
+					},
+					{
+						movement: 6,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "FIGHTER",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
+						movement: 1,
+						team: 0,
+						territory: "Western United States",
+						unit_type: "INFANTRY",
+					},
+					{
 						movement: 1,
 						team: 0,
 						territory: "Western United States",
@@ -166,6 +202,19 @@ export default {
 
 			return foundUnit ? foundUnit.count : 0;
 		},
+		toggleUnit(unit, index) {
+			// once you find the index of the first movement, just use index
+			const movementIndex = this.units.findIndex(
+				(u) => u.movement === unit.movement
+			);
+
+			// this sets the unit to `selected` if it is not already
+			this.units[movementIndex + index].selected = !this.units[
+				movementIndex + index
+			].selected
+				? true
+				: false;
+		},
 		addUnit(unitType) {
 			this.selectedUnits[unitType] ??= 0;
 
@@ -228,7 +277,7 @@ export default {
 				v-else-if="!isMovingUnits"
 				:playerTurn="playerTurn"
 				:units="units"
-				:summedUnits="summedUnits"
+				:toggleUnit="toggleUnit"
 			/>
 		</div>
 
@@ -366,6 +415,7 @@ export default {
 		height: 100%;
 		display: grid;
 		place-items: center;
+		overflow-y: auto;
 	}
 }
 </style>

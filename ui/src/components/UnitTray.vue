@@ -1,18 +1,11 @@
 <script>
 import { unitIcons } from "@/data/unitIcons";
+import { countries } from "@/data/countries";
 
 export default {
 	props: {
 		units: {
 			type: Array,
-			required: false,
-		},
-		summedUnits: {
-			type: Array,
-			required: false,
-		},
-		selectedUnits: {
-			type: Object,
 			required: false,
 		},
 		selectMode: {
@@ -30,15 +23,7 @@ export default {
 			required: false,
 			default: 0,
 		},
-		getTotalUnitTypeCount: {
-			type: Function,
-			required: false,
-		},
-		addUnit: {
-			type: Function,
-			required: false,
-		},
-		minusUnit: {
+		toggleUnit: {
 			type: Function,
 			required: false,
 		},
@@ -65,6 +50,11 @@ export default {
 
 			return unit ? unit.unitIcon : "";
 		},
+		countryFlagSrc() {
+			const country = countries.find((c) => c.name === this.teamName);
+
+			return country ? country.flagIcon : "";
+		},
 	},
 	methods: {
 		getUnitIconSrc(unit) {
@@ -72,15 +62,23 @@ export default {
 
 			return unitIcon ? unitIcon.unitIcon : "";
 		},
+		getColorForUnit(unit) {
+			const unitCountry = countries[unit.team];
+
+			const alpha = unit.selected ? "ff" : "40"; // Fully opaque if selected, semi-transparent if not
+
+			return unitCountry
+				? "#" + unitCountry.color.toString(16) + alpha
+				: "#0c6f13"; // Default color
+		},
 	},
 };
 </script>
 
 <template>
 	<!-- v-if="!selectMode" -->
+	<div class="unit-box-header">Units in Territory</div>
 	<div class="unit-box">
-		Units
-
 		<!-- units will be sorted by remaining movement ascending -->
 		<div
 			v-for="(group, movement) in movementGroups"
@@ -89,46 +87,27 @@ export default {
 		>
 			Remaining Movement: {{ movement }}
 			<div class="unit-box-group-container">
-				<div
+				<button
 					v-for="(unit, index) in group"
 					:key="`${index}-${unit.unit_type}`"
-					class="unit-box-unit"
+					class="unit-button"
+					:style="{
+						backgroundColor: getColorForUnit(unit),
+					}"
+					:onClick="() => toggleUnit(unit, index)"
 				>
 					<img
 						:src="getUnitIconSrc(unit)"
 						:alt="unit.name"
 						class="unit-icon"
+						:title="unit.unit_type"
 					/>
-				</div>
+				</button>
 			</div>
 		</div>
 	</div>
 
-	<!-- <div v-else-if="!confirmedSelection" class="unit-box">
-		Units:
-		<div
-			class="unit-row"
-			v-for="(unit, index) in summedUnits"
-			:key="`${index}-${unit.unit_type}`"
-		>
-			<div>{{ unit.unit_type }}</div>
-			<div>
-				{{ selectedUnits[unit.unit_type] || 0 }} / {{ unit.count }}
-			</div>
-			<button
-				:disabled="(selectedUnits[unit.unit_type] ?? 0) === unit.count"
-				@click="addUnit(unit.unit_type)"
-			>
-				+
-			</button>
-			<button
-				:disabled="(selectedUnits[unit.unit_type] ?? 0) < 1"
-				@click="minusUnit(unit.unit_type)"
-			>
-				-
-			</button>
-		</div>
-	</div>
+	<!-- 
 
 	<div v-else class="unit-box">
 		Units:
@@ -143,13 +122,24 @@ export default {
 </template>
 
 <style scoped lang="scss">
+.unit-box-header {
+	width: 100%;
+	padding-top: 0.5rem;
+	text-align: center;
+	font-size: 1.2rem;
+}
+
 .unit-box {
 	width: 100%;
 	height: 100%;
-	max-height: 100%;
 
 	padding: 1rem;
-	overflow-y: scroll;
+	// background-color: rgba(0, 0, 0, 0.4);
+
+	p {
+		padding-bottom: 0.5rem;
+		font-size: 1rem;
+	}
 
 	.unit-box-movement-group {
 		font-size: 0.8rem;
@@ -157,12 +147,27 @@ export default {
 		.unit-box-group-container {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
-		}
 
-		.unit-box-unit {
-			.unit-icon {
-				width: 3rem;
+			.unit-button {
+				width: 3rem; /* Adjust size */
 				height: 3rem;
+				margin: 0;
+
+				border-radius: 50%; /* Makes it circular */
+				background-color: #00000000; /* Default color */
+				border: none;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				cursor: pointer;
+				transition:
+					background-color 0.3s ease,
+					transform 0.2s ease;
+
+				.unit-icon {
+					width: 3rem;
+					height: auto;
+				}
 			}
 		}
 	}
