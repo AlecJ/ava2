@@ -28,6 +28,9 @@ Germany
 Japan
 
 """
+
+order_of_play = ['Soviet Union', 'Germany',
+                 'United Kingdom', 'Japan', 'United States']
 valid_countries = ['United States', 'United Kingdom',
                    'Soviet Union', 'Germany', 'Japan']
 

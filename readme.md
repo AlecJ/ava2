@@ -16,17 +16,40 @@ run with
 
 ## To Do
 
+-   new game, starting money
+-   all starting units placed
+-   add IDs to units
+-   purchase phase
+
+-   pre-combat movement phase
+-   post-combat movement phase
 -   able to end turn
 -   able to undo turn
--   unit movement
+
 -   territory capture
 -   all land units
 
+-   order of play
+
 Final tile fix in blender
+Eastern United States / Panama / Mexico
+
+Ocean Tiles
+11 and 17 do NOT border
+12 and 18 DO border
+14 and 16 DO border
+17 and 22 DO border
+17 and 11 do NOT border
+21 and 22 do NOT border
+
+22: 17, 18, 23, 24, 25
+ocean_tile_26 missing
+Confirm "Anglo-Egypt"
 
 -   finish territory data
 -   ship movement
 -   loading and unloading
+-   fighters on carriers
 -   plane movement
 
 -   combat
@@ -43,6 +66,7 @@ Final tile fix in blender
 
 Future Work:
 
+-   move session db logic to session model
 -   sort friendly and enemy units in territory (UnitTray)
 -   highlight territories that you may move units to
 -   hint for saving bookmark to return to game
@@ -52,7 +76,15 @@ Future Work:
     capital city
     AA gun
     industrial complex
--   National Advantages Table
+
 -   Develop weapons stage and Research Dice
+-   National Advantages Table
+
 -   Victory City
 -   Liberating Territories
+
+## Special Rules
+
+You cannot use a canal unless your team controls it.
+The Panama canal is controlled by Panama.
+The Suez Canal is controlled by whoever controls both Anglo-Egypt and Trans-Jordan.

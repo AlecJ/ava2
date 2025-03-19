@@ -91,7 +91,7 @@ export const useWorldStore = defineStore("world", {
 				};
 
 				const response = await API.post(
-					`/game/${this.getSessionId}/moveunits?pid=${this.getPlayerId}`,
+					`/game/${this.getSessionId}/moveunits`,
 					data
 				);
 				console.log("API Response:", response.data); // Debugging log

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from app.extensions import mongo
 from app.services.session import get_session_by_session_id, create_session, join_session
-from app.services.game import create_game_state
+from app.models.game_state import GameState
 
 
 session_route = Blueprint('session_route', __name__)
@@ -39,7 +39,7 @@ def handle_get_session(session_id):
 @session_route.route('/create', methods=['POST'])
 def handle_create_session():
     session = create_session()
-    create_game_state(session.session_id)
+    GameState.create(session.session_id)
 
     session = session.to_dict()
 
@@ -91,20 +91,3 @@ def handle_delete_session(session_id):
     }
 
     return jsonify(response), 200
-
-
-@session_route.route('/<string:session_id>/moveunits', methods=['POST'])
-def handle_move_units(session_id):
-    session = get_session_by_session_id(session_id, convert_to_class=True)
-
-    # get territory A
-
-    # get territory B
-
-    # get units
-
-    # move units between territories
-
-    # update session
-
-    # send world as response
