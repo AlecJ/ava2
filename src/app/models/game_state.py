@@ -1,5 +1,6 @@
 # from uuid import uuid4
 # from enum import Enum
+from collections import Counter
 from app.models.territory_data import TERRITORY_DATA
 
 from app.models.unit import Unit
@@ -85,14 +86,27 @@ class GameState:
         """
         Validates that the unit can move to the new territory.
         """
-        for unit in self.units:
-            if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
-                units_to_move[unit.unit_type] -= 1
+        total_unit_count = Counter(self.units)
+        # [{'movement': 2, 'team': 0, 'territory': 'Western United States', 'unit_type': 'INFANTRY', 'selected': True}]
+        # cast dict units to class units
+        moving_unit_count = Counter(units_to_move)
 
-        # make sure there were enough of each unit type in the territory
-        for unit_count in units_to_move.values():
-            if unit_count > 0:
-                return False
+        # for unit in self.units:
+        #     # territory
+        #     # team
+        #     # type
+        #     # movement
+        #     if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
+        #         units_to_move[unit.unit_type] -= 1
+
+        # # make sure there were enough of each unit type in the territory
+        # for unit_count in units_to_move.values():
+        #     if unit_count > 0:
+        #         return False
+
+        if not all(total_unit_count[unit] >= moving_unit_count[unit] for unit in moving_unit_count):
+            # not enough units of that type in the territory
+            return False
 
         # make sure territories are neighbors
         territory_a_data = TERRITORY_DATA[territory_a]
@@ -103,9 +117,11 @@ class GameState:
         """
         Moves the units from territory A to territory B.
         """
+        moving_unit_count = Counter(units_to_move)
+
         for unit in self.units:
-            if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
-                units_to_move[unit.unit_type] -= 1
+            if moving_unit_count[unit] > 0:
+                moving_unit_count[unit] -= 1
                 unit.territory = territory_b
                 unit.movement -= 1
 

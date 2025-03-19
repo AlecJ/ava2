@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from app.extensions import mongo
 from app.services.game import create_game_state, get_game_state_by_session_id, update_game_state
 from app.services.session import get_player_team_by_id
+from app.models.unit import Unit
 
 
 game_route = Blueprint('game_route', __name__)
@@ -45,8 +46,11 @@ def handle_move_units(session_id):
     territory_b = data.get('territoryB')
     units_to_move = data.get('units')
 
+    # cast units to class objects
+    units_to_move = [Unit.from_dict(unit) for unit in units_to_move]
+
     game_state.validate_unit_movement(
-        player_team, territory_a, territory_b, units_to_move.copy())
+        player_team, territory_a, territory_b, units_to_move)
 
     # move units
     game_state.move_units(player_team, territory_a, territory_b, units_to_move)

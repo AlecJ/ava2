@@ -8,7 +8,7 @@ export default {
 			type: Array,
 			required: false,
 		},
-		selectMode: {
+		isMovingUnits: {
 			type: Boolean,
 			required: false,
 			default: false,
@@ -29,13 +29,11 @@ export default {
 		},
 	},
 	computed: {
-		confirmedUnits() {
-			return this.units.filter(
-				(unit) => this.selectedUnits[unit.unit_type] > 0
-			);
+		playerUnits() {
+			return this.units.filter((unit) => unit.team === this.playerTurn);
 		},
 		movementGroups() {
-			return this.units.reduce((acc, unit) => {
+			return this.playerUnits.reduce((acc, unit) => {
 				if (acc[unit.movement] === undefined) {
 					acc[unit.movement] = [];
 				}
@@ -45,10 +43,32 @@ export default {
 				return acc;
 			}, {});
 		},
-		unitIconSrc() {
-			const unit = unitIcons.find((unit) => unit.name === "INFANTRY");
-
-			return unit ? unit.unitIcon : "";
+		friendlyUnits() {
+			// Allies players are teams 0, 1, and 2
+			// Axis players are teams 3 and 4
+			return this.units.filter((unit) => {
+				if (this.playerTurn <= 2) {
+					return unit.team <= 2 && unit.team !== this.playerTurn;
+				} else {
+					// For team 3, we want to include both team 1 and team 2 units
+					return unit.team >= 3 && unit.team !== this.playerTurn;
+				}
+			});
+		},
+		enemyUnits() {
+			// Allies players are teams 0, 1, and 2
+			// Axis players are teams 3 and 4
+			return this.units.filter((unit) => {
+				if (this.playerTurn <= 2) {
+					return unit.team >= 3;
+				} else {
+					// For team 3, we want to include both team 1 and team 2 units
+					return unit.team <= 2;
+				}
+			});
+		},
+		selectedUnits() {
+			return this.units.filter((unit) => unit.selected);
 		},
 		countryFlagSrc() {
 			const country = countries.find((c) => c.name === this.teamName);
@@ -71,14 +91,18 @@ export default {
 				? "#" + unitCountry.color.toString(16) + alpha
 				: "#0c6f13"; // Default color
 		},
+		getTeamNameForUnit(unit) {
+			const team = unit.team;
+
+			return countries[team] ? countries[team].name : "Unknown";
+		},
 	},
 };
 </script>
 
 <template>
-	<!-- v-if="!selectMode" -->
 	<div class="unit-box-header">Units in Territory</div>
-	<div class="unit-box">
+	<div v-if="!isMovingUnits" class="unit-box">
 		<!-- units will be sorted by remaining movement ascending -->
 		<div
 			v-for="(group, movement) in movementGroups"
@@ -88,6 +112,7 @@ export default {
 			Remaining Movement: {{ movement }}
 			<div class="unit-box-group-container">
 				<button
+					:disabled="Number(movement) === 0"
 					v-for="(unit, index) in group"
 					:key="`${index}-${unit.unit_type}`"
 					class="unit-button"
@@ -105,20 +130,78 @@ export default {
 				</button>
 			</div>
 		</div>
+
+		<div v-if="friendlyUnits.length" class="friendly-units-in-territory">
+			Friendly Units in Territory:
+			<div class="unit-box-group-container">
+				<div
+					v-for="(unit, index) in friendlyUnits"
+					:key="`${index}-${unit.unit_type}`"
+					class="unit-button"
+					:style="{
+						backgroundColor: getColorForUnit(unit),
+					}"
+				>
+					<img
+						:src="getUnitIconSrc(unit)"
+						:alt="unit.name"
+						class="unit-icon"
+						:title="
+							unit.unit_type + ' - ' + getTeamNameForUnit(unit)
+						"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div v-if="enemyUnits.length" class="enemy-units-in-territory">
+			Enemy Units in Territory:
+			<div class="unit-box-group-container">
+				<div
+					v-for="(unit, index) in enemyUnits"
+					:key="`${index}-${unit.unit_type}`"
+					class="unit-button"
+					:style="{
+						backgroundColor: getColorForUnit(unit),
+					}"
+				>
+					<img
+						:src="getUnitIconSrc(unit)"
+						:alt="unit.name"
+						class="unit-icon"
+						:title="
+							unit.unit_type + ' - ' + getTeamNameForUnit(unit)
+						"
+					/>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<!-- 
-
 	<div v-else class="unit-box">
-		Units:
-		<div
-			v-for="(unit, index) in confirmedUnits"
-			:key="`${index}-${unit.unit_type}`"
-		>
-			<div>{{ unit.unit_type }}</div>
-			<div>x{{ selectedUnits[unit.unit_type] }}</div>
+		<div class="selected-units">
+			Units to be Moved:
+			<div class="unit-box-group-container">
+				<div
+					v-for="(unit, index) in selectedUnits"
+					:key="`${index}-${unit.unit_type}`"
+					class="unit-button"
+					:style="{
+						backgroundColor: getColorForUnit(unit),
+					}"
+				>
+					<img
+						:src="getUnitIconSrc(unit)"
+						:alt="unit.name"
+						class="unit-icon"
+						:title="
+							unit.unit_type + ' - ' + getTeamNameForUnit(unit)
+						"
+					/>
+				</div>
+			</div>
 		</div>
-	</div> -->
+	</div>
 </template>
 
 <style scoped lang="scss">
@@ -143,10 +226,25 @@ export default {
 
 	.unit-box-movement-group {
 		font-size: 0.8rem;
+	}
 
+	.friendly-units-in-territory,
+	.enemy-units-in-territory {
+		font-size: 1rem;
+		padding-top: 0.75rem;
+	}
+
+	.unit-box-movement-group,
+	.friendly-units-in-territory,
+	.enemy-units-in-territory,
+	.selected-units {
 		.unit-box-group-container {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+
+			button:active {
+				cursor: pointer;
+			}
 
 			.unit-button {
 				width: 3rem; /* Adjust size */
@@ -159,7 +257,7 @@ export default {
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				cursor: pointer;
+
 				transition:
 					background-color 0.3s ease,
 					transform 0.2s ease;

@@ -55,7 +55,6 @@ export default {
 			teamName: null,
 			power: 0,
 			units: [],
-			selectedUnits: {},
 			isSelectingTerritory: false,
 		};
 	},
@@ -68,86 +67,92 @@ export default {
 				this.power = newVal.power;
 				this.units = newVal.units;
 
-				this.units = [
-					{
-						movement: 5,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "FIGHTER",
-					},
-					{
-						movement: 4,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "FIGHTER",
-					},
-					{
-						movement: 6,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "FIGHTER",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 1,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 0,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 0,
-						team: 1,
-						territory: "Western United States",
-						unit_type: "INFANTRY",
-					},
-					{
-						movement: 3,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "TANK",
-					},
-					{
-						movement: 3,
-						team: 0,
-						territory: "Western United States",
-						unit_type: "TANK",
-					},
-				];
+				// this.units = [
+				// 	{
+				// 		movement: 5,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "FIGHTER",
+				// 	},
+				// 	{
+				// 		movement: 4,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "FIGHTER",
+				// 	},
+				// 	{
+				// 		movement: 6,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "FIGHTER",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 2,
+				// 		team: 3,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 1,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 0,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 0,
+				// 		team: 1,
+				// 		territory: "Western United States",
+				// 		unit_type: "INFANTRY",
+				// 	},
+				// 	{
+				// 		movement: 3,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "TANK",
+				// 	},
+				// 	{
+				// 		movement: 3,
+				// 		team: 0,
+				// 		territory: "Western United States",
+				// 		unit_type: "TANK",
+				// 	},
+				// ];
 
 				// sort units by remaining movement
 				this.units.sort((a, b) => a.movement - b.movement);
@@ -160,23 +165,6 @@ export default {
 		},
 	},
 	computed: {
-		playerUnits() {
-			return this.units.filter((unit) => unit.team === this.playerTurn);
-		},
-		nonPlayerUnits() {
-			return this.units.filter((unit) => unit.team !== this.playerTurn);
-		},
-		summedUnits() {
-			const reducedUnits = this.playerUnits.reduce((acc, unit) => {
-				acc[unit.unit_type] = (acc[unit.unit_type] || 0) + 1;
-				return acc;
-			}, {});
-
-			return Object.entries(reducedUnits).map(([unit_type, count]) => ({
-				unit_type,
-				count,
-			}));
-		},
 		countryFlagSrc() {
 			const country = countries.find((c) => c.name === this.teamName);
 
@@ -195,13 +183,6 @@ export default {
 
 			return countries[this.territoryData?.team].name;
 		},
-		getTotalUnitTypeCount(unitType) {
-			const foundUnit = this.summedUnits.find(
-				(unit) => unit.unit_type === unitType
-			);
-
-			return foundUnit ? foundUnit.count : 0;
-		},
 		toggleUnit(unit, index) {
 			// once you find the index of the first movement, just use index
 			const movementIndex = this.units.findIndex(
@@ -215,30 +196,13 @@ export default {
 				? true
 				: false;
 		},
-		addUnit(unitType) {
-			this.selectedUnits[unitType] ??= 0;
-
-			console.log(this.getTotalUnitTypeCount(unitType));
-
-			if (
-				this.selectedUnits[unitType] <
-				this.getTotalUnitTypeCount(unitType)
-			) {
-				this.selectedUnits[unitType]++;
-			}
-		},
-		minusUnit(unitType) {
-			if (this.selectedUnits[unitType] > 0) {
-				this.selectedUnits[unitType]--;
-			}
-		},
 		confirmUnitSelection() {
-			const confirmedUnits = { ...this.selectedUnits };
-			this.moveUnits(confirmedUnits);
+			const selectedUnits = this.units.filter((unit) => unit.selected);
+			this.moveUnits(selectedUnits);
 
 			this.switchUnitMovementMode(false);
 
-			this.selectedUnits = {};
+			// need to reset or update territories
 			this.isSelectingTerritory = false;
 
 			// select new territory, move camera
@@ -274,69 +238,48 @@ export default {
 			<LoadingSpinner v-if="isLoading" />
 
 			<UnitTray
-				v-else-if="!isMovingUnits"
+				v-if="!isLoading"
+				:isMovingUnits="isMovingUnits"
 				:playerTurn="playerTurn"
 				:units="units"
 				:toggleUnit="toggleUnit"
 			/>
+
+			<div v-if="!isLoading && isMovingUnits">
+				<p>Select a Territory</p>
+				<p>
+					You have selected:
+					{{
+						selectedTerritoryForMovement
+							? selectedTerritoryForMovement
+							: "No territory selected."
+					}}
+				</p>
+			</div>
 		</div>
 
-		<!-- <div
-			v-else-if="isMovingUnits && !isSelectingTerritory"
-			class="territory-unit-movement"
-		>
-			<div>Unit Movement</div>
-			<p>Which units do you want to move</p>
-			<UnitTray
-				selectMode
-				:units="units"
-				:summedUnits="summedUnits"
-				:selectedUnits="selectedUnits"
-				:getTotalUnitTypeCount="getTotalUnitTypeCount"
-				:addUnit="addUnit"
-				:minusUnit="minusUnit"
-			/>
-			<button @click="isSelectingTerritory = true">
-				Confirm Unit Selection
-			</button>
+		<div class="command-tray-buttons">
 			<button
-				@click="
-					() => {
-						switchUnitMovementMode(false);
-						selectedUnits = {};
-					}
-				"
+				:disabled="!isMovingUnits"
+				@click="() => switchUnitMovementMode(false)"
 			>
 				Back
 			</button>
-		</div> -->
 
-		<!-- <div v-else class="territory-unit-movement">
-			<div>Unit Movement</div>
-			<p>Which units do you want to move</p>
-			<p>
-				You have selected:
-				{{
-					selectedTerritoryForMovement
-						? selectedTerritoryForMovement
-						: "No territory selected."
-				}}
-			</p>
 			<button
-				:disabled="!selectedTerritoryForMovement"
-				@click="confirmUnitSelection"
-			>
-				Accept
-			</button>
-			<button @click="isSelectingTerritory = false">Back</button>
-		</div> -->
-		<div class="command-tray-buttons">
-			<button
-				v-if="currentPhase === 1 && units.length > 0"
+				v-if="!isMovingUnits"
 				@click="switchUnitMovementMode(true)"
 				class="move-units-button"
 			>
 				Move Units
+			</button>
+
+			<button
+				v-if="isMovingUnits"
+				:disabled="!selectedTerritoryForMovement"
+				@click="confirmUnitSelection"
+			>
+				Confirm Unit Movement
 			</button>
 		</div>
 	</div>

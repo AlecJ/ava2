@@ -107,8 +107,6 @@ export default {
 			this.selectedTerritoryForMovement = null;
 		},
 		moveUnits(units) {
-			// subtract from focused territory
-
 			// add to selected territory
 			this.worldStore.moveUnits(
 				this.focusedCountry,
@@ -154,6 +152,7 @@ export default {
 		:isMovingUnits="isMovingUnits"
 		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
 	/>
+
 	<CommandTray
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:isLoading="isLoading"
@@ -167,7 +166,7 @@ export default {
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 	/>
 
-	<PlayerBoard v-if="!showLandingPopUp && !showTeamSelectPopUp" />
+	<!-- <PlayerBoard v-if="!showLandingPopUp && !showTeamSelectPopUp" /> -->
 
 	<EndTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
@@ -176,12 +175,14 @@ export default {
 	/>
 
 	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />
+
 	<TeamSelectPopUp
 		v-if="showTeamSelectPopUp"
 		:selectPlayer="selectPlayer"
 		:selectedCountries="selectedCountries"
 		:playerCountry="playerCountry"
 	/>
+
 	<BackgroundStars />
 </template>
 

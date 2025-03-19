@@ -36,6 +36,23 @@ class Unit:
             f"<Unit(type={self.unit_type}, team={self.team}, territory={self.territory}>"
         )
 
+    def __eq__(self, other):
+        """
+        Checks if two units are the same based on their type, team, territory, and movement.
+        """
+        return (self.unit_type == other.unit_type and
+                self.team == other.team and
+                self.territory == other.territory and
+                self.movement == other.movement)
+
+    def __hash__(self):
+        """
+        This is necessary to enable Counters for checking if a list of units is a subset of another list.
+
+        See GameState.validate_unit_movement for more details.
+        """
+        return hash((self.unit_type, self.team, self.territory, self.movement))
+
     def to_dict(self):
         """
         Converts the Unit object to a dictionary for JSON serialization.
