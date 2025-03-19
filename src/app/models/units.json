@@ -1,0 +1,13 @@
+{
+	"INFANTRY": { "movement": 1 },
+	"ARTILLERY": { "movement": 1 },
+	"TANK": { "movement": 2 },
+	"ANTI-AIRCRAFT": { "movement": 1 },
+	"FIGHTER": { "movement": 4 },
+	"BOMBER": { "movement": 6 },
+	"BATTLESHIP": { "movement": 2 },
+	"DESTROYER": { "movement": 2 },
+	"AIRCRAFT-CARRIER": { "movement": 2 },
+	"TRANSPORT": { "movement": 2 },
+	"SUBMARINE": { "movement": 2 }
+}

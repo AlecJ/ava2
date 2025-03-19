@@ -1,20 +1,15 @@
-from enum import Enum
+from app.models.unit_data import UNIT_DATA
+
 
 """
+
 A Unit is:
 Unit Type
 Team ID
 Territory
 Remaining Movement
+
 """
-
-unit_type_to_movement = {
-    'INFANTRY': 2
-}
-
-
-class UnitType(Enum):
-    INFANTRY = 'INFANTRY'
 
 
 class Unit:
@@ -22,7 +17,7 @@ class Unit:
         self.team = team
         self.unit_type = unit_type
         self.territory = territory
-        self.movement = movement or unit_type_to_movement[unit_type]
+        self.movement = movement or UNIT_DATA[unit_type].movement
 
         if team is None or unit_type is None or territory is None:
             raise ValueError(

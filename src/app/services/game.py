@@ -1,52 +1,59 @@
-from app.extensions import mongo
-from app.models.game_state import GameState
+from collections import Counter
+
+from app.models.territory_data import TERRITORY_DATA
+from app.models.unit_data import UNIT_DATA
 
 
 """
-create_game_state
-
-get_game_state_by_session_id
+validate_unit_movement
 
 move_units
 
 end_turn
+
 """
 
 
-def create_game_state(session_id):
+def validate_unit_movement(game_state, territory_a, territory_b, units_to_move):
     """
-    Create a session.
+    Validates that the unit can move to the new territory.
     """
-    game_state = GameState(session_id)
-    mongo.db.game_state.insert_one(game_state.to_dict())
-    return game_state
+    total_unit_count = Counter(game_state.units)
+    moving_unit_count = Counter(units_to_move)
+
+    if not all(total_unit_count[unit] >= moving_unit_count[unit] for unit in moving_unit_count):
+        # not enough units of that type in the territory
+        return False
+
+    # make sure territories are neighbors
+    territory_a_data = TERRITORY_DATA[territory_a]
+
+    return territory_b in territory_a_data['neighbors']
 
 
-def get_game_state_by_session_id(session_id, convert_to_class=True):
+def move_units(game_state, territory_b, units_to_move):
     """
-    Get a session by session ID.
+    Moves the units from territory A to territory B.
     """
-    result = mongo.db.game_state.find_one({'session_id': session_id})
+    moving_unit_count = Counter(units_to_move)
 
-    # remove mongo ObjectID
-    del result['_id']
+    for unit in game_state.units:
+        if moving_unit_count[unit] > 0:
+            moving_unit_count[unit] -= 1
+            unit.territory = territory_b
+            unit.movement -= 1
 
-    if not result:
-        return None
+    # major error if reached
+    # TODO add logging
 
-    if convert_to_class:
-        return GameState.from_dict(result)
-
-    return result
+    return True
 
 
-def update_game_state(game_state):
+def end_turn(game_state):
     """
-    Update a game state.
-
-    Returns None.
+    Ends the current player's turn and resets unit movement.
     """
-    mongo.db.game_state.update_one(
-        {'session_id': game_state.session_id},
-        {'$set': game_state.to_dict()}
-    )
+    for unit in game_state.units:
+        unit.movement = UNIT_DATA[unit.unit_type].movement
+
+    return True

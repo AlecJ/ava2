@@ -225,44 +225,6 @@ export const unitIcons = [
 		).href,
 	},
 	{
-		name: "BATTLESHIP",
-		country: "United Kingdom",
-		unitIcon: new URL(
-			"@/assets/units/allies-destroyer.png",
-			import.meta.url
-		).href,
-	},
-	{
-		name: "BATTLESHIP",
-		country: "Soviet Union",
-		unitIcon: new URL(
-			"@/assets/units/allies-destroyer.png",
-			import.meta.url
-		).href,
-	},
-	{
-		name: "BATTLESHIP",
-		country: "Germany",
-		unitIcon: new URL(
-			"@/assets/units/germany-destroyer.png",
-			import.meta.url
-		).href,
-	},
-	{
-		name: "BATTLESHIP",
-		country: "Japan",
-		unitIcon: new URL("@/assets/units/japan-destroyer.png", import.meta.url)
-			.href,
-	},
-	{
-		name: "DESTROYER",
-		country: "United States",
-		unitIcon: new URL(
-			"@/assets/units/allies-destroyer.png",
-			import.meta.url
-		).href,
-	},
-	{
 		name: "DESTROYER",
 		country: "United Kingdom",
 		unitIcon: new URL(

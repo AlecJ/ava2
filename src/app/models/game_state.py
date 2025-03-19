@@ -1,8 +1,9 @@
 # from uuid import uuid4
 # from enum import Enum
-from collections import Counter
-from app.models.territory_data import TERRITORY_DATA
 
+
+from app.extensions import mongo
+from app.models.territory_data import TERRITORY_DATA
 from app.models.unit import Unit
 
 """
@@ -66,6 +67,44 @@ class GameState:
             raise ValueError(
                 f"Failed to cast GameState json to class: {e}")
 
+    @classmethod
+    def create(cls, session_id):
+        """
+        Create a session.
+        """
+        game_state = cls(session_id=session_id)
+        mongo.db.game_state.insert_one(game_state.to_dict())
+        return game_state
+
+    @classmethod
+    def get_game_state_by_session_id(cls, session_id, convert_to_class=True):
+        """
+        Get a session by session ID.
+        """
+        result = mongo.db.game_state.find_one({'session_id': session_id})
+
+        # remove mongo ObjectID
+        del result['_id']
+
+        if not result:
+            return None
+
+        if convert_to_class:
+            return GameState.from_dict(result)
+
+        return result
+
+    def update(self):
+        """
+        Update a game state.
+
+        Returns None.
+        """
+        mongo.db.game_state.update_one(
+            {'session_id': self.session_id},
+            {'$set': self.to_dict()}
+        )
+
     def initialize_units(self):
         """
         Initializes the units for game start.
@@ -81,48 +120,3 @@ class GameState:
                 ))
 
         return result
-
-    def validate_unit_movement(self, player_team, territory_a, territory_b, units_to_move):
-        """
-        Validates that the unit can move to the new territory.
-        """
-        total_unit_count = Counter(self.units)
-        # [{'movement': 2, 'team': 0, 'territory': 'Western United States', 'unit_type': 'INFANTRY', 'selected': True}]
-        # cast dict units to class units
-        moving_unit_count = Counter(units_to_move)
-
-        # for unit in self.units:
-        #     # territory
-        #     # team
-        #     # type
-        #     # movement
-        #     if unit.territory == territory_a and unit.team == player_team and unit.unit_type in units_to_move.keys() and units_to_move[unit.unit_type] > 0:
-        #         units_to_move[unit.unit_type] -= 1
-
-        # # make sure there were enough of each unit type in the territory
-        # for unit_count in units_to_move.values():
-        #     if unit_count > 0:
-        #         return False
-
-        if not all(total_unit_count[unit] >= moving_unit_count[unit] for unit in moving_unit_count):
-            # not enough units of that type in the territory
-            return False
-
-        # make sure territories are neighbors
-        territory_a_data = TERRITORY_DATA[territory_a]
-
-        return territory_b in territory_a_data['neighbors']
-
-    def move_units(self, player_team, territory_a, territory_b, units_to_move):
-        """
-        Moves the units from territory A to territory B.
-        """
-        moving_unit_count = Counter(units_to_move)
-
-        for unit in self.units:
-            if moving_unit_count[unit] > 0:
-                moving_unit_count[unit] -= 1
-                unit.territory = territory_b
-                unit.movement -= 1
-
-        return True
