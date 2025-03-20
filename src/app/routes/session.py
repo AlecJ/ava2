@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from app.extensions import mongo
-from app.services.session import join_session
+from app.services.session import join_session, sanitize_player_data
 from app.models.session import Session
 
 
@@ -16,10 +15,9 @@ def handle_get_session(session_id):
     if not session:
         return jsonify({'status': 'ID not found.'}), 404
 
-    # remove player data from session (IDs are private)
+    # remove player keys from response
     json_session = session.to_dict()
-    del json_session['players']
-    json_session['players'] = session.chosen_countries
+    json_session['players'] = sanitize_player_data(session.players)
 
     response = {
         'status': 'Session found.',

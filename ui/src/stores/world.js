@@ -97,25 +97,44 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 				console.log("API Response:", response.data); // Debugging log
-				this.updateGameWorld(response.data.game_state.units);
+				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
 		},
-		captureTerritory(territoryName, team) {
-			const territoryMesh = this.getTerritoryMesh(territoryName);
-			if (!territoryMesh) {
-				console.log(territoryName + " not found.");
-				return;
+		async endTurn() {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const response = await API.post(
+					`/game/${this.getSessionId}/endturn`
+				);
+				console.log("API Response:", response.data); // Debugging log
+
+				this.updateGameWorld(response.data.game_state);
+				sessionStore.setPlayers(response.data.players);
+			} catch (error) {
+				console.error("API Error:", error);
+			} finally {
+				sessionStore.setIsLoading(false);
 			}
-			territoryMesh.material.color.setHex(this.getCountryColor(team));
-			this.territories[territoryName].team = team;
 		},
-		setNextPhase() {
-			this.currentPhase++;
-		},
+		// captureTerritory(territoryName, team) {
+		// 	const territoryMesh = this.getTerritoryMesh(territoryName);
+		// 	if (!territoryMesh) {
+		// 		console.log(territoryName + " not found.");
+		// 		return;
+		// 	}
+		// 	territoryMesh.material.color.setHex(this.getCountryColor(team));
+		// 	this.territories[territoryName].team = team;
+		// },
+		// setNextPhase() {
+		// 	this.currentPhase++;
+		// },
 	},
 	getters: {
 		getTerritories: (state) => state.territories,

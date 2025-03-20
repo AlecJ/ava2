@@ -1,6 +1,10 @@
 <script>
 export default {
 	props: {
+		endTurn: {
+			type: Function,
+			required: true,
+		},
 		nextPhase: {
 			type: Function,
 			required: true,
@@ -15,7 +19,8 @@ export default {
 </script>
 
 <template>
-	<button v-if="currentPhase === 0" @click="nextPhase">
+	<button @click="endTurn">End Turn</button>
+	<!-- <button v-if="currentPhase === 0" @click="nextPhase">
 		End Purchase Unit Phase
 	</button>
 	<button v-else-if="currentPhase === 1" @click="nextPhase">
@@ -32,7 +37,7 @@ export default {
 	</button>
 	<button v-else @click="nextPhase" disabled>
 		Waiting for other players...
-	</button>
+	</button> -->
 </template>
 
 <style scoped lang="scss">

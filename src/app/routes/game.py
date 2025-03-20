@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, request
 
-from app.extensions import mongo
-from app.services.game import validate_unit_movement, move_units, end_turn
+from app.models.session import Session
 from app.models.game_state import GameState
 from app.models.unit import Unit
+from app.services.session import sanitize_player_data
+from app.services.game import validate_unit_movement, move_units, end_turn
 
 
 game_route = Blueprint('game_route', __name__)
@@ -49,8 +50,8 @@ def handle_move_units(session_id):
     validate_unit_movement(game_state,
                            territory_a, territory_b, units_to_move)
 
-    # move units
-    move_units(game_state, territory_b, units_to_move)
+    move_units(game_state, territory_a, territory_b, units_to_move)
+
     game_state.update()
 
     response = {
@@ -68,18 +69,24 @@ def handle_undo_turn(session_id):
 
 @game_route.route('/<string:session_id>/endturn', methods=['POST'])
 def handle_end_turn(session_id):
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
+
     game_state = GameState.get_game_state_by_session_id(
         session_id, convert_to_class=True)
 
     if not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
-    end_turn(game_state)
+    end_turn(session, game_state)
+
+    session.update()
     game_state.update()
 
     response = {
         'status': 'Turn ended successfully.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
+        'players': sanitize_player_data(session.players),
     }
     return jsonify(response), 200

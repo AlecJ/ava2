@@ -25,8 +25,13 @@ export const useSessionStore = defineStore("session", {
 			this.isLoading = bool;
 		},
 		setPlayer(player) {
+			// for setting the user's data
 			this.playerId = player.player_id;
 			this.playerCountry = player.country;
+		},
+		setPlayers(players) {
+			// for updating all player data (countries and IPCS)
+			this.players = players;
 		},
 		async getSession(sessionId, playerId) {
 			// also send player ID
@@ -107,5 +112,6 @@ export const useSessionStore = defineStore("session", {
 	},
 	getters: {
 		getIsLoading: (state) => state.isLoading,
+		getPlayers: (state) => state.players,
 	},
 });

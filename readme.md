@@ -17,19 +17,16 @@ run with
 ## To Do
 
 -   new game, starting money
--   all starting units placed
--   add IDs to units
+-   fix wrong amounts for countries
+
 -   purchase phase
+-   able to undo turn
 
 -   pre-combat movement phase
 -   post-combat movement phase
--   able to end turn
--   able to undo turn
-
--   territory capture
--   all land units
 
 -   order of play
+-   player key request validation
 
 Final tile fix in blender
 Eastern United States / Panama / Mexico
@@ -53,12 +50,12 @@ Confirm "Anglo-Egypt"
 -   plane movement
 
 -   combat
+-   territory capture
 
 -   player list and order
     current country’s turn indicated
--   current IPCs
--   polling for team select lobby (if first and waiting)
 
+-   polling for team select lobby (if first and waiting)
 -   add logging
 -   backend tests
 -   remove console logs

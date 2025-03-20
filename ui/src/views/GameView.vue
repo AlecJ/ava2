@@ -36,10 +36,11 @@ export default {
 		status() {
 			return this.sessionStore?.status;
 		},
-		countries() {
-			return this.sessionStore?.countries;
+		players() {
+			return this.sessionStore?.getPlayers;
 		},
 		selectedCountries() {
+			// remove with above
 			return this.sessionStore?.players || [];
 		},
 		playerCountry() {
@@ -121,15 +122,16 @@ export default {
 				territory
 			);
 		},
-		// GAME LOGIC HELPER
 		areTerritoriesNeighbors(territoryNameA, territoryNameB) {
-			// get territory by name
 			const territoryA = this.worldStore.getTerritory(territoryNameA);
 			const neighbors = territoryA.neighbors;
 			return neighbors.find(
 				(neighborTerritoryName) =>
 					neighborTerritoryName === territoryNameB
 			);
+		},
+		endTurn() {
+			this.worldStore.endTurn();
 		},
 	},
 	created() {
@@ -165,10 +167,14 @@ export default {
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 	/>
 
-	<!-- <PlayerBoard v-if="!showLandingPopUp && !showTeamSelectPopUp" /> -->
+	<PlayerBoard
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:players="players"
+	/>
 
 	<EndTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:endTurn="endTurn"
 		:nextPhase="nextPhase"
 		:currentPhase="currentPhase"
 	/>
@@ -178,7 +184,7 @@ export default {
 	<TeamSelectPopUp
 		v-if="showTeamSelectPopUp"
 		:selectPlayer="selectPlayer"
-		:selectedCountries="selectedCountries"
+		:players="players"
 		:playerCountry="playerCountry"
 	/>
 

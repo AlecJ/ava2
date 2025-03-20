@@ -1,16 +1,25 @@
 <script>
+import { countries } from "@/data/countries";
+import { useSessionStore } from "@/stores/session";
+
 export default {
-	props: {},
-	data() {
-		return {
-			Countries: [
-				{ name: "United States", color: 0x738326, power: 42 },
-				{ name: "United Kingdom", color: 0xc5b99b, power: 30 },
-				{ name: "Soviet Union", color: 0x7d4932, power: 24 },
-				{ name: "Germany", color: 0x767a73, power: 40 },
-				{ name: "Japan", color: 0xc78940, power: 30 },
-			],
-		};
+	props: {
+		players: {
+			type: Array,
+			required: true,
+		},
+	},
+	computed: {},
+	methods: {
+		getCountryColor(player) {
+			const country = countries.find(
+				(country) => country.name === player.country
+			);
+
+			return country
+				? "#" + country.color.toString(16) + "ff"
+				: "#0c6f13"; // Default color
+		},
 	},
 };
 </script>
@@ -19,12 +28,12 @@ export default {
 	<div :class="['board']" @mousedown.prevent.stop>
 		<div
 			class="playerCard"
-			v-for="country in Countries"
-			:key="country.name"
-			:style="{ backgroundColor: '#' + country.color.toString(16) }"
+			v-for="player in players"
+			:key="player.country"
+			:style="{ backgroundColor: getCountryColor(player) }"
 		>
-			<div class="name">{{ country.name }}</div>
-			<div class="power">{{ country.power }}</div>
+			<div class="name">{{ player.country }}</div>
+			<div class="power">{{ player.ipcs }}</div>
 		</div>
 	</div>
 </template>

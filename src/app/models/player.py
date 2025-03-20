@@ -7,16 +7,17 @@ A Player is:
     Player ID
     Session ID
     Country
-    APCs
+    IPCs
 
 """
 
 
 class Player:
-    def __init__(self, player_id=uuid4(), session_id=None, country=None):
-        self.player_id = str(player_id)
+    def __init__(self, player_id=None, session_id=None, country=None, ipcs=0):
+        self.player_id = player_id or str(uuid4())
         self.session_id = str(session_id)
         self.country = country
+        self.ipcs = ipcs
 
         if country is None or session_id is None:
             raise ValueError(
@@ -32,7 +33,8 @@ class Player:
         return (
             f"<Player(player_id={self.player_id}, "
             f"session_id={self.session_id}, "
-            f"country={self.country})>"
+            f"country={self.country}),"
+            f"apcs={self.ipcs}>"
         )
 
     def to_dict(self):
@@ -42,7 +44,8 @@ class Player:
         return {
             'player_id': self.player_id,
             'session_id': self.session_id,
-            'country': self.country
+            'country': self.country,
+            'ipcs': self.ipcs
         }
 
     @classmethod
@@ -54,7 +57,8 @@ class Player:
             return cls(
                 player_id=data['player_id'],
                 session_id=data['session_id'],
-                country=data['country']
+                country=data['country'],
+                ipcs=data['ipcs']
             )
         except KeyError as e:
             raise ValueError(f"Invalid data: missing key {e}")

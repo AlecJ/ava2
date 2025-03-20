@@ -36,11 +36,11 @@ class SessionStatus(Enum):
 
 
 class Session:
-    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, current_turn=0):
+    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, turn_num=0):
         self.session_id = str(session_id)
         self.players = players
         self.status = status
-        self.current_turn = current_turn
+        self.turn_num = turn_num
 
         # if the game is being created for first time, assign a uuid for the session
 
@@ -49,14 +49,14 @@ class Session:
         return [player.country for player in self.players]
 
     def __str__(self):
-        return f"Session {self.session_id} (Status: {self.status.name}, Current Turn: {self.current_turn})"
+        return f"Session {self.session_id} (Status: {self.status.name}, Turn: {self.turn_num})"
 
     def __repr__(self):
         return (
             f"<Session(session_id={self.session_id}, "
             f"players={len(self.players)}, "
             f"status={self.status.name}, "
-            f"current_turn={self.current_turn})>"
+            f"turn={self.turn_num})>"
         )
 
     def to_dict(self):
@@ -67,7 +67,7 @@ class Session:
             'session_id': self.session_id,
             'players': [player.to_dict() for player in self.players],
             'status': self.status.name,
-            'current_turn': self.current_turn
+            'turn_num': self.turn_num
         }
 
     @classmethod
@@ -84,7 +84,7 @@ class Session:
                        players=[Player.from_dict(player)
                                 for player in data['players']],
                        status=SessionStatus[data['status']],
-                       current_turn=data['current_turn']
+                       turn_num=data['turn_num']
                        )
         except KeyError as e:
             # TODO log error
@@ -139,3 +139,12 @@ class Session:
                 return player
 
         raise ValueError(f"Player with ID {player_id} not found.")
+
+    def get_player_by_team_num(self, team_num):
+        """
+        Get the player by their team number.
+        """
+        country = order_of_play[team_num]
+        for player in self.players:
+            if player.country == country:
+                return player

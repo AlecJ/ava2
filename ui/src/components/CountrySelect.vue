@@ -5,8 +5,8 @@ export default {
 			type: Object,
 			required: true,
 		},
-		selectedCountries: {
-			type: Array,
+		isCountryTaken: {
+			type: Boolean,
 			required: true,
 		},
 		playerCountry: {
@@ -19,9 +19,6 @@ export default {
 		},
 	},
 	computed: {
-		isSelected() {
-			return this.selectedCountries.includes(this.country.name);
-		},
 		isPlayer() {
 			return this.playerCountry === this.country.name;
 		},
@@ -35,11 +32,14 @@ export default {
 
 		<div id="countryName">{{ country.name }}</div>
 
-		<button @click="selectPlayer" v-if="!isSelected && !this.playerCountry">
+		<button
+			@click="selectPlayer"
+			v-if="!isCountryTaken && !this.playerCountry"
+		>
 			Select
 		</button>
-		<div v-else-if="isSelected && !isPlayer">Waiting</div>
-		<div v-else-if="!isSelected && this.playerCountry && !isPlayer">
+		<div v-else-if="isCountryTaken && !isPlayer">Waiting</div>
+		<div v-else-if="!isCountryTaken && this.playerCountry && !isPlayer">
 			Open
 		</div>
 		<div v-else-if="isPlayer">You</div>

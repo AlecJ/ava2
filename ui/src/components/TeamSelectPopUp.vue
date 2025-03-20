@@ -13,7 +13,7 @@ export default {
 			type: Function,
 			required: true,
 		},
-		selectedCountries: {
+		players: {
 			type: Array,
 			required: true,
 		},
@@ -26,6 +26,15 @@ export default {
 		return {
 			countries,
 		};
+	},
+	methods: {
+		isCountryTaken(countryName) {
+			return (
+				this.players.find(
+					(player) => player.country === countryName
+				) !== undefined
+			);
+		},
 	},
 };
 </script>
@@ -41,7 +50,7 @@ export default {
 				v-for="country in countries"
 				:key="country.name"
 				:country="country"
-				:selectedCountries="selectedCountries"
+				:isCountryTaken="isCountryTaken(country.name)"
 				:playerCountry="playerCountry"
 				:selectPlayer="
 					() => {

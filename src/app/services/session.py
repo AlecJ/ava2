@@ -1,6 +1,8 @@
 from app.models.session import Session, SessionStatus
 from app.models.player import Player
 from app.models.game_state import GameState
+from app.services.game import end_turn
+
 
 order_of_play = ['Soviet Union', 'Germany',
                  'United Kingdom', 'Japan', 'United States']
@@ -35,7 +37,9 @@ def join_session(session_id, country):
 
     # if game is full, initialize a game state
     if session.status == SessionStatus.ACTIVE:
-        GameState.create_game_state(session.session_id)
+        game_state = GameState.create_game_state(session.session_id)
+        # initializes some data for the first turn
+        end_turn(session, game_state)
 
     return session, new_player
 
@@ -65,19 +69,9 @@ def validate_country_selection(session, country=None):
     return
 
 
-# def submit_turn(self):
-#     """
-#     This will handle player turn logic and increment the turn counter.
-#     """
-#     self.current_turn += 1
-#     pass
-
-
-# def get_team_num_from_country(cls, country):
-#     """
-#     Returns the team number for a given country.
-#     """
-#     try:
-#         return valid_countries.index(country)
-#     except ValueError:
-#         raise ValueError(f"Country {country} is not valid.")
+def sanitize_player_data(players):
+    """
+    Returns player data as json with player keys removed.
+    """
+    return [
+        {'country': player.country, 'ipcs': player.ipcs} for player in players]

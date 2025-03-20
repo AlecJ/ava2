@@ -15,8 +15,8 @@ A Unit is:
 
 
 class Unit:
-    def __init__(self, unit_id=uuid4(), team=None, unit_type=None, movement=None):
-        self.unit_id = str(unit_id)
+    def __init__(self, unit_id=None, team=None, unit_type=None, movement=None):
+        self.unit_id = unit_id or str(uuid4())
         self.team = team
         self.unit_type = unit_type
         self.movement = movement or UNIT_DATA[unit_type]['movement']
