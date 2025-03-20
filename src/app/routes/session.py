@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 
 from app.extensions import mongo
-from app.services.session import get_session_by_session_id, create_session, join_session
-from app.models.game_state import GameState
+from app.services.session import join_session
+from app.models.session import Session
 
 
 session_route = Blueprint('session_route', __name__)
@@ -10,7 +10,8 @@ session_route = Blueprint('session_route', __name__)
 
 @session_route.route('/<string:session_id>', methods=['GET'])
 def handle_get_session(session_id):
-    session = get_session_by_session_id(session_id, convert_to_class=True)
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
 
     if not session:
         return jsonify({'status': 'ID not found.'}), 404
@@ -28,6 +29,9 @@ def handle_get_session(session_id):
 
     # add player data if a valid player ID is provided
     player_id = request.args.get('pid')
+    if not player_id:
+        return jsonify(response), 200
+
     player = session.get_player_by_id(player_id)
 
     if player:
@@ -38,8 +42,7 @@ def handle_get_session(session_id):
 
 @session_route.route('/create', methods=['POST'])
 def handle_create_session():
-    session = create_session()
-    GameState.create(session.session_id)
+    session = Session.create_session()
 
     session = session.to_dict()
 
@@ -57,13 +60,17 @@ def handle_join_session(session_id):
     country_name = data.get('countryName')
 
     # verify session is valid
-    session = get_session_by_session_id(session_id, convert_to_class=True)
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
 
     if not session:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     # attempt to add player to the session
-    session, player = join_session(session_id, country_name)
+    try:
+        session, player = join_session(session_id, country_name)
+    except ValueError as e:
+        return jsonify({'status': str(e)}), 400
 
     if not player:
         return jsonify({'status': 'Error joining session.'}), 400
@@ -76,18 +83,18 @@ def handle_join_session(session_id):
     return jsonify(response), 200
 
 
-@session_route.route('/delete/<string:session_id>', methods=['DELETE'])
-def handle_delete_session(session_id):
-    result = mongo.db.session.find_one({'session_id': session_id})
+# @session_route.route('/delete/<string:session_id>', methods=['DELETE'])
+# def handle_delete_session(session_id):
+#     result = mongo.db.session.find_one({'session_id': session_id})
 
-    if not result:
-        return jsonify({'status': 'ID not found.'}), 404
+#     if not result:
+#         return jsonify({'status': 'ID not found.'}), 404
 
-    mongo.db.session.delete_one({'session_id': session_id})
+#     mongo.db.session.delete_one({'session_id': session_id})
 
-    response = {
-        'status': 'Session deleted.',
-        'session_id': result['session_id'],
-    }
+#     response = {
+#         'status': 'Session deleted.',
+#         'session_id': result['session_id'],
+#     }
 
-    return jsonify(response), 200
+#     return jsonify(response), 200

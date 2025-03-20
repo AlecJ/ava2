@@ -1,31 +1,25 @@
 from uuid import uuid4
 from enum import Enum
 
+from app.extensions import mongo
 from app.models.player import Player
 
 """
 This is the session object. It tracks the state of a game session
 including the players and current turn.
 
-A Session is a:
-
-Session ID
-List of Players
-Status
-Current Turn
+A Session is:
+    Session ID
+    List of Player
+    SessionStatus
+    Current Turn
 
 A Player is:
-Player ID
-Session ID
-Country
-APCs
+    Player ID
+    Session ID
+    Country (string)
+    APCs
 
-Country is one of:
-USA
-USSR
-UK
-Germany
-Japan
 
 """
 
@@ -97,54 +91,51 @@ class Session:
             raise ValueError(
                 f"Failed to cast Session json to class. Missing required key: {e}")
 
+    @staticmethod
+    def get_session_by_session_id(session_id, convert_to_class=True):
+        """
+        Get a session by session ID.
+        """
+        result = mongo.db.session.find_one({'session_id': session_id})
+
+        # remove mongo ObjectID
+        del result['_id']
+
+        if not result:
+            return None
+
+        if convert_to_class:
+            return Session.from_dict(result)
+
+        return result
+
+    @staticmethod
+    def create_session():
+        """
+        Create a session.
+        """
+        session = Session()
+        mongo.db.session.insert_one(session.to_dict())
+        return session
+
+    def update(self):
+        """
+        Update a session.
+
+        Returns None.
+        """
+        mongo.db.session.update_one(
+            # Filter to find the session by its unique identifier
+            {'session_id': self.session_id},
+            {'$set': self.to_dict()}  # Update the session with the new data
+        )
+
     def get_player_by_id(self, player_id):
+        """
+        Get the team of a player by their player ID.
+        """
         for player in self.players:
             if player.player_id == player_id:
                 return player
 
-        return None
-
-    def join_game(self, country=None):
-        """
-        Adds a player to the game. The user provides a country.
-        """
-        # ensure country is valid
-        if country not in valid_countries:
-            raise ValueError(f"Country {country} is not a valid country.")
-
-        taken_countries = [player.country for player in self.players]
-
-        if country in taken_countries:
-            raise ValueError(f"Country {country} is already taken.")
-
-        # ensure game is not full
-        if len(self.players) > 4:
-            raise ValueError("Game is full.")
-
-        # add new player
-        new_player = Player(session_id=self.session_id,
-                            country=country)
-        self.players.append(new_player)
-
-        # if game is full, start the game
-        if len(self.players) == 5:
-            self.status = SessionStatus.ACTIVE
-
-        return new_player
-
-    def submit_turn(self):
-        """
-        This will handle player turn logic and increment the turn counter.
-        """
-        self.current_turn += 1
-        pass
-
-    @classmethod
-    def get_team_num_from_country(cls, country):
-        """
-        Returns the team number for a given country.
-        """
-        try:
-            return valid_countries.index(country)
-        except ValueError:
-            raise ValueError(f"Country {country} is not valid.")
+        raise ValueError(f"Player with ID {player_id} not found.")

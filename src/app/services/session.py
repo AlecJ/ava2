@@ -1,54 +1,11 @@
-from app.extensions import mongo
-from app.models.session import Session
+from app.models.session import Session, SessionStatus
+from app.models.player import Player
+from app.models.game_state import GameState
 
-
-"""
-get_session_by_session_id
-
-create_session
-
-join_session
-"""
-
-
-def get_session_by_session_id(session_id, convert_to_class=True):
-    """
-    Get a session by session ID.
-    """
-    result = mongo.db.session.find_one({'session_id': session_id})
-
-    # remove mongo ObjectID
-    del result['_id']
-
-    if not result:
-        return None
-
-    if convert_to_class:
-        return Session.from_dict(result)
-
-    return result
-
-
-def create_session():
-    """
-    Create a session.
-    """
-    session = Session()
-    mongo.db.session.insert_one(session.to_dict())
-    return session
-
-
-def update_session(session):
-    """
-    Update a session.
-
-    Returns None.
-    """
-    mongo.db.session.update_one(
-        # Filter to find the session by its unique identifier
-        {'session_id': session.session_id},
-        {'$set': session.to_dict()}  # Update the session with the new data
-    )
+order_of_play = ['Soviet Union', 'Germany',
+                 'United Kingdom', 'Japan', 'United States']
+valid_countries = ['United States', 'United Kingdom',
+                   'Soviet Union', 'Germany', 'Japan']
 
 
 def join_session(session_id, country):
@@ -59,20 +16,68 @@ def join_session(session_id, country):
 
     Player object is returned, if valid.
     """
-    session = get_session_by_session_id(session_id, convert_to_class=True)
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
 
-    player = session.join_game(country)
+    # raises ValueError if invalid, caught in route
+    validate_country_selection(session, country)
 
-    update_session(session)
+    # add new player
+    new_player = Player(session_id=session.session_id,
+                        country=country)
+    session.players.append(new_player)
 
-    return session, player
+    # if game is full, start the game
+    if len(session.players) == 5:
+        session.status = SessionStatus.ACTIVE
+
+    session.update()
+
+    # if game is full, initialize a game state
+    if session.status == SessionStatus.ACTIVE:
+        GameState.create_game_state(session.session_id)
+
+    return session, new_player
 
 
-def get_player_team_by_id(session_id, player_id):
+def validate_country_selection(session, country=None):
     """
-    Get the team of a player by their player ID.
-    """
-    session = get_session_by_session_id(session_id, convert_to_class=True)
-    player = session.get_player_by_id(player_id)
+    Validate the country selection for a player joining a session.
+    Raises ValueError if the country is invalid or already taken, or game is full.
 
-    return Session.get_team_num_from_country(player.country)
+    :param session: The current game session.
+    :param country: The country name selected by the player.
+    :return: None
+    """
+    # ensure country is valid
+    if country not in valid_countries:
+        raise ValueError(f"Country {country} is not a valid country.")
+
+    taken_countries = [player.country for player in session.players]
+
+    if country in taken_countries:
+        raise ValueError(f"Country {country} is already taken.")
+
+    # ensure game is not full
+    if len(session.players) > 4:
+        raise ValueError("Game is full.")
+
+    return
+
+
+# def submit_turn(self):
+#     """
+#     This will handle player turn logic and increment the turn counter.
+#     """
+#     self.current_turn += 1
+#     pass
+
+
+# def get_team_num_from_country(cls, country):
+#     """
+#     Returns the team number for a given country.
+#     """
+#     try:
+#         return valid_countries.index(country)
+#     except ValueError:
+#         raise ValueError(f"Country {country} is not valid.")

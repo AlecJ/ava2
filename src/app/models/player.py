@@ -1,6 +1,17 @@
 from uuid import uuid4
 
 
+"""
+
+A Player is:
+    Player ID
+    Session ID
+    Country
+    APCs
+
+"""
+
+
 class Player:
     def __init__(self, player_id=uuid4(), session_id=None, country=None):
         self.player_id = str(player_id)

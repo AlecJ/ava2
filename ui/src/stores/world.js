@@ -40,20 +40,22 @@ export const useWorldStore = defineStore("world", {
 				(territoryMesh) => territoryMesh.userData.name === territoryName
 			);
 		},
-		// This is used to reset the territories units before updating them
-		resetTerritoryUnits() {
-			Object.values(this.territories).forEach((territory) => {
-				territory.units = [];
-			});
-		},
-		updateGameWorld(units) {
-			// reset territories units
-			this.resetTerritoryUnits();
-
-			// set territories units
-			units.forEach((unit) => {
-				this.territories[unit.territory].units.push(unit);
-			});
+		updateGameWorld(gameState) {
+			for (let [territoryName, territory] of Object.entries(
+				gameState.territories
+			)) {
+				if (!this.territories[territoryName]) {
+					console.warn(
+						`Territory ${territoryName} not found in the store.`
+					);
+					continue;
+				}
+				// console.log(territoryName, territory);
+				this.territories[territoryName].team = territory.team;
+				this.territories[territoryName].units = territory.units;
+				this.territories[territoryName].has_factory =
+					territory.has_factory;
+			}
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -69,9 +71,9 @@ export const useWorldStore = defineStore("world", {
 
 				const response = await API.get(`/game/${this.getSessionId}`);
 
-				// console.log("API Response:", response.data); // Debugging log
+				console.log("API Response:", response.data); // Debugging log
 
-				this.updateGameWorld(response.data.game_state.units);
+				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {

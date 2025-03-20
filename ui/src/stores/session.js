@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { API } from "@/services/api";
 
+import { useWorldStore } from "@/stores/world";
+
 export const useSessionStore = defineStore("session", {
 	state: () => ({
 		sessionId: null,
@@ -36,14 +38,23 @@ export const useSessionStore = defineStore("session", {
 					`/session/${sessionId}`
 				);
 
-				const response = await API.get(
-					`/session/${sessionId}?pid=${playerId}`
-				);
+				// todo
+				const url = playerId
+					? `/session/${sessionId}?pid=${playerId}`
+					: `/session/${sessionId}`;
+
+				const response = await API.get(url);
 				console.log("API Response:", response.data); // Debugging log
 				this.setSession(response.data.session);
 				if (response.data.player) this.setPlayer(response.data.player);
+
+				// if the session has started, fetch the game state
+				if (response.data.session.status === "ACTIVE") {
+					const worldStore = useWorldStore();
+					await worldStore.getWorldData();
+				}
 			} catch (error) {
-				console.error("API Error:", error.response?.data?.status);
+				console.error("API Error:", error);
 			}
 
 			this.isLoading = false;

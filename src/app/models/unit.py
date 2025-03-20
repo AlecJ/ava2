@@ -1,34 +1,37 @@
+from uuid import uuid4
+
 from app.models.unit_data import UNIT_DATA
 
 
 """
 
 A Unit is:
-Unit Type
-Team ID
-Territory
-Remaining Movement
+    Unit ID
+    Team ID
+    Unit Type
+    Remaining Movement
 
 """
 
 
 class Unit:
-    def __init__(self, team, unit_type, territory, movement=None):
+    def __init__(self, unit_id=uuid4(), team=None, unit_type=None, movement=None):
+        self.unit_id = str(unit_id)
         self.team = team
         self.unit_type = unit_type
-        self.territory = territory
-        self.movement = movement or UNIT_DATA[unit_type].movement
+        self.movement = movement or UNIT_DATA[unit_type]['movement']
 
-        if team is None or unit_type is None or territory is None:
+        # todo -- does this do anything
+        if team is None or unit_type is None:
             raise ValueError(
                 "Cannot instatiate Unit Class: Invalid data: missing required values.")
 
     def __str__(self):
-        return f"Unit: {self.unit_type} Team: {self.team} Territory: {self.territory}"
+        return f"Unit: {self.unit_type} Team: {self.team}"
 
     def __repr__(self):
         return (
-            f"<Unit(type={self.unit_type}, team={self.team}, territory={self.territory}>"
+            f"<Unit(id={self.unit_id}, type={self.unit_type}, team={self.team}>"
         )
 
     def __eq__(self, other):
@@ -37,7 +40,6 @@ class Unit:
         """
         return (self.unit_type == other.unit_type and
                 self.team == other.team and
-                self.territory == other.territory and
                 self.movement == other.movement)
 
     def __hash__(self):
@@ -46,16 +48,16 @@ class Unit:
 
         See GameState.validate_unit_movement for more details.
         """
-        return hash((self.unit_type, self.team, self.territory, self.movement))
+        return hash((self.unit_type, self.team, self.movement))
 
     def to_dict(self):
         """
         Converts the Unit object to a dictionary for JSON serialization.
         """
         return {
+            'unit_id': self.unit_id,
             'team': self.team,
             'unit_type': self.unit_type,
-            'territory': self.territory,
             'movement': self.movement,
         }
 
@@ -68,9 +70,9 @@ class Unit:
         """
         try:
             return cls(
+                unit_id=data['unit_id'],
                 team=data['team'],
                 unit_type=data['unit_type'],
-                territory=data['territory'],
                 movement=data['movement']
             )
         except KeyError as e:
