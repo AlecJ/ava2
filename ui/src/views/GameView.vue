@@ -8,6 +8,7 @@ import CommandTray from "@/components/CommandTray.vue";
 import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
+import PurchaseUnitsButton from "@/components/PurchaseUnitsButton.vue";
 
 export default {
 	name: "GameView",
@@ -19,6 +20,7 @@ export default {
 		PlayerBoard,
 		ThreeGlobe,
 		EndTurnButton,
+		PurchaseUnitsButton,
 	},
 	data() {
 		return {
@@ -26,6 +28,7 @@ export default {
 			worldStore: null,
 			focusedCountry: null,
 			isMovingUnits: false,
+			isPurchasingUnits: false,
 			selectedTerritoryForMovement: null,
 		};
 	},
@@ -127,6 +130,9 @@ export default {
 					neighborTerritoryName === territoryNameB
 			);
 		},
+		setPurchasingUnits(bool) {
+			this.isPurchasingUnits = bool;
+		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
@@ -159,12 +165,19 @@ export default {
 		:isMovingUnits="isMovingUnits"
 		:moveUnits="moveUnits"
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
+		:isPurchasingUnits="isPurchasingUnits"
 	/>
 
 	<PlayerBoard
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:players="players"
 		:currentTurnNum="currentTurnNum"
+	/>
+
+	<PurchaseUnitsButton
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:active="currentPhaseNum === 0"
+		:setPurchasingUnits="setPurchasingUnits"
 	/>
 
 	<EndTurnButton

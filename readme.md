@@ -22,7 +22,6 @@ run with
 -   pre-combat movement phase (player may move into hostile territory)
 -   post-combat movement phase (player may not move into hostile territory)
 
--   order of play
 -   player key request validation
 
 Final tile fix in blender
@@ -48,9 +47,6 @@ Confirm "Anglo-Egypt"
 
 -   combat
 -   territory capture
-
--   player list and order
-    current country’s turn indicated
 
 -   polling for team select lobby (if first and waiting)
 -   add logging

@@ -41,7 +41,13 @@ export default {
 button {
 	position: absolute;
 	bottom: 1.5rem;
-	width: 15%;
+	width: 20%;
 	height: 3rem;
+	margin-left: 0;
+
+	background-color: rgba(33, 32, 32, 0.931);
+	border: 2px solid white;
+	border-radius: 0 2rem 2rem 0;
+	border-left: 0;
 }
 </style>
