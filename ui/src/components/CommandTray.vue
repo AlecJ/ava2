@@ -21,7 +21,7 @@ export default {
 			type: Function,
 			required: true,
 		},
-		playerTurn: {
+		currentTurnNum: {
 			type: Number,
 			required: false,
 			default: 0,
@@ -151,7 +151,7 @@ export default {
 			<UnitTray
 				v-if="!isLoading"
 				:isMovingUnits="isMovingUnits"
-				:playerTurn="playerTurn"
+				:playerTurn="currentTurnNum % 5"
 				:units="units"
 				:toggleUnit="toggleUnit"
 			/>

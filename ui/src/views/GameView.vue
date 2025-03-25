@@ -66,11 +66,8 @@ export default {
 
 			return { ...territoryData, name: this.focusedCountry };
 		},
-		playerTurn() {
-			return this.worldStore?.getPlayerTurn;
-		},
-		currentPhase() {
-			return this.worldStore?.getPhase;
+		currentTurnNum() {
+			return this.sessionStore?.getTurnNum;
 		},
 	},
 	methods: {
@@ -159,7 +156,7 @@ export default {
 		:isLoading="isLoading"
 		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
-		:playerTurn="playerTurn"
+		:currentTurnNum="currentTurnNum"
 		:currentPhase="currentPhase"
 		:switchUnitMovementMode="switchUnitMovementMode"
 		:isMovingUnits="isMovingUnits"
@@ -170,6 +167,7 @@ export default {
 	<PlayerBoard
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:players="players"
+		:currentTurnNum="currentTurnNum"
 	/>
 
 	<EndTurnButton

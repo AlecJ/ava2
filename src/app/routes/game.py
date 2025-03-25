@@ -86,6 +86,7 @@ def handle_end_turn(session_id):
     response = {
         'status': 'Turn ended successfully.',
         'session_id': game_state.session_id,
+        'turn_num': session.turn_num,
         'game_state': game_state.to_dict(),
         'players': sanitize_player_data(session.players),
     }

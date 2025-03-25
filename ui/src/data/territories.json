@@ -8,7 +8,7 @@
 		"units": []
 	},
 	"Alaska": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -16,7 +16,7 @@
 		"units": []
 	},
 	"Algeria": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -24,7 +24,7 @@
 		"units": []
 	},
 	"Anglo Egypt": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -55,7 +55,7 @@
 		"units": []
 	},
 	"Archangel": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -68,7 +68,7 @@
 		"units": []
 	},
 	"Australia": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -81,7 +81,7 @@
 		"units": []
 	},
 	"Balkans": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -95,7 +95,7 @@
 		"units": []
 	},
 	"Belgian Congo": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -109,7 +109,7 @@
 		"units": []
 	},
 	"Belorussia": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -122,7 +122,7 @@
 		"units": []
 	},
 	"Borneo": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 4,
@@ -130,7 +130,7 @@
 		"units": []
 	},
 	"Brazil": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -138,7 +138,7 @@
 		"units": []
 	},
 	"Buryatia S.S.R.": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -152,7 +152,7 @@
 		"units": []
 	},
 	"Caroline Islands": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -160,7 +160,7 @@
 		"units": []
 	},
 	"Caucasus": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 4,
@@ -175,7 +175,7 @@
 		"units": []
 	},
 	"Central America": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -188,7 +188,7 @@
 		"units": []
 	},
 	"Central United States": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 6,
@@ -212,7 +212,7 @@
 		"units": []
 	},
 	"China": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -228,7 +228,7 @@
 		"units": []
 	},
 	"Eastern United States": {
-		"team": 0,
+		"team": 4,
 		"is_capital": true,
 		"is_ocean": false,
 		"power": 12,
@@ -240,7 +240,7 @@
 		"units": []
 	},
 	"East Indies": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 4,
@@ -248,7 +248,7 @@
 		"units": []
 	},
 	"East Mexico": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -264,7 +264,7 @@
 		"units": []
 	},
 	"Eastern Canada": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -278,7 +278,7 @@
 		"units": []
 	},
 	"Eastern Europe": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -301,7 +301,7 @@
 		"units": []
 	},
 	"Evenki National Okrug": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -317,7 +317,7 @@
 		"units": []
 	},
 	"French Equitorial Africa": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -330,7 +330,7 @@
 		"units": []
 	},
 	"French Indochina": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -338,7 +338,7 @@
 		"units": []
 	},
 	"French Madagascar": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -351,7 +351,7 @@
 		"units": []
 	},
 	"French West Africa": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -359,7 +359,7 @@
 		"units": []
 	},
 	"Germany": {
-		"team": 3,
+		"team": 1,
 		"is_capital": true,
 		"is_ocean": false,
 		"power": 10,
@@ -373,7 +373,7 @@
 		"units": []
 	},
 	"Gibraltar": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -381,7 +381,7 @@
 		"units": []
 	},
 	"Greenland": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -389,7 +389,7 @@
 		"units": []
 	},
 	"Hawaiian Islands": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -413,7 +413,7 @@
 		"units": []
 	},
 	"India": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -421,7 +421,7 @@
 		"units": []
 	},
 	"Italian East Africa": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -434,7 +434,7 @@
 		"units": []
 	},
 	"Japan": {
-		"team": 4,
+		"team": 3,
 		"is_capital": true,
 		"is_ocean": false,
 		"power": 8,
@@ -442,7 +442,7 @@
 		"units": []
 	},
 	"Karelia S.S.R.": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -458,7 +458,7 @@
 		"units": []
 	},
 	"Kazahk S.S.R.": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -480,7 +480,7 @@
 		"units": []
 	},
 	"Kwangtung": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -493,7 +493,7 @@
 		"units": []
 	},
 	"Libya": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -501,7 +501,7 @@
 		"units": []
 	},
 	"Manchuria": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -509,7 +509,7 @@
 		"units": []
 	},
 	"Midway Island": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -533,7 +533,7 @@
 		"units": []
 	},
 	"New Guinea": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -541,7 +541,7 @@
 		"units": []
 	},
 	"New Zealand": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -549,7 +549,7 @@
 		"units": []
 	},
 	"Norway": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -562,7 +562,7 @@
 		"units": []
 	},
 	"Novosibirsk": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -576,7 +576,7 @@
 		"units": []
 	},
 	"Okinawa": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -584,7 +584,7 @@
 		"units": []
 	},
 	"Persia": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -606,7 +606,7 @@
 		"units": []
 	},
 	"Philippine Islands": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -614,7 +614,7 @@
 		"units": []
 	},
 	"Rhodesia": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -627,7 +627,7 @@
 		"units": []
 	},
 	"Russia": {
-		"team": 2,
+		"team": 0,
 		"is_capital": true,
 		"is_ocean": false,
 		"power": 8,
@@ -658,7 +658,7 @@
 		"units": []
 	},
 	"Sinkiang": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -666,7 +666,7 @@
 		"units": []
 	},
 	"Solomon Islands": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -674,7 +674,7 @@
 		"units": []
 	},
 	"Southern Europe": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 6,
@@ -682,7 +682,7 @@
 		"units": []
 	},
 	"Soviet Far East": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -714,7 +714,7 @@
 		"units": []
 	},
 	"Trans-Jordan": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -735,7 +735,7 @@
 		"units": []
 	},
 	"Ukraine S.S.R.": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 3,
@@ -750,7 +750,7 @@
 		"units": []
 	},
 	"Union of South Africa": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -758,7 +758,7 @@
 		"units": []
 	},
 	"United Kingdom": {
-		"team": 1,
+		"team": 2,
 		"is_capital": true,
 		"is_ocean": false,
 		"power": 8,
@@ -780,7 +780,7 @@
 		"units": []
 	},
 	"Wake Island": {
-		"team": 4,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 0,
@@ -788,7 +788,7 @@
 		"units": []
 	},
 	"West Indies": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -796,7 +796,7 @@
 		"units": []
 	},
 	"West Mexico": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -809,7 +809,7 @@
 		"units": []
 	},
 	"West Russia": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 2,
@@ -824,7 +824,7 @@
 		"units": []
 	},
 	"Western Canada": {
-		"team": 1,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
@@ -840,7 +840,7 @@
 		"units": []
 	},
 	"Western Europe": {
-		"team": 3,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 6,
@@ -855,7 +855,7 @@
 		"units": []
 	},
 	"Western United States": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 10,
@@ -869,7 +869,7 @@
 		"units": []
 	},
 	"Yakut S.S.R.": {
-		"team": 2,
+		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,

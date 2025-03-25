@@ -4,8 +4,6 @@ from app.models.game_state import GameState
 from app.services.game import end_turn
 
 
-order_of_play = ['Soviet Union', 'Germany',
-                 'United Kingdom', 'Japan', 'United States']
 valid_countries = ['United States', 'United Kingdom',
                    'Soviet Union', 'Germany', 'Japan']
 
@@ -32,14 +30,14 @@ def join_session(session_id, country):
     # if game is full, start the game
     if len(session.players) == 5:
         session.status = SessionStatus.ACTIVE
+        session.sort_players_by_player_order()
 
-    session.update()
-
-    # if game is full, initialize a game state
-    if session.status == SessionStatus.ACTIVE:
         game_state = GameState.create_game_state(session.session_id)
+
         # initializes some data for the first turn
         end_turn(session, game_state)
+        session.turn_num = 0
+        game_state.update()
 
     return session, new_player
 
@@ -75,3 +73,9 @@ def sanitize_player_data(players):
     """
     return [
         {'country': player.country, 'ipcs': player.ipcs} for player in players]
+
+
+def activate_game(session):
+    """
+    Set game to active and sort players by player order.
+    """

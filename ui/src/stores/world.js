@@ -11,8 +11,6 @@ export const useWorldStore = defineStore("world", {
 		countries: countries,
 		territories: {},
 		threeGlobeAndCountries: null,
-		playerTurn: 0,
-		currentPhase: 1, // TODO set to 0
 	}),
 	actions: {
 		initTerritories() {
@@ -22,6 +20,7 @@ export const useWorldStore = defineStore("world", {
 				)
 			);
 		},
+		// TODO use this everywhere
 		getCountryColor(team) {
 			if (!this.countries) return null;
 
@@ -117,6 +116,7 @@ export const useWorldStore = defineStore("world", {
 
 				this.updateGameWorld(response.data.game_state);
 				sessionStore.setPlayers(response.data.players);
+				sessionStore.setTurnNum(response.data.turn_num);
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {
@@ -139,8 +139,6 @@ export const useWorldStore = defineStore("world", {
 	getters: {
 		getTerritories: (state) => state.territories,
 		getGlobeAndCountries: (state) => state.threeGlobeAndCountries,
-		getPlayerTurn: (state) => state.playerTurn,
-		getPhase: (state) => state.currentPhase,
 		getSessionId() {
 			const sessionStore = useSessionStore();
 			return sessionStore.sessionId;

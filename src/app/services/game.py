@@ -8,6 +8,8 @@ validate_unit_movement
 
 move_units
 
+add_territory_power_to_player_ipcs
+
 end_turn
 
 """

@@ -73,6 +73,8 @@ def handle_join_session(session_id):
     if not player:
         return jsonify({'status': 'Error joining session.'}), 400
 
+    session.update()
+
     response = {'status': 'Player joined.',
                 'session_id': session_id,
                 'session': session.to_dict(),

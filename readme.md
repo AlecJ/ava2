@@ -16,14 +16,11 @@ run with
 
 ## To Do
 
--   new game, starting money
--   fix wrong amounts for countries
-
 -   purchase phase
 -   able to undo turn
 
--   pre-combat movement phase
--   post-combat movement phase
+-   pre-combat movement phase (player may move into hostile territory)
+-   post-combat movement phase (player may not move into hostile territory)
 
 -   order of play
 -   player key request validation

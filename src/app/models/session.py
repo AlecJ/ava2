@@ -25,8 +25,6 @@ A Player is:
 
 order_of_play = ['Soviet Union', 'Germany',
                  'United Kingdom', 'Japan', 'United States']
-valid_countries = ['United States', 'United Kingdom',
-                   'Soviet Union', 'Germany', 'Japan']
 
 
 class SessionStatus(Enum):
@@ -148,3 +146,19 @@ class Session:
         for player in self.players:
             if player.country == country:
                 return player
+
+    def sort_players_by_player_order(self):
+        """
+        Sort the player list to match the order of play.
+
+        This is a void function that alters the data in place.
+        """
+        result = []
+
+        for country in order_of_play:
+            for player in self.players:
+                if player.country == country:
+                    result.append(player)
+                    break
+
+        self.players = result

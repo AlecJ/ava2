@@ -7,10 +7,10 @@ export const useSessionStore = defineStore("session", {
 	state: () => ({
 		sessionId: null,
 		playerId: null,
-		players: null,
 		playerCountry: null,
+		players: null,
 		status: null,
-		currentTurn: null,
+		turnNum: null,
 		isLoading: false,
 		isTesting: false,
 	}),
@@ -18,7 +18,7 @@ export const useSessionStore = defineStore("session", {
 		setSession(session) {
 			this.sessionId = session.session_id;
 			this.status = session.status;
-			this.currentTurn = session.current_turn;
+			this.turnNum = session.turn_num;
 			this.players = session.players;
 		},
 		setIsLoading(bool) {
@@ -32,6 +32,9 @@ export const useSessionStore = defineStore("session", {
 		setPlayers(players) {
 			// for updating all player data (countries and IPCS)
 			this.players = players;
+		},
+		setTurnNum(num) {
+			this.turnNum = num;
 		},
 		async getSession(sessionId, playerId) {
 			// also send player ID
@@ -113,5 +116,6 @@ export const useSessionStore = defineStore("session", {
 	getters: {
 		getIsLoading: (state) => state.isLoading,
 		getPlayers: (state) => state.players,
+		getTurnNum: (state) => state.turnNum,
 	},
 });

@@ -8,8 +8,24 @@ export default {
 			type: Array,
 			required: true,
 		},
+		currentTurnNum: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 	},
-	computed: {},
+	computed: {
+		rotatedPlayers() {
+			const players = [...this.players];
+
+			const rotationAmount = this.currentTurnNum % 5;
+
+			return [
+				...players.slice(rotationAmount, 5),
+				...players.slice(0, rotationAmount),
+			];
+		},
+	},
 	methods: {
 		getCountryColor(player) {
 			const country = countries.find(
@@ -28,7 +44,7 @@ export default {
 	<div :class="['board']" @mousedown.prevent.stop>
 		<div
 			class="playerCard"
-			v-for="player in players"
+			v-for="player in rotatedPlayers"
 			:key="player.country"
 			:style="{ backgroundColor: getCountryColor(player) }"
 		>
@@ -73,6 +89,12 @@ export default {
 		font-size: 1rem;
 		display: grid;
 		grid-template-columns: 1fr auto;
+
+		transition: margin-left 0.5s ease-in-out;
+
+		&:first-child {
+			margin-left: 0.75rem;
+		}
 	}
 	button {
 		width: 12rem;
