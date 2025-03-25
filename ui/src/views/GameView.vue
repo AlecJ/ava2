@@ -69,6 +69,9 @@ export default {
 		currentTurnNum() {
 			return this.sessionStore?.getTurnNum;
 		},
+		currentPhaseNum() {
+			return this.sessionStore?.getPhaseNum;
+		},
 	},
 	methods: {
 		async fetchSession() {
@@ -95,9 +98,6 @@ export default {
 		},
 		captureTerritory(territoryName, team) {
 			this.worldStore.captureTerritory(territoryName, team);
-		},
-		nextPhase() {
-			this.worldStore.setNextPhase();
 		},
 		switchUnitMovementMode(bool) {
 			this.isMovingUnits = bool;
@@ -127,9 +127,6 @@ export default {
 					neighborTerritoryName === territoryNameB
 			);
 		},
-		endTurn() {
-			this.worldStore.endTurn();
-		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
@@ -157,7 +154,7 @@ export default {
 		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
 		:currentTurnNum="currentTurnNum"
-		:currentPhase="currentPhase"
+		:currentPhaseNum="currentPhaseNum"
 		:switchUnitMovementMode="switchUnitMovementMode"
 		:isMovingUnits="isMovingUnits"
 		:moveUnits="moveUnits"
@@ -172,9 +169,9 @@ export default {
 
 	<EndTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:endTurn="endTurn"
-		:nextPhase="nextPhase"
-		:currentPhase="currentPhase"
+		:endPhase="this.worldStore.endPhase"
+		:endTurn="this.worldStore.endTurn"
+		:currentPhaseNum="currentPhaseNum"
 	/>
 
 	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />

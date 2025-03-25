@@ -67,14 +67,6 @@ def validate_country_selection(session, country=None):
     return
 
 
-def sanitize_player_data(players):
-    """
-    Returns player data as json with player keys removed.
-    """
-    return [
-        {'country': player.country, 'ipcs': player.ipcs} for player in players]
-
-
 def activate_game(session):
     """
     Set game to active and sort players by player order.

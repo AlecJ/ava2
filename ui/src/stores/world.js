@@ -103,6 +103,24 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
+		async endPhase() {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const response = await API.post(
+					`/game/${this.getSessionId}/endphase`
+				);
+				console.log("API Response:", response.data); // Debugging log
+
+				sessionStore.setSession(response.data.session);
+			} catch (error) {
+				console.error("API Error:", error);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
 		async endTurn() {
 			// also send player ID
 			const sessionStore = useSessionStore();
@@ -115,8 +133,7 @@ export const useWorldStore = defineStore("world", {
 				console.log("API Response:", response.data); // Debugging log
 
 				this.updateGameWorld(response.data.game_state);
-				sessionStore.setPlayers(response.data.players);
-				sessionStore.setTurnNum(response.data.turn_num);
+				sessionStore.setSession(response.data.session);
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {
@@ -131,9 +148,6 @@ export const useWorldStore = defineStore("world", {
 		// 	}
 		// 	territoryMesh.material.color.setHex(this.getCountryColor(team));
 		// 	this.territories[territoryName].team = team;
-		// },
-		// setNextPhase() {
-		// 	this.currentPhase++;
 		// },
 	},
 	getters: {

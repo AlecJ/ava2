@@ -1,15 +1,15 @@
 <script>
 export default {
 	props: {
+		endPhase: {
+			type: Function,
+			required: true,
+		},
 		endTurn: {
 			type: Function,
 			required: true,
 		},
-		nextPhase: {
-			type: Function,
-			required: true,
-		},
-		currentPhase: {
+		currentPhaseNum: {
 			type: Number,
 			required: false,
 			default: 0,
@@ -19,23 +19,20 @@ export default {
 </script>
 
 <template>
-	<button @click="endTurn">End Turn</button>
-	<!-- <button v-if="currentPhase === 0" @click="nextPhase">
+	<button v-if="currentPhaseNum === 0" @click="endPhase">
 		End Purchase Unit Phase
 	</button>
-	<button v-else-if="currentPhase === 1" @click="nextPhase">
+	<button v-else-if="currentPhaseNum === 1" @click="endPhase">
 		End Combat Move Phase
 	</button>
-	<button v-else-if="currentPhase === 2" @click="nextPhase">
+	<button v-else-if="currentPhaseNum === 2" @click="endPhase">
 		End Combat Phase
 	</button>
-	<button v-else-if="currentPhase === 3" @click="nextPhase">
+	<button v-else-if="currentPhaseNum === 3" @click="endPhase">
 		End Noncombat Move Phase
 	</button>
-	<button v-else-if="currentPhase === 4" @click="nextPhase">
-		End Mobilize Phase
-	</button>
-	<button v-else @click="nextPhase" disabled>
+	<button v-else-if="currentPhaseNum === 4" @click="endTurn">End Turn</button>
+	<!-- <button v-else @click="nextPhase" disabled>
 		Waiting for other players...
 	</button> -->
 </template>

@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, request
 from app.models.session import Session
 from app.models.game_state import GameState
 from app.models.unit import Unit
-from app.services.session import sanitize_player_data
 from app.services.game import validate_unit_movement, move_units, end_turn
 
 
@@ -62,9 +61,38 @@ def handle_move_units(session_id):
     return jsonify(response), 200
 
 
-@game_route.route('/<string:session_id>/undo', methods=['POST'])
+# @game_route.route('/<string:session_id>/undo', methods=['POST'])
 def handle_undo_turn(session_id):
     pass
+
+
+def handle_purchase_units(session_id):
+    pass
+
+
+def handle_combat(session_id):
+    pass
+
+
+def handle_place_new_units(session_id):
+    pass
+
+
+@game_route.route('/<string:session_id>/endphase', methods=['POST'])
+def handle_end_phase(session_id):
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
+
+    session.increment_phase()
+
+    session.update()
+
+    response = {
+        'status': 'Turn ended successfully.',
+        'session_id': session.session_id,
+        'session': session.to_dict(sanitize_players=True),
+    }
+    return jsonify(response), 200
 
 
 @game_route.route('/<string:session_id>/endturn', methods=['POST'])
@@ -86,8 +114,7 @@ def handle_end_turn(session_id):
     response = {
         'status': 'Turn ended successfully.',
         'session_id': game_state.session_id,
-        'turn_num': session.turn_num,
+        'session': session.to_dict(sanitize_players=True),
         'game_state': game_state.to_dict(),
-        'players': sanitize_player_data(session.players),
     }
     return jsonify(response), 200

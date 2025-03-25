@@ -33,12 +33,21 @@ class SessionStatus(Enum):
     COMPLETE = 'COMPLETE'
 
 
+class PhaseNumber(Enum):
+    PURCHASE_UNITS = 0
+    COMBAT_MOVE = 1
+    COMBAT = 2
+    NON_COMBAT_MOVE = 3
+    MOBILIZE = 4
+
+
 class Session:
-    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, turn_num=0):
+    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, turn_num=0, phase_num=PhaseNumber.PURCHASE_UNITS):
         self.session_id = str(session_id)
         self.players = players
         self.status = status
         self.turn_num = turn_num
+        self.phase_num = phase_num
 
         # if the game is being created for first time, assign a uuid for the session
 
@@ -57,16 +66,23 @@ class Session:
             f"turn={self.turn_num})>"
         )
 
-    def to_dict(self):
+    def to_dict(self, sanitize_players=False):
         """
         Converts the Session object to a dictionary for JSON serialization.
         """
-        return {
+        result = {
             'session_id': self.session_id,
             'players': [player.to_dict() for player in self.players],
             'status': self.status.name,
-            'turn_num': self.turn_num
+            'turn_num': self.turn_num,
+            'phase_num': self.phase_num,
         }
+
+        if sanitize_players:
+            result['players'] = [{'country': player.country,
+                                  'ipcs': player.ipcs} for player in self.players]
+
+        return result
 
     @classmethod
     def from_dict(cls, data):
@@ -82,7 +98,8 @@ class Session:
                        players=[Player.from_dict(player)
                                 for player in data['players']],
                        status=SessionStatus[data['status']],
-                       turn_num=data['turn_num']
+                       turn_num=data['turn_num'],
+                       phase_num=data['phase_num'],
                        )
         except KeyError as e:
             # TODO log error
@@ -162,3 +179,6 @@ class Session:
                     break
 
         self.players = result
+
+    def increment_phase(self):
+        self.phase_num = (self.phase_num + 1) % 5

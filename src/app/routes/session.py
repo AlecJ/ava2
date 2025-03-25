@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from app.services.session import join_session, sanitize_player_data
+from app.services.session import join_session
 from app.models.session import Session
 
 
@@ -15,14 +15,10 @@ def handle_get_session(session_id):
     if not session:
         return jsonify({'status': 'ID not found.'}), 404
 
-    # remove player keys from response
-    json_session = session.to_dict()
-    json_session['players'] = sanitize_player_data(session.players)
-
     response = {
         'status': 'Session found.',
         'session_id': session.session_id,
-        'session': json_session,
+        'session': session.to_dict(sanitize_players=True),
     }
 
     # add player data if a valid player ID is provided
@@ -77,7 +73,7 @@ def handle_join_session(session_id):
 
     response = {'status': 'Player joined.',
                 'session_id': session_id,
-                'session': session.to_dict(),
+                'session': session.to_dict(sanitize_players=True),
                 'player': player.to_dict()}
 
     return jsonify(response), 200

@@ -92,5 +92,6 @@ def end_turn(session, game_state):
             unit.movement = UNIT_DATA[unit.unit_type]['movement']
 
     session.turn_num += 1
+    session.phase_num = 0
 
     return
