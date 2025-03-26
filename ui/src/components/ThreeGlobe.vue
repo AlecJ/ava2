@@ -50,7 +50,7 @@ export default {
 	},
 	computed: {
 		controlsEnabled() {
-			return true; //this.status === "ACTIVE";
+			return this.status === "ACTIVE";
 		},
 		globeAndCountries() {
 			return this.worldStore?.threeGlobeAndCountries;

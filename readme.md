@@ -16,9 +16,6 @@ run with
 
 ## To Do
 
--   backend tests
--   add logging
-
 -   purchase phase
 -   able to undo turn
 
@@ -53,6 +50,9 @@ Confirm "Anglo-Egypt"
 
 -   polling for team select lobby (if first and waiting)
 -   remove console logs
+-   add logging
+
+-   backend tests
 -   check TODOs
 
 Future Work:

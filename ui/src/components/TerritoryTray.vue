@@ -39,7 +39,7 @@ export default {
 			type: Function,
 			required: true,
 		},
-		currentPhase: {
+		currentPhaseNum: {
 			type: Number,
 			required: false,
 			default: 0,
@@ -76,7 +76,7 @@ export default {
 				// Delay clearing the name until after the sidebar transition ends
 				setTimeout(() => {
 					this.resetData();
-				}, 300);
+				}, 500);
 			}
 		},
 	},
@@ -89,10 +89,12 @@ export default {
 	},
 	methods: {
 		resetData() {
-			this.territoryName = null;
-			this.teamName = null;
-			this.power = 0;
-			this.units = [];
+			if (!this.territoryData) {
+				this.territoryName = null;
+				this.teamName = null;
+				this.power = 0;
+				this.units = [];
+			}
 		},
 		getCountryName() {
 			if (!this.territoryData) return null;
@@ -128,11 +130,9 @@ export default {
 </script>
 
 <template>
-	<div
-		:class="['right-side-bar', { active: !!territoryData }]"
-		@mousedown.prevent.stop
-	>
+	<div class="territory-tray">
 		<div class="territory-name">{{ territoryName }}</div>
+
 		<div class="territory-info-row">
 			<div class="controlling-country">
 				<div class="left">Occupied by:</div>
@@ -202,37 +202,15 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.right-side-bar {
-	position: fixed;
-	top: 12.5%;
-	right: 0;
-	overflow: hidden;
-	z-index: 1;
-
-	width: 30%;
-	min-width: 250px;
-	max-width: 600px;
-	height: 75%;
-	padding: 1rem;
-
-	background-color: rgba(33, 32, 32, 0.931);
-	border: 2px solid white;
-	border-radius: 2rem 0 0 2rem;
-	border-right: 0;
+.territory-tray {
+	width: 42%;
+	height: 100%;
+	justify-self: start;
 
 	display: grid;
 	grid-template-rows: 1fr 1fr 5fr 1fr;
 	place-items: center;
 	pointer-events: auto;
-
-	transform: translateX(90%);
-	transition: transform 0.3s ease-in-out;
-
-	color: white;
-
-	&.active {
-		transform: translateX(0%);
-	}
 
 	.territory-name {
 		font-size: clamp(1rem, 2vw, 2rem);

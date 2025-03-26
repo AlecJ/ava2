@@ -1,9 +1,11 @@
 from app.models.territory_data import TERRITORY_DATA
 from app.models.unit_data import UNIT_DATA
-from app.models.session import Session
+from app.models.session import Session, PhaseNumber
 
 
 """
+purchase_unit
+
 validate_unit_movement
 
 move_units
@@ -13,6 +15,18 @@ add_territory_power_to_player_ipcs
 end_turn
 
 """
+
+
+def purchase_unit(game_state, unit_type_to_purchase):
+    """
+    Validate player has funds. Add unit to waiting pool (placed at end of round)
+    and remove IPCs from player.
+    """
+    # get player
+
+    # add unit to player
+
+    # remove IPCs
 
 
 def validate_unit_movement(game_state, territory_a_name, territory_b_name, units_to_move):
@@ -92,6 +106,6 @@ def end_turn(session, game_state):
             unit.movement = UNIT_DATA[unit.unit_type]['movement']
 
     session.turn_num += 1
-    session.phase_num = 0
+    session.phase_num = PhaseNumber.PURCHASE_UNITS
 
     return

@@ -79,6 +79,29 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
+		async purchaseUnit(unitType) {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const data = {
+					unitType: unitType,
+				};
+
+				const response = await API.post(
+					`/game/${this.getSessionId}/purchaseunit?pid=${playerId}`,
+					data
+				);
+				console.log("API Response:", response.data); // Debugging log
+				// this.updateGameWorld(response.data.game_state);
+			} catch (error) {
+				console.error("API Error:", error);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
 		async moveUnits(territoryNameA, territoryNameB, units) {
 			// also send player ID
 			const sessionStore = useSessionStore();

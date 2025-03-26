@@ -75,7 +75,7 @@ class Session:
             'players': [player.to_dict() for player in self.players],
             'status': self.status.name,
             'turn_num': self.turn_num,
-            'phase_num': self.phase_num.name,
+            'phase_num': self.phase_num.value,
         }
 
         if sanitize_players:
@@ -99,7 +99,7 @@ class Session:
                                 for player in data['players']],
                        status=SessionStatus[data['status']],
                        turn_num=data['turn_num'],
-                       phase_num=PhaseNumber[data['phase_num']],
+                       phase_num=PhaseNumber(data['phase_num']),
                        )
         except KeyError as e:
             # TODO log error
@@ -181,4 +181,4 @@ class Session:
         self.players = result
 
     def increment_phase(self):
-        self.phase_num = (self.phase_num + 1) % 5
+        self.phase_num = PhaseNumber((self.phase_num.value + 1) % 5)

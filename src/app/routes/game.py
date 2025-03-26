@@ -3,7 +3,8 @@ from flask import Blueprint, jsonify, request
 from app.models.session import Session
 from app.models.game_state import GameState
 from app.models.unit import Unit
-from app.services.game import validate_unit_movement, move_units, end_turn
+from app.services.session import validate_player
+from app.services.game import purchase_unit, validate_unit_movement, move_units, end_turn
 
 
 game_route = Blueprint('game_route', __name__)
@@ -21,6 +22,38 @@ def handle_get_game_state(session_id):
         'status': 'Game state found.',
         'session_id': game_state['session_id'],
         'game_state': game_state,
+    }
+    return jsonify(response), 200
+
+
+@game_route.route('/<string:session_id>/purchaseunit', methods=['POST'])
+def handle_purchase_unit(session_id):
+    game_state = GameState.get_game_state_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # TODO for EVERY turn, validate player ID matches current player turn
+    # validate all units are owned by the player
+    # validate current turn player has correct key
+
+    # add player data if a valid player ID is provided
+    player_id = request.args.get('pid')
+    if not validate_player(player_id):
+        return jsonify({'status': 'Player ID not found.'}), 404
+
+    data = request.get_json()
+    unit_type_to_purchase = data.get('unitType')
+
+    purchase_unit(player, unit_type_to_purchase)
+
+    game_state.update()
+
+    response = {
+        'status': 'Unit purchase action handled successfully.',
+        'session_id': game_state.session_id,
+        'game_state': game_state.to_dict(),
     }
     return jsonify(response), 200
 

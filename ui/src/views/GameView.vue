@@ -4,7 +4,7 @@ import { useWorldStore } from "@/stores/world";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
-import CommandTray from "@/components/CommandTray.vue";
+import DefaultTray from "@/components/DefaultTray.vue";
 import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
@@ -16,7 +16,7 @@ export default {
 		BackgroundStars,
 		LandingPopUp,
 		TeamSelectPopUp,
-		CommandTray,
+		DefaultTray,
 		PlayerBoard,
 		ThreeGlobe,
 		EndTurnButton,
@@ -106,6 +106,9 @@ export default {
 			this.isMovingUnits = bool;
 			this.selectedTerritoryForMovement = null;
 		},
+		purchaseUnit(unitType) {
+			this.worldStore.purchaseUnit(unitType);
+		},
 		moveUnits(units) {
 			// add to selected territory
 			this.worldStore.moveUnits(
@@ -154,7 +157,7 @@ export default {
 		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
 	/>
 
-	<CommandTray
+	<DefaultTray
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:isLoading="isLoading"
 		:territoryData="focusedTerritoryData"
@@ -166,6 +169,7 @@ export default {
 		:moveUnits="moveUnits"
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 		:isPurchasingUnits="isPurchasingUnits"
+		:purchaseUnit="purchaseUnit"
 	/>
 
 	<PlayerBoard
@@ -178,6 +182,7 @@ export default {
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:active="currentPhaseNum === 0"
 		:setPurchasingUnits="setPurchasingUnits"
+		:isPurchasingUnits="isPurchasingUnits"
 	/>
 
 	<EndTurnButton

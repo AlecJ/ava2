@@ -109,6 +109,7 @@ export const useSessionStore = defineStore("session", {
 		},
 	},
 	getters: {
+		getPlayerId: (state) => state.playerId,
 		getIsLoading: (state) => state.isLoading,
 		getPlayers: (state) => state.players,
 		getTurnNum: (state) => state.turnNum,

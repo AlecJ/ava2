@@ -10,6 +10,11 @@ export default {
 			type: Function,
 			required: true,
 		},
+		isPurchasingUnits: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 };
 </script>
@@ -17,9 +22,10 @@ export default {
 <template>
 	<button
 		:disabled="!active"
+		@mousedown.prevent.stop
 		@click="
 			() => {
-				setPurchasingUnits(true);
+				setPurchasingUnits(!isPurchasingUnits);
 			}
 		"
 	>

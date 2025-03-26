@@ -71,3 +71,7 @@ def activate_game(session):
     """
     Set game to active and sort players by player order.
     """
+
+
+def validate_player(player_id):
+    return True
