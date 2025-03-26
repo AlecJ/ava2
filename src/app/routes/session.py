@@ -76,7 +76,7 @@ def handle_join_session(session_id):
                 'session': session.to_dict(sanitize_players=True),
                 'player': player.to_dict()}
 
-    return jsonify(response), 200
+    return jsonify(response), 201
 
 
 # @session_route.route('/delete/<string:session_id>', methods=['DELETE'])

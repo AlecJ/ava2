@@ -16,6 +16,9 @@ run with
 
 ## To Do
 
+-   backend tests
+-   add logging
+
 -   purchase phase
 -   able to undo turn
 
@@ -49,8 +52,6 @@ Confirm "Anglo-Egypt"
 -   territory capture
 
 -   polling for team select lobby (if first and waiting)
--   add logging
--   backend tests
 -   remove console logs
 -   check TODOs
 

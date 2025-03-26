@@ -75,7 +75,7 @@ class Session:
             'players': [player.to_dict() for player in self.players],
             'status': self.status.name,
             'turn_num': self.turn_num,
-            'phase_num': self.phase_num,
+            'phase_num': self.phase_num.name,
         }
 
         if sanitize_players:
@@ -99,7 +99,7 @@ class Session:
                                 for player in data['players']],
                        status=SessionStatus[data['status']],
                        turn_num=data['turn_num'],
-                       phase_num=data['phase_num'],
+                       phase_num=PhaseNumber[data['phase_num']],
                        )
         except KeyError as e:
             # TODO log error

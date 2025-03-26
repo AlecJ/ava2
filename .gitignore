@@ -34,4 +34,4 @@ coverage
 
 *.tsbuildinfo
 
-old_src
+.pytest_cache/
