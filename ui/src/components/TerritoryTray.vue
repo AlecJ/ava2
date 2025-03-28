@@ -203,7 +203,9 @@ export default {
 
 <style scoped lang="scss">
 .territory-tray {
-	width: 42%;
+	width: 24rem;
+	// width: 42%;
+	// min-width: 24rem;
 	height: 100%;
 	justify-self: start;
 

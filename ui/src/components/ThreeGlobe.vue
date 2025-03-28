@@ -36,6 +36,15 @@ export default {
 			type: Function,
 			required: true,
 		},
+		isSelectingTerritory: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		selectTerritory: {
+			type: Function,
+			required: true,
+		},
 	},
 	data() {
 		return {
@@ -142,7 +151,13 @@ export default {
 					return;
 				}
 
-				// if we are moving units, then just return the name of the territory
+				// sometimes we just want to get the name of the selected territory,
+				// for placing units, etc
+				if (this.isSelectingTerritory) {
+					this.selectTerritory(territoryName);
+					return;
+				}
+
 				if (this.isMovingUnits) {
 					this.selectTerritoryForUnitMovement(territoryName);
 					return;

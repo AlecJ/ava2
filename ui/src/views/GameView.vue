@@ -9,6 +9,7 @@ import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
 import PurchaseUnitsButton from "@/components/PurchaseUnitsButton.vue";
+import PlaceMobilizationUnitsButton from "@/components/PlaceMobilizationUnitsButton.vue";
 
 export default {
 	name: "GameView",
@@ -21,6 +22,7 @@ export default {
 		ThreeGlobe,
 		EndTurnButton,
 		PurchaseUnitsButton,
+		PlaceMobilizationUnitsButton,
 	},
 	data() {
 		return {
@@ -28,8 +30,11 @@ export default {
 			worldStore: null,
 			focusedCountry: null,
 			isMovingUnits: false,
+			isSelectingTerritory: false,
 			isPurchasingUnits: false,
+			isPlacingMobilizationUnits: false,
 			selectedTerritoryForMovement: null,
+			selectedTerritory: null,
 		};
 	},
 	computed: {
@@ -43,10 +48,14 @@ export default {
 			return this.sessionStore?.getPlayers;
 		},
 		selectedCountries() {
-			// remove with above
+			// TODO remove with above
 			return this.sessionStore?.players || [];
 		},
+		player() {
+			return this.sessionStore?.getPlayer;
+		},
 		playerCountry() {
+			// TODO replace with above
 			return this.sessionStore?.playerCountry;
 		},
 		isTestMode() {
@@ -125,6 +134,14 @@ export default {
 				territory
 			);
 		},
+		setIsSelectingTerritory(bool) {
+			this.isSelectingTerritory = bool;
+
+			if (this.isSelectingTerritory) this.selectedTerritory = null;
+		},
+		selectTerritory(territory) {
+			this.selectedTerritory = territory;
+		},
 		areTerritoriesNeighbors(territoryNameA, territoryNameB) {
 			const territoryA = this.worldStore.getTerritory(territoryNameA);
 			const neighbors = territoryA.neighbors;
@@ -135,6 +152,9 @@ export default {
 		},
 		setPurchasingUnits(bool) {
 			this.isPurchasingUnits = bool;
+		},
+		setPlacingMobilizationUnits(bool) {
+			this.isPlacingMobilizationUnits = bool;
 		},
 		endPhase() {
 			this.setPurchasingUnits(false);
@@ -153,17 +173,21 @@ export default {
 </script>
 
 <template>
+	<!-- needs refactor, merge isMoving into isSelecting -->
 	<ThreeGlobe
 		:sessionId="sessionId"
 		:status="status"
 		:focusCountry="focusCountry"
 		:isMovingUnits="isMovingUnits"
 		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
+		:isSelectingTerritory="isSelectingTerritory"
+		:selectTerritory="selectTerritory"
 	/>
 
 	<DefaultTray
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:isLoading="isLoading"
+		:player="player"
 		:territoryData="focusedTerritoryData"
 		:captureTerritory="captureTerritory"
 		:currentTurnNum="currentTurnNum"
@@ -174,6 +198,10 @@ export default {
 		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 		:isPurchasingUnits="isPurchasingUnits"
 		:purchaseUnit="purchaseUnit"
+		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
+		:placeUnit="() => {}"
+		:setIsSelectingTerritory="setIsSelectingTerritory"
+		:selectedTerritory="selectedTerritory"
 	/>
 
 	<PlayerBoard
@@ -187,6 +215,13 @@ export default {
 		:active="currentPhaseNum === 0"
 		:setPurchasingUnits="setPurchasingUnits"
 		:isPurchasingUnits="isPurchasingUnits"
+	/>
+
+	<PlaceMobilizationUnitsButton
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:active="currentPhaseNum === 4"
+		:setPlacingMobilizationUnits="setPlacingMobilizationUnits"
+		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
 	/>
 
 	<EndTurnButton

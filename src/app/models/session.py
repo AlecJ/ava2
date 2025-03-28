@@ -3,6 +3,7 @@ from enum import Enum
 
 from app.extensions import mongo
 from app.models.player import Player
+from app.models.order_of_play import order_of_play
 
 """
 This is the session object. It tracks the state of a game session
@@ -22,9 +23,6 @@ A Player is:
 
 
 """
-
-order_of_play = ['Soviet Union', 'Germany',
-                 'United Kingdom', 'Japan', 'United States']
 
 
 class SessionStatus(Enum):

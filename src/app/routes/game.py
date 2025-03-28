@@ -4,7 +4,7 @@ from app.models.session import Session, PhaseNumber
 from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
-from app.services.game import purchase_unit, validate_unit_movement, move_units, end_turn
+from app.services.game import purchase_unit, mobilize_units, validate_unit_movement, move_units, end_turn
 
 
 game_route = Blueprint('game_route', __name__)
@@ -60,6 +60,53 @@ def handle_purchase_unit(session_id):
         'status': 'Unit purchase action handled successfully.',
         'session_id': session.session_id,
         'session': session.to_dict(sanitize_players=True),
+    }
+    return jsonify(response), 200
+
+
+@game_route.route('/<string:session_id>/mobilizeunits', methods=['POST'])
+def handle_mobilize_units(session_id):
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not session:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    game_state = GameState.get_game_state_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # ensure it is the mobilize phase
+    if session.phase_num != PhaseNumber.MOBILIZE:
+        return jsonify({'status': 'User cannot mobilize units outside of the mobilize units phase.'}), 400
+
+    # add player data if a valid player ID is provided
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
+
+    # TODO for EVERY turn, validate player ID matches current player turn
+    # validate all units are owned by the player
+    # validate current turn player has correct key
+    if not validate_player(player):
+        return jsonify({'status': 'Player ID not found.'}), 404
+
+    data = request.get_json()
+    units_to_mobilize = data.get('units')
+    selected_territory = data.get('selectedTerritory')
+
+    if not mobilize_units(game_state, player, units_to_mobilize, selected_territory):
+        return jsonify({'status': 'Mobilization failed. Invalid units or territory selected.'}), 400
+
+    session.update()
+    game_state.update()
+
+    response = {
+        'status': 'Unit purchase action handled successfully.',
+        'session_id': session.session_id,
+        'session': session.to_dict(sanitize_players=True),
+        'game_state': game_state.to_dict(),
     }
     return jsonify(response), 200
 

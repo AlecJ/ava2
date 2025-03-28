@@ -44,36 +44,37 @@ export default {
 			}, {});
 		},
 		friendlyUnits() {
-			// Allies players are teams 0, 1, and 2
-			// Axis players are teams 3 and 4
+			// Allies players are teams 0, 2, and 4
+			// Axis players are teams 1 and 3
 			return this.units.filter((unit) => {
-				if (this.playerTurn <= 2) {
-					return unit.team <= 2 && unit.team !== this.playerTurn;
+				if ([0, 2, 4].includes(this.playerTurn)) {
+					return (
+						[0, 2, 4].includes(unit.team) &&
+						unit.team !== this.playerTurn
+					);
 				} else {
-					// For team 3, we want to include both team 1 and team 2 units
-					return unit.team >= 3 && unit.team !== this.playerTurn;
+					return (
+						[1, 3].includes(unit.team) &&
+						unit.team !== this.playerTurn
+					);
 				}
 			});
 		},
 		enemyUnits() {
 			// Allies players are teams 0, 1, and 2
 			// Axis players are teams 3 and 4
+			// Allies players are teams 0, 2, and 4
+			// Axis players are teams 1 and 3
 			return this.units.filter((unit) => {
-				if (this.playerTurn <= 2) {
-					return unit.team >= 3;
+				if ([0, 2, 4].includes(this.playerTurn)) {
+					return [1, 3].includes(unit.team);
 				} else {
-					// For team 3, we want to include both team 1 and team 2 units
-					return unit.team <= 2;
+					return [0, 2, 4].includes(unit.team);
 				}
 			});
 		},
 		selectedUnits() {
 			return this.units.filter((unit) => unit.selected);
-		},
-		countryFlagSrc() {
-			const country = countries.find((c) => c.name === this.teamName);
-
-			return country ? country.flagIcon : "";
 		},
 	},
 	methods: {
@@ -123,7 +124,7 @@ export default {
 				>
 					<img
 						:src="getUnitIconSrc(unit)"
-						:alt="unit.name"
+						:alt="unit.unit_type"
 						class="unit-icon"
 						:title="unit.unit_type"
 					/>
@@ -144,7 +145,7 @@ export default {
 				>
 					<img
 						:src="getUnitIconSrc(unit)"
-						:alt="unit.name"
+						:alt="unit.unit_type"
 						class="unit-icon"
 						:title="
 							unit.unit_type + ' - ' + getTeamNameForUnit(unit)
@@ -167,7 +168,7 @@ export default {
 				>
 					<img
 						:src="getUnitIconSrc(unit)"
-						:alt="unit.name"
+						:alt="unit.unit_type"
 						class="unit-icon"
 						:title="
 							unit.unit_type + ' - ' + getTeamNameForUnit(unit)

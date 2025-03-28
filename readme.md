@@ -16,7 +16,11 @@ run with
 
 ## To Do
 
--   mobilization phase
+-   end turn should reset tray
+-   refactor unitTray to unitBox
+-   remove isMovingUnits
+-   maybe refactor defaultTray, loading should be consistent
+
 -   can only move units during movement phase
 -   pre-combat movement phase (player may move into hostile territory)
 -   post-combat movement phase (player may not move into hostile territory)

@@ -1,6 +1,7 @@
 from app.models.territory_data import TERRITORY_DATA
 from app.models.unit_data import UNIT_DATA
 from app.models.session import Session, PhaseNumber
+from app.models.unit import Unit
 
 
 """
@@ -35,6 +36,47 @@ def purchase_unit(player, unit_type_to_purchase):
 
     # add unit to player
     player.mobilization_units.append(unit_type_to_purchase)
+
+    return True
+
+
+def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
+    """
+    Remove units from player's mobilization units array.
+    Add units to the selected territory.
+
+    Validation
+    - player has units to place
+    - territory has industrial complex and is owned by the player
+    - sea units must be in ocean with a neighboring industrial complex
+
+    :return bool: if the units were successfully placed.
+    """
+    # check if territory is valid
+    selected_territory_generic_data = TERRITORY_DATA[selected_territory]
+    selected_territory_data = game_state.territories[selected_territory]
+    has_factory = selected_territory_data.has_factory
+
+    if player.team_num != selected_territory_data.team or not has_factory:
+        return False
+
+    # remove each unit, remove from player and create one in the territory
+    for unit in units_to_mobilize:
+        unit_type = unit['unit_type']
+
+        # error out if user tries to place more units than they have available
+        if unit_type not in player.mobilization_units:
+            return False
+
+        # remove unit from players mobilization units
+        player.mobilization_units.remove(unit_type)
+
+        # add unit to territory
+        new_unit = Unit(
+            unit_type=unit_type,
+            team=player.team_num,
+        )
+        selected_territory_data.units.append(new_unit)
 
     return True
 

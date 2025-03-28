@@ -2,6 +2,7 @@
 import TerritoryTray from "@/components/TerritoryTray.vue";
 import UnitTray from "@/components/UnitTray.vue";
 import PurchaseUnitsTray from "@/components/PurchaseUnitsTray.vue";
+import PlaceMobilizationUnitsTray from "@/components/PlaceMobilizationUnitsTray.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 export default {
@@ -9,11 +10,16 @@ export default {
 		TerritoryTray,
 		UnitTray,
 		PurchaseUnitsTray,
+		PlaceMobilizationUnitsTray,
 		LoadingSpinner,
 	},
 	props: {
 		isLoading: {
 			type: Boolean,
+			required: false,
+		},
+		player: {
+			type: Object,
 			required: false,
 		},
 		territoryData: {
@@ -60,6 +66,19 @@ export default {
 			type: Function,
 			required: true,
 		},
+		isPlacingMobilizationUnits: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		setIsSelectingTerritory: {
+			type: Function,
+			required: true,
+		},
+		selectedTerritory: {
+			type: String,
+			required: false,
+		},
 	},
 	data() {
 		return {
@@ -93,7 +112,10 @@ export default {
 			return this.isPurchasingUnits;
 		},
 		showHalfScreen() {
-			return !!this.territoryData && !this.isPurchasingUnits;
+			return (
+				!!this.territoryData ||
+				(this.isPlacingMobilizationUnits && !this.isPurchasingUnits)
+			);
 		},
 	},
 	methods: {},
@@ -111,7 +133,12 @@ export default {
 		@mousedown.prevent.stop
 	>
 		<TerritoryTray
-			v-show="showTerritoryData && !showFullScreen && !forceClose"
+			v-show="
+				showTerritoryData &&
+				!isPurchasingUnits &&
+				!isPlacingMobilizationUnits &&
+				!forceClose
+			"
 			:isLoading="isLoading"
 			:territoryData="territoryData"
 			:captureTerritory="captureTerritory"
@@ -125,8 +152,15 @@ export default {
 		/>
 
 		<PurchaseUnitsTray
-			v-if="showFullScreen && !forceClose"
+			v-if="isPurchasingUnits && !forceClose"
 			:purchaseUnit="purchaseUnit"
+		/>
+
+		<PlaceMobilizationUnitsTray
+			v-if="isPlacingMobilizationUnits && !forceClose"
+			:player="player"
+			:setIsSelectingTerritory="setIsSelectingTerritory"
+			:selectedTerritory="selectedTerritory"
 		/>
 	</div>
 </template>
@@ -164,7 +198,7 @@ export default {
 	}
 
 	&.show-territory-screen:not(.force-close) {
-		transform: translateX(60%);
+		transform: translateX(calc(100% - 26rem));
 	}
 }
 </style>

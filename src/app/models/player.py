@@ -1,4 +1,5 @@
 from uuid import uuid4
+from app.models.order_of_play import order_of_play
 
 
 """
@@ -66,3 +67,11 @@ class Player:
             )
         except KeyError as e:
             raise ValueError(f"Invalid data: missing key {e}")
+
+    @property
+    def team_num(self):
+        """
+        Just sort of came up enough that this should be a function.
+        Index of country in order_of_play.
+        """
+        return order_of_play.index(self.country)

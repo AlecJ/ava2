@@ -6,11 +6,11 @@ export default {
 			required: false,
 			default: false,
 		},
-		setPurchasingUnits: {
+		setPlacingMobilizationUnits: {
 			type: Function,
 			required: true,
 		},
-		isPurchasingUnits: {
+		isPlacingMobilizationUnits: {
 			type: Boolean,
 			required: false,
 			default: false,
@@ -23,21 +23,17 @@ export default {
 	<button
 		:disabled="!active"
 		@mousedown.prevent.stop
-		@click="
-			() => {
-				setPurchasingUnits(!isPurchasingUnits);
-			}
-		"
+		@click="setPlacingMobilizationUnits(!isPlacingMobilizationUnits)"
 	>
-		Purchase Units
+		Place Mobilization Units
 	</button>
 </template>
 
 <style scoped lang="scss">
 button {
 	position: absolute;
-	top: 37.5%;
-	width: calc(2rem + 11rem);
+	top: 45%;
+	width: calc(2rem + 15rem);
 	height: 3rem;
 	left: -2rem;
 	margin-left: 0;
