@@ -2,7 +2,7 @@
 
 button {
 	margin: 1.5rem;
-	padding: 10px 20px;
+	padding: 0.75rem;
 	background-color: #000000;
 	color: white;
 	border: white 1px solid;
@@ -16,7 +16,6 @@ button {
 	}
 
 	&:disabled {
-		color: #4a4a4a;
 		background-color: #4a4a4a;
 		cursor: not-allowed;
 	}

@@ -83,6 +83,9 @@ export default {
 		currentPhaseNum() {
 			return this.sessionStore?.getPhaseNum;
 		},
+		hasMobilizeUnitsRemaining() {
+			return this.player.mobilization_units.length;
+		},
 	},
 	methods: {
 		async fetchSession() {
@@ -205,6 +208,7 @@ export default {
 		:endPhase="endPhase"
 		:endTurn="this.worldStore.endTurn"
 		:currentPhaseNum="currentPhaseNum"
+		:disabled="hasMobilizeUnitsRemaining"
 	/>
 
 	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />

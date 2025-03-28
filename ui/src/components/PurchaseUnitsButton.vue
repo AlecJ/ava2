@@ -52,5 +52,9 @@ button {
 	&:hover:not(:disabled) {
 		left: 0%;
 	}
+
+	&:disabled {
+		color: #4a4a4a;
+	}
 }
 </style>

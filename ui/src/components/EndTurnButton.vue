@@ -14,6 +14,11 @@ export default {
 			required: false,
 			default: 0,
 		},
+		disabled: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 };
 </script>
@@ -31,7 +36,13 @@ export default {
 	<button v-else-if="currentPhaseNum === 3" @click="endPhase">
 		End Noncombat Move Phase
 	</button>
-	<button v-else-if="currentPhaseNum === 4" @click="endTurn">End Turn</button>
+	<button
+		v-else-if="currentPhaseNum === 4"
+		@click="endTurn"
+		:disabled="disabled"
+	>
+		End Turn
+	</button>
 	<!-- <button v-else @click="nextPhase" disabled>
 		Waiting for other players...
 	</button> -->
@@ -41,7 +52,8 @@ export default {
 button {
 	position: absolute;
 	bottom: 1.5rem;
-	width: 20%;
+	// width: 20%;
+	width: calc(2rem + 14rem);
 	height: 3rem;
 	margin-left: 0;
 
@@ -49,5 +61,16 @@ button {
 	border: 2px solid white;
 	border-radius: 0 2rem 2rem 0;
 	border-left: 0;
+
+	left: -2rem;
+	transition: left 0.3s ease;
+
+	&:hover:not(:disabled) {
+		left: 0%;
+	}
+
+	&:disabled {
+		color: #4a4a4a;
+	}
 }
 </style>

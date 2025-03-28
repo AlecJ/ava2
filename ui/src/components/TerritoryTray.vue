@@ -188,34 +188,32 @@ export default {
 			</div>
 		</div>
 
-		<div class="command-tray-content">
+		<div class="territory-tray-content">
 			<LoadingSpinner v-if="isLoading" />
 
 			<div class="unit-box-header">Units in Territory</div>
-			<div class="unit-box">
-				<!-- units will be sorted by remaining movement ascending -->
-				<UnitBox
-					v-if="!isSelectingTerritory"
-					:units="playerUnits"
-					:sortByMovement="true"
-					:readOnly="false"
-				></UnitBox>
+			<!-- units will be sorted by remaining movement ascending -->
+			<UnitBox
+				v-if="!isSelectingTerritory"
+				:units="playerUnits"
+				:sortByMovement="true"
+				:readOnly="false"
+			></UnitBox>
 
-				<div
-					v-if="friendlyUnits.length && !isSelectingTerritory"
-					class="friendly-units-in-territory"
-				>
-					Friendly Units in Territory:
-					<UnitBox :units="friendlyUnits" readOnly></UnitBox>
-				</div>
+			<div
+				v-if="friendlyUnits.length && !isSelectingTerritory"
+				class="friendly-units-in-territory"
+			>
+				Friendly Units in Territory:
+				<UnitBox :units="friendlyUnits" readOnly></UnitBox>
+			</div>
 
-				<div
-					v-if="enemyUnits.length && !isSelectingTerritory"
-					class="enemy-units-in-territory"
-				>
-					Enemy Units in Territory:
-					<UnitBox :units="enemyUnits" readOnly></UnitBox>
-				</div>
+			<div
+				v-if="enemyUnits.length && !isSelectingTerritory"
+				class="enemy-units-in-territory"
+			>
+				Enemy Units in Territory:
+				<UnitBox :units="enemyUnits" readOnly></UnitBox>
 			</div>
 
 			<div v-if="isSelectingTerritory" class="unit-box">
@@ -234,7 +232,7 @@ export default {
 			</div>
 		</div>
 
-		<div class="command-tray-buttons">
+		<div class="territory-tray-buttons">
 			<button
 				v-if="!isSelectingTerritory"
 				:disabled="!selectedUnits.length"
@@ -307,11 +305,9 @@ export default {
 		}
 	}
 
-	.command-tray-content {
+	.territory-tray-content {
 		width: 100%;
 		height: 100%;
-		display: grid;
-		place-items: center;
 		overflow-y: auto;
 	}
 
@@ -320,6 +316,11 @@ export default {
 		padding-top: 0.5rem;
 		text-align: center;
 		font-size: 1.2rem;
+	}
+
+	.territory-tray-buttons {
+		display: grid;
+		grid-template-columns: auto auto;
 	}
 }
 </style>

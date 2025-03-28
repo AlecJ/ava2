@@ -188,6 +188,8 @@ def handle_end_turn(session_id):
     if not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
+    # TODO validate player has no forces waiting to mobilize
+
     end_turn(session, game_state)
 
     session.update()
