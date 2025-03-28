@@ -80,7 +80,9 @@ class Session:
 
         if sanitize_players:
             result['players'] = [{'country': player.country,
-                                  'ipcs': player.ipcs} for player in self.players]
+                                  'ipcs': player.ipcs,
+                                  'mobilization_units': player.mobilization_units} for player in self.players
+                                 ]
 
         return result
 

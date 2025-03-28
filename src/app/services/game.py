@@ -17,16 +17,26 @@ end_turn
 """
 
 
-def purchase_unit(game_state, unit_type_to_purchase):
+def purchase_unit(player, unit_type_to_purchase):
     """
     Validate player has funds. Add unit to waiting pool (placed at end of round)
     and remove IPCs from player.
-    """
-    # get player
 
-    # add unit to player
+    :return bool: if the purchase was successful.
+    """
+    new_unit_data = UNIT_DATA[unit_type_to_purchase]
+
+    # ensure player has sufficient funds
+    if player.ipcs < new_unit_data['cost']:
+        return False
 
     # remove IPCs
+    player.ipcs -= new_unit_data['cost']
+
+    # add unit to player
+    player.mobilization_units.append(unit_type_to_purchase)
+
+    return True
 
 
 def validate_unit_movement(game_state, territory_a_name, territory_b_name, units_to_move):

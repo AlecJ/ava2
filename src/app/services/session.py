@@ -73,5 +73,5 @@ def activate_game(session):
     """
 
 
-def validate_player(player_id):
+def validate_player(player):
     return True

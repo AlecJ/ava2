@@ -136,6 +136,10 @@ export default {
 		setPurchasingUnits(bool) {
 			this.isPurchasingUnits = bool;
 		},
+		endPhase() {
+			this.setPurchasingUnits(false);
+			this.worldStore.endPhase();
+		},
 	},
 	created() {
 		this.sessionStore = useSessionStore();
@@ -187,7 +191,7 @@ export default {
 
 	<EndTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:endPhase="this.worldStore.endPhase"
+		:endPhase="endPhase"
 		:endTurn="this.worldStore.endTurn"
 		:currentPhaseNum="currentPhaseNum"
 	/>

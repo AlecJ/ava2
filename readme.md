@@ -16,11 +16,12 @@ run with
 
 ## To Do
 
--   purchase phase
--   able to undo turn
-
+-   mobilization phase
+-   can only move units during movement phase
 -   pre-combat movement phase (player may move into hostile territory)
 -   post-combat movement phase (player may not move into hostile territory)
+
+-   able to undo turn
 
 -   player key request validation
 

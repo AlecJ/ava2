@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from app.models.session import Session
+from app.models.session import Session, PhaseNumber
 from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
@@ -28,32 +28,38 @@ def handle_get_game_state(session_id):
 
 @game_route.route('/<string:session_id>/purchaseunit', methods=['POST'])
 def handle_purchase_unit(session_id):
-    game_state = GameState.get_game_state_by_session_id(
+    session = Session.get_session_by_session_id(
         session_id, convert_to_class=True)
 
-    if not game_state:
+    if not session:
         return jsonify({'status': 'Session ID not found.'}), 404
+
+    # ensure it is the purchase phase
+    if session.phase_num != PhaseNumber.PURCHASE_UNITS:
+        return jsonify({'status': 'User cannot purchase units outside of the purchase units phase.'}), 400
+
+    # add player data if a valid player ID is provided
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
 
     # TODO for EVERY turn, validate player ID matches current player turn
     # validate all units are owned by the player
     # validate current turn player has correct key
-
-    # add player data if a valid player ID is provided
-    player_id = request.args.get('pid')
-    if not validate_player(player_id):
+    if not validate_player(player):
         return jsonify({'status': 'Player ID not found.'}), 404
 
     data = request.get_json()
     unit_type_to_purchase = data.get('unitType')
 
-    purchase_unit(player, unit_type_to_purchase)
+    if not purchase_unit(player, unit_type_to_purchase):
+        return jsonify({'status': 'Purchase failed. Player does not have sufficient funds.'}), 400
 
-    game_state.update()
+    session.update()
 
     response = {
         'status': 'Unit purchase action handled successfully.',
-        'session_id': game_state.session_id,
-        'game_state': game_state.to_dict(),
+        'session_id': session.session_id,
+        'session': session.to_dict(sanitize_players=True),
     }
     return jsonify(response), 200
 
@@ -96,10 +102,6 @@ def handle_move_units(session_id):
 
 # @game_route.route('/<string:session_id>/undo', methods=['POST'])
 def handle_undo_turn(session_id):
-    pass
-
-
-def handle_purchase_units(session_id):
     pass
 
 

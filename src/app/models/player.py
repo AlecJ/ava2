@@ -8,16 +8,18 @@ A Player is:
     Session ID
     Country
     IPCs
+    MOBILIZATION_UNITS
 
 """
 
 
 class Player:
-    def __init__(self, player_id=None, session_id=None, country=None, ipcs=0):
+    def __init__(self, player_id=None, session_id=None, country=None, ipcs=0, mobilization_units=[]):
         self.player_id = player_id or str(uuid4())
         self.session_id = str(session_id)
         self.country = country
         self.ipcs = ipcs
+        self.mobilization_units = mobilization_units
 
         if country is None or session_id is None:
             raise ValueError(
@@ -45,7 +47,8 @@ class Player:
             'player_id': self.player_id,
             'session_id': self.session_id,
             'country': self.country,
-            'ipcs': self.ipcs
+            'ipcs': self.ipcs,
+            'mobilization_units': self.mobilization_units,
         }
 
     @classmethod
@@ -58,7 +61,8 @@ class Player:
                 player_id=data['player_id'],
                 session_id=data['session_id'],
                 country=data['country'],
-                ipcs=data['ipcs']
+                ipcs=data['ipcs'],
+                mobilization_units=data.get('mobilization_units', []),
             )
         except KeyError as e:
             raise ValueError(f"Invalid data: missing key {e}")
