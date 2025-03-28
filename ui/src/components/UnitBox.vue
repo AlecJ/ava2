@@ -14,6 +14,11 @@ export default {
 			required: false,
 			default: false,
 		},
+		readOnly: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	computed: {
 		unitsSortedByMovement() {
@@ -64,7 +69,7 @@ export default {
 		getColorForUnit(unit) {
 			const unitCountry = countries[unit.team];
 
-			const alpha = unit.selected ? "ff" : "40"; // Fully opaque if selected, semi-transparent if not
+			const alpha = this.readOnly ? "aa" : unit.selected ? "ff" : "50"; // Fully opaque if selected, semi-transparent if not
 
 			return unitCountry
 				? "#" + unitCountry.color.toString(16) + alpha
@@ -76,6 +81,8 @@ export default {
 			return countries[team] ? countries[team].name : "Unknown";
 		},
 		toggle(unit) {
+			if (this.readOnly) return;
+
 			if (!unit.selected) {
 				unit.selected = true;
 			} else {
@@ -122,9 +129,9 @@ export default {
 <style scoped lang="scss">
 .unit-box {
 	width: 100%;
-	height: 100%;
+	// height: 100%;
 
-	padding: 1rem;
+	padding: 0;
 	// background-color: rgba(0, 0, 0, 0.4);
 
 	p {

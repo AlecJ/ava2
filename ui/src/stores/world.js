@@ -188,15 +188,6 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
-		// captureTerritory(territoryName, team) {
-		// 	const territoryMesh = this.getTerritoryMesh(territoryName);
-		// 	if (!territoryMesh) {
-		// 		console.log(territoryName + " not found.");
-		// 		return;
-		// 	}
-		// 	territoryMesh.material.color.setHex(this.getCountryColor(team));
-		// 	this.territories[territoryName].team = team;
-		// },
 	},
 	getters: {
 		getTerritories: (state) => state.territories,

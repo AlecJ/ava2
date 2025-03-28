@@ -3,13 +3,11 @@ import { useWorldStore } from "@/stores/world";
 import { countries } from "@/data/countries";
 import { unitIcons } from "@/data/unitIcons";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import UnitTray from "@/components/UnitTray.vue";
 import UnitBox from "@/components/UnitBox.vue";
 
 export default {
 	components: {
 		LoadingSpinner,
-		UnitTray,
 		UnitBox,
 	},
 	props: {
@@ -28,7 +26,7 @@ export default {
 	},
 	data() {
 		return {
-			sessionStore: null,
+			worldStore: null,
 			playerUnits: [],
 		};
 	},

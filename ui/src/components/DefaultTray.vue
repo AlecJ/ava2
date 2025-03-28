@@ -1,6 +1,5 @@
 <script>
 import TerritoryTray from "@/components/TerritoryTray.vue";
-import UnitTray from "@/components/UnitTray.vue";
 import PurchaseUnitsTray from "@/components/PurchaseUnitsTray.vue";
 import PlaceMobilizationUnitsTray from "@/components/PlaceMobilizationUnitsTray.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
@@ -8,7 +7,6 @@ import LoadingSpinner from "@/components/LoadingSpinner.vue";
 export default {
 	components: {
 		TerritoryTray,
-		UnitTray,
 		PurchaseUnitsTray,
 		PlaceMobilizationUnitsTray,
 		LoadingSpinner,
@@ -26,36 +24,15 @@ export default {
 			type: Object,
 			required: false,
 		},
-		captureTerritory: {
-			type: Function,
-			required: true,
-		},
 		currentTurnNum: {
 			type: Number,
 			required: false,
 			default: 0,
 		},
-		switchUnitMovementMode: {
-			type: Function,
-			required: true,
-		},
-		isMovingUnits: {
-			type: Boolean,
-			required: false,
-			default: false,
-		},
-		moveUnits: {
-			type: Function,
-			required: true,
-		},
 		currentPhaseNum: {
 			type: Number,
 			required: false,
 			default: 0,
-		},
-		selectedTerritoryForMovement: {
-			type: String,
-			required: false,
 		},
 		isPurchasingUnits: {
 			type: Boolean,
@@ -140,15 +117,11 @@ export default {
 				!forceClose
 			"
 			:isLoading="isLoading"
+			:player="player"
 			:territoryData="territoryData"
-			:captureTerritory="captureTerritory"
-			:currentTurnNum="currentTurnNum"
 			:currentPhaseNum="currentPhaseNum"
-			:switchUnitMovementMode="switchUnitMovementMode"
-			:isMovingUnits="isMovingUnits"
-			:moveUnits="moveUnits"
-			:selectedTerritoryForMovement="selectedTerritoryForMovement"
-			:isPurchasingUnits="isPurchasingUnits"
+			:setIsSelectingTerritory="setIsSelectingTerritory"
+			:selectedTerritory="selectedTerritory"
 		/>
 
 		<PurchaseUnitsTray

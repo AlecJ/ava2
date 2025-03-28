@@ -16,10 +16,10 @@ run with
 
 ## To Do
 
--   end turn should reset tray
 -   refactor unitTray to unitBox
 -   remove isMovingUnits
 -   maybe refactor defaultTray, loading should be consistent
+-   end turn should reset tray
 
 -   can only move units during movement phase
 -   pre-combat movement phase (player may move into hostile territory)

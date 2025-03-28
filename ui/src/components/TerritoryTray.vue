@@ -1,11 +1,12 @@
 <script>
+import { useWorldStore } from "@/stores/world";
 import { countries } from "@/data/countries";
-import UnitTray from "@/components/UnitTray.vue";
+import UnitBox from "@/components/UnitBox.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 export default {
 	components: {
-		UnitTray,
+		UnitBox,
 		LoadingSpinner,
 	},
 	props: {
@@ -13,49 +14,31 @@ export default {
 			type: Boolean,
 			required: false,
 		},
+		player: {
+			type: Object,
+			required: true,
+		},
 		territoryData: {
 			type: Object,
 			required: false,
-		},
-		captureTerritory: {
-			type: Function,
-			required: true,
-		},
-		currentTurnNum: {
-			type: Number,
-			required: false,
-			default: 0,
-		},
-		switchUnitMovementMode: {
-			type: Function,
-			required: true,
-		},
-		isMovingUnits: {
-			type: Boolean,
-			required: false,
-			default: false,
-		},
-		moveUnits: {
-			type: Function,
-			required: true,
 		},
 		currentPhaseNum: {
 			type: Number,
 			required: false,
 			default: 0,
 		},
-		selectedTerritoryForMovement: {
+		setIsSelectingTerritory: {
+			type: Function,
+			required: true,
+		},
+		selectedTerritory: {
 			type: String,
 			required: false,
-		},
-		isPurchasingUnits: {
-			type: Boolean,
-			required: false,
-			default: false,
 		},
 	},
 	data() {
 		return {
+			worldStore: null,
 			territoryName: null,
 			teamName: null,
 			power: 0,
@@ -81,10 +64,53 @@ export default {
 		},
 	},
 	computed: {
+		playerTeamNum() {
+			return countries.findIndex(
+				(country) => country.name === this.player.country
+			);
+		},
 		countryFlagSrc() {
 			const country = countries.find((c) => c.name === this.teamName);
 
 			return country ? country.flagIcon : "";
+		},
+		playerUnits() {
+			return this.units.filter(
+				(unit) => unit.team === this.playerTeamNum
+			);
+		},
+		friendlyUnits() {
+			// Allies players are teams 0, 2, and 4
+			// Axis players are teams 1 and 3
+			return this.units.filter((unit) => {
+				if ([0, 2, 4].includes(this.playerTeamNum)) {
+					return (
+						[0, 2, 4].includes(unit.team) &&
+						unit.team !== this.playerTeamNum
+					);
+				} else {
+					return (
+						[1, 3].includes(unit.team) &&
+						unit.team !== this.playerTeamNum
+					);
+				}
+			});
+		},
+		enemyUnits() {
+			// Allies players are teams 0, 1, and 2
+			// Axis players are teams 3 and 4
+			// Allies players are teams 0, 2, and 4
+			// Axis players are teams 1 and 3
+			return this.units.filter((unit) => {
+				if ([0, 2, 4].includes(this.playerTeamNum)) {
+					return [1, 3].includes(unit.team);
+				} else {
+					return [0, 2, 4].includes(unit.team);
+				}
+			});
+		},
+		selectedUnits() {
+			return this.units.filter((unit) => unit.selected);
 		},
 	},
 	methods: {
@@ -94,6 +120,7 @@ export default {
 				this.teamName = null;
 				this.power = 0;
 				this.units = [];
+				this.isSelectingTerritory = false;
 			}
 		},
 		getCountryName() {
@@ -114,17 +141,28 @@ export default {
 				? true
 				: false;
 		},
-		confirmUnitSelection() {
-			const selectedUnits = this.units.filter((unit) => unit.selected);
-			this.moveUnits(selectedUnits);
-
-			this.switchUnitMovementMode(false);
-
-			// need to reset or update territories
-			this.isSelectingTerritory = false;
-
-			// select new territory, move camera
+		switchTerritorySelectionMode(bool) {
+			this.isSelectingTerritory = bool;
+			this.setIsSelectingTerritory(bool);
 		},
+		placeUnits() {
+			this.worldStore.mobilizeUnits(
+				this.selectedUnits,
+				this.selectedTerritory
+			);
+		},
+		confirmUnitSelection() {
+			this.worldStore.moveUnits(
+				this.territoryName,
+				this.selectedTerritory,
+				this.selectedUnits
+			);
+
+			this.switchTerritorySelectionMode(false);
+		},
+	},
+	created() {
+		this.worldStore = useWorldStore();
 	},
 };
 </script>
@@ -153,46 +191,66 @@ export default {
 		<div class="command-tray-content">
 			<LoadingSpinner v-if="isLoading" />
 
-			<UnitTray
-				v-if="!isLoading"
-				:isMovingUnits="isMovingUnits"
-				:playerTurn="currentTurnNum % 5"
-				:units="units"
-				:toggleUnit="toggleUnit"
-			/>
+			<div class="unit-box-header">Units in Territory</div>
+			<div class="unit-box">
+				<!-- units will be sorted by remaining movement ascending -->
+				<UnitBox
+					v-if="!isSelectingTerritory"
+					:units="playerUnits"
+					:sortByMovement="true"
+					:readOnly="false"
+				></UnitBox>
 
-			<div v-if="!isLoading && isMovingUnits">
+				<div
+					v-if="friendlyUnits.length && !isSelectingTerritory"
+					class="friendly-units-in-territory"
+				>
+					Friendly Units in Territory:
+					<UnitBox :units="friendlyUnits" readOnly></UnitBox>
+				</div>
+
+				<div
+					v-if="enemyUnits.length && !isSelectingTerritory"
+					class="enemy-units-in-territory"
+				>
+					Enemy Units in Territory:
+					<UnitBox :units="enemyUnits" readOnly></UnitBox>
+				</div>
+			</div>
+
+			<div v-if="isSelectingTerritory" class="unit-box">
+				<div class="selected-units">
+					Units to be Moved:
+					<UnitBox :units="selectedUnits" readOnly></UnitBox>
+				</div>
+			</div>
+
+			<div v-if="isSelectingTerritory">
 				<p>Select a Territory</p>
 				<p>
 					You have selected:
-					{{
-						selectedTerritoryForMovement
-							? selectedTerritoryForMovement
-							: "No territory selected."
-					}}
+					{{ selectedTerritory || "None" }}
 				</p>
 			</div>
 		</div>
 
 		<div class="command-tray-buttons">
 			<button
-				:disabled="!isMovingUnits"
-				@click="() => switchUnitMovementMode(false)"
-			>
-				Back
-			</button>
-
-			<button
-				v-if="!isMovingUnits"
-				@click="switchUnitMovementMode(true)"
-				class="move-units-button"
+				v-if="!isSelectingTerritory"
+				:disabled="!selectedUnits.length"
+				@click="switchTerritorySelectionMode(true)"
 			>
 				Move Units
 			</button>
-
 			<button
-				v-if="isMovingUnits"
-				:disabled="!selectedTerritoryForMovement"
+				v-if="isSelectingTerritory"
+				@click="switchTerritorySelectionMode(false)"
+			>
+				Back
+			</button>
+			<button
+				v-if="isSelectingTerritory"
+				:disabled="!selectedTerritory"
 				@click="confirmUnitSelection"
 			>
 				Confirm Unit Movement
@@ -255,6 +313,13 @@ export default {
 		display: grid;
 		place-items: center;
 		overflow-y: auto;
+	}
+
+	.unit-box-header {
+		width: 100%;
+		padding-top: 0.5rem;
+		text-align: center;
+		font-size: 1.2rem;
 	}
 }
 </style>

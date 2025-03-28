@@ -29,7 +29,6 @@ export default {
 			sessionStore: null,
 			worldStore: null,
 			focusedCountry: null,
-			isMovingUnits: false,
 			isSelectingTerritory: false,
 			isPurchasingUnits: false,
 			isPlacingMobilizationUnits: false,
@@ -108,31 +107,8 @@ export default {
 		focusCountry(countryName) {
 			this.focusedCountry = countryName;
 		},
-		captureTerritory(territoryName, team) {
-			this.worldStore.captureTerritory(territoryName, team);
-		},
-		switchUnitMovementMode(bool) {
-			this.isMovingUnits = bool;
-			this.selectedTerritoryForMovement = null;
-		},
 		purchaseUnit(unitType) {
 			this.worldStore.purchaseUnit(unitType);
-		},
-		moveUnits(units) {
-			// add to selected territory
-			this.worldStore.moveUnits(
-				this.focusedCountry,
-				this.selectedTerritoryForMovement,
-				units
-			);
-		},
-		selectTerritoryForUnitMovement(territory) {
-			// TODO other validation for game rules
-			// this.selectedTerritoryForMovement = territory; // ocean_territories do not have neighbors yet
-			this.selectedTerritoryForMovement = this.areTerritoriesNeighbors(
-				this.focusedCountry,
-				territory
-			);
 		},
 		setIsSelectingTerritory(bool) {
 			this.isSelectingTerritory = bool;
@@ -141,6 +117,13 @@ export default {
 		},
 		selectTerritory(territory) {
 			this.selectedTerritory = territory;
+
+			// TODO other validation for game rules
+			// this.selectedTerritoryForMovement = territory; // ocean_territories do not have neighbors yet
+			// this.selectedTerritoryForMovement = this.areTerritoriesNeighbors(
+			// 	this.focusedCountry,
+			// 	territory
+			// );
 		},
 		areTerritoriesNeighbors(territoryNameA, territoryNameB) {
 			const territoryA = this.worldStore.getTerritory(territoryNameA);
@@ -178,8 +161,6 @@ export default {
 		:sessionId="sessionId"
 		:status="status"
 		:focusCountry="focusCountry"
-		:isMovingUnits="isMovingUnits"
-		:selectTerritoryForUnitMovement="selectTerritoryForUnitMovement"
 		:isSelectingTerritory="isSelectingTerritory"
 		:selectTerritory="selectTerritory"
 	/>
@@ -189,13 +170,8 @@ export default {
 		:isLoading="isLoading"
 		:player="player"
 		:territoryData="focusedTerritoryData"
-		:captureTerritory="captureTerritory"
 		:currentTurnNum="currentTurnNum"
 		:currentPhaseNum="currentPhaseNum"
-		:switchUnitMovementMode="switchUnitMovementMode"
-		:isMovingUnits="isMovingUnits"
-		:moveUnits="moveUnits"
-		:selectedTerritoryForMovement="selectedTerritoryForMovement"
 		:isPurchasingUnits="isPurchasingUnits"
 		:purchaseUnit="purchaseUnit"
 		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"

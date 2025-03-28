@@ -27,15 +27,6 @@ export default {
 			type: Function,
 			required: true,
 		},
-		isMovingUnits: {
-			type: Boolean,
-			required: false,
-			default: false,
-		},
-		selectTerritoryForUnitMovement: {
-			type: Function,
-			required: true,
-		},
 		isSelectingTerritory: {
 			type: Boolean,
 			required: false,
@@ -155,11 +146,6 @@ export default {
 				// for placing units, etc
 				if (this.isSelectingTerritory) {
 					this.selectTerritory(territoryName);
-					return;
-				}
-
-				if (this.isMovingUnits) {
-					this.selectTerritoryForUnitMovement(territoryName);
 					return;
 				}
 
