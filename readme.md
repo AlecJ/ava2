@@ -16,18 +16,29 @@ run with
 
 ## To Do
 
--   refactor unitTray to unitBox
--   remove isMovingUnits
--   maybe refactor defaultTray, loading should be consistent
--   end turn should reset tray
+-   ship movement (only in sea)
+-   if a zone has sea units that can load, additional load units onto ships button
+
+-   loading and unloading
+-   fighters on carriers
+
+-   plane movement (destroyed at end of turn if it does not end in a valid space
+-   friendly territory or sea zone with AC with space)
 
 -   can only move units during movement phase
 -   pre-combat movement phase (player may move into hostile territory)
+-   units stop right away (cannot move) if they are in a hostile territory
+-   cannot move anti aircraft
+
 -   post-combat movement phase (player may not move into hostile territory)
+-   units may not end in hostile territory
+-   can move anti aircraft
 
 -   able to undo turn
 
 -   player key request validation
+
+-   prevent player from buying industrial complexs > territories owned
 
 Final tile fix in blender
 Eastern United States / Panama / Mexico
@@ -45,22 +56,23 @@ ocean_tile_26 missing
 Confirm "Anglo-Egypt"
 
 -   finish territory data
--   ship movement
--   loading and unloading
--   fighters on carriers
--   plane movement
 
 -   combat
 -   territory capture
 
 -   polling for team select lobby (if first and waiting)
+
 -   remove console logs
 -   add logging
+-   toast popup with api error status
 
 -   backend tests
 -   check TODOs
 
 Future Work:
+
+-   maybe refactor defaultTray, loading should be consistent
+-   end turn should reset tray
 
 -   move session db logic to session model
 -   sort friendly and enemy units in territory (UnitTray)

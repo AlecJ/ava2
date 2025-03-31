@@ -119,6 +119,7 @@ export default {
 			:isLoading="isLoading"
 			:player="player"
 			:territoryData="territoryData"
+			:currentTurnNum="currentTurnNum"
 			:currentPhaseNum="currentPhaseNum"
 			:setIsSelectingTerritory="setIsSelectingTerritory"
 			:selectedTerritory="selectedTerritory"

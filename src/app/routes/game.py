@@ -113,6 +113,15 @@ def handle_mobilize_units(session_id):
 
 @game_route.route('/<string:session_id>/moveunits', methods=['POST'])
 def handle_move_units(session_id):
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not session:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
+        return jsonify({'status': 'User cannot move units outside of combat and non-combat movement phases.'}), 400
+
     game_state = GameState.get_game_state_by_session_id(
         session_id, convert_to_class=True)
 
@@ -132,8 +141,9 @@ def handle_move_units(session_id):
     units_to_move = [Unit.from_dict(unit) for unit in units_to_move]
 
     # validate the attempted troop movement
-    validate_unit_movement(game_state,
-                           territory_a, territory_b, units_to_move)
+    if not validate_unit_movement(game_state,
+                                  territory_a, territory_b, units_to_move):
+        return jsonify({'status': 'User cannot move units with 0 movement.'}), 400
 
     move_units(game_state, territory_a, territory_b, units_to_move)
 
@@ -153,10 +163,6 @@ def handle_undo_turn(session_id):
 
 
 def handle_combat(session_id):
-    pass
-
-
-def handle_place_new_units(session_id):
     pass
 
 

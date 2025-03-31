@@ -146,7 +146,7 @@ export const useWorldStore = defineStore("world", {
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error);
+				console.error("API Error:", error.response.data.status);
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -164,7 +164,7 @@ export const useWorldStore = defineStore("world", {
 
 				sessionStore.setSession(response.data.session);
 			} catch (error) {
-				console.error("API Error:", error);
+				console.error("API Error:", error.response.data.status);
 			} finally {
 				sessionStore.setIsLoading(false);
 			}

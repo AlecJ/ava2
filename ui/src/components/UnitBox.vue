@@ -109,6 +109,7 @@ export default {
 					v-for="(unit, index) in group"
 					:key="`${index}-${unit.unit_type}`"
 					class="unit-button"
+					:disabled="sortByMovement && groupIndex <= 0"
 					:style="{
 						backgroundColor: getColorForUnit(unit),
 					}"

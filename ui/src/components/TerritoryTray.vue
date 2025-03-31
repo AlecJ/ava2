@@ -22,6 +22,11 @@ export default {
 			type: Object,
 			required: false,
 		},
+		currentTurnNum: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 		currentPhaseNum: {
 			type: Number,
 			required: false,
@@ -64,15 +69,24 @@ export default {
 		},
 	},
 	computed: {
+		countryFlagSrc() {
+			const country = countries.find((c) => c.name === this.teamName);
+
+			return country ? country.flagIcon : "";
+		},
 		playerTeamNum() {
 			return countries.findIndex(
 				(country) => country.name === this.player.country
 			);
 		},
-		countryFlagSrc() {
-			const country = countries.find((c) => c.name === this.teamName);
-
-			return country ? country.flagIcon : "";
+		currentPlayerTurn() {
+			return this.currentTurnNum % 5;
+		},
+		isPlayerTurn() {
+			return this.playerTeamNum === this.currentPlayerTurn;
+		},
+		isMovementPhase() {
+			return this.currentPhaseNum === 1 || this.currentPhaseNum === 3;
 		},
 		playerUnits() {
 			return this.units.filter(
@@ -195,9 +209,9 @@ export default {
 			<!-- units will be sorted by remaining movement ascending -->
 			<UnitBox
 				v-if="!isSelectingTerritory"
+				:readOnly="!isPlayerTurn || !isMovementPhase"
 				:units="playerUnits"
 				:sortByMovement="true"
-				:readOnly="false"
 			></UnitBox>
 
 			<div
@@ -232,7 +246,10 @@ export default {
 			</div>
 		</div>
 
-		<div class="territory-tray-buttons">
+		<div
+			class="territory-tray-buttons"
+			v-if="isPlayerTurn && isMovementPhase"
+		>
 			<button
 				v-if="!isSelectingTerritory"
 				:disabled="!selectedUnits.length"

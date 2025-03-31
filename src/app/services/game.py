@@ -49,34 +49,54 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
     - player has units to place
     - territory has industrial complex and is owned by the player
     - sea units must be in ocean with a neighboring industrial complex
+    - new industrial complex must be in a controlled territory without an existing one
 
     :return bool: if the units were successfully placed.
     """
     # check if territory is valid
     selected_territory_generic_data = TERRITORY_DATA[selected_territory]
     selected_territory_data = game_state.territories[selected_territory]
+
+    is_controlled_by_player = player.team_num == selected_territory_data.team
+    is_ocean = selected_territory_generic_data['is_ocean']
     has_factory = selected_territory_data.has_factory
+    has_adjacent_industrial_complex = check_territory_has_adjacent_industrial_complex(
+        game_state, player, selected_territory)
 
-    if player.team_num != selected_territory_data.team or not has_factory:
-        return False
-
-    # remove each unit, remove from player and create one in the territory
+    # for each unit, remove from player and create one in the territory
     for unit in units_to_mobilize:
         unit_type = unit['unit_type']
 
-        # error out if user tries to place more units than they have available
+        # user cannot place more units than they have available
         if unit_type not in player.mobilization_units:
+            return False
+
+        # if land unit, it must have be land and have industrial complex
+        if not is_sea_unit(unit_type) and unit_type != "INDUSTRIAL-COMPLEX" and (is_ocean or not has_factory or not is_controlled_by_player):
+            return False
+
+        # if sea unit, it must be be sea and have an adjacent controlled industrial complex
+        if is_sea_unit(unit_type) and unit_type != "INDUSTRIAL-COMPLEX" and (not is_ocean or not has_adjacent_industrial_complex):
+            return False
+
+        # if industrial complex, it must be a controlled land without an existing one
+        if unit_type == "INDUSTRIAL-COMPLEX" and (is_ocean or has_factory or not is_controlled_by_player):
             return False
 
         # remove unit from players mobilization units
         player.mobilization_units.remove(unit_type)
 
-        # add unit to territory
-        new_unit = Unit(
-            unit_type=unit_type,
-            team=player.team_num,
-        )
-        selected_territory_data.units.append(new_unit)
+        # industrial complex is a special building that never moves,
+        # instead of creating a "unit", update the territory data
+        if unit_type == "INDUSTRIAL-COMPLEX":
+            selected_territory_data.has_factory = True
+        else:
+            # add unit to territory
+            new_unit = Unit(
+                unit_type=unit_type,
+                team=player.team_num,
+            )
+            selected_territory_data.units.append(new_unit)
 
     return True
 
@@ -161,3 +181,31 @@ def end_turn(session, game_state):
     session.phase_num = PhaseNumber.PURCHASE_UNITS
 
     return
+
+
+def is_sea_unit(unit_type):
+    """
+    Check if given unit type is in the list of sea units.
+
+    :return bool:
+    """
+    return unit_type in ['AIRCRAFT-CARRIER', 'TRANSPORT', 'BATTLESHIP', 'DESTROYER', 'SUBMARINE']
+
+
+def check_territory_has_adjacent_industrial_complex(game_state, player, selected_territory):
+    """
+    Check neighboring territories of a territory to see if there is an industrial complex
+    controlled by the player.
+
+    :return bool:
+    """
+    selected_territory_generic_data = TERRITORY_DATA[selected_territory]
+    neighbors = selected_territory_generic_data['neighbors']
+
+    for neighbor in neighbors:
+        neighbor_data = game_state.territories[neighbor]
+
+        if player.team_num == neighbor_data.team and neighbor_data.has_factory:
+            return True
+
+    return False

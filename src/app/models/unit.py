@@ -19,7 +19,8 @@ class Unit:
         self.unit_id = unit_id or str(uuid4())
         self.team = team
         self.unit_type = unit_type
-        self.movement = movement or UNIT_DATA[unit_type]['movement']
+        # 0 movement is valid
+        self.movement = movement if movement is not None else UNIT_DATA[unit_type]['movement']
 
         # todo -- does this do anything
         if team is None or unit_type is None:
