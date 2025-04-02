@@ -73,5 +73,15 @@ def activate_game(session):
     """
 
 
-def validate_player(player):
+def validate_player(session, player):
+    """
+    Validates:
+    - it is the given player's turn
+
+    :return bool:
+    """
+    # make sure it is request user's turn
+    if player.team_num != session.turn_num % 5:
+        return False
+
     return True

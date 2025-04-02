@@ -16,16 +16,14 @@ run with
 
 ## To Do
 
--   ship movement (only in sea)
 -   if a zone has sea units that can load, additional load units onto ships button
 
 -   loading and unloading
--   fighters on carriers
+-   fighters on carriers, infantry?
 
 -   plane movement (destroyed at end of turn if it does not end in a valid space
 -   friendly territory or sea zone with AC with space)
 
--   can only move units during movement phase
 -   pre-combat movement phase (player may move into hostile territory)
 -   units stop right away (cannot move) if they are in a hostile territory
 -   cannot move anti aircraft

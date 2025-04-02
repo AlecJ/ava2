@@ -45,8 +45,8 @@ def handle_purchase_unit(session_id):
     # TODO for EVERY turn, validate player ID matches current player turn
     # validate all units are owned by the player
     # validate current turn player has correct key
-    if not validate_player(player):
-        return jsonify({'status': 'Player ID not found.'}), 404
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 404
 
     data = request.get_json()
     unit_type_to_purchase = data.get('unitType')
@@ -89,8 +89,8 @@ def handle_mobilize_units(session_id):
     # TODO for EVERY turn, validate player ID matches current player turn
     # validate all units are owned by the player
     # validate current turn player has correct key
-    if not validate_player(player):
-        return jsonify({'status': 'Player ID not found.'}), 404
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 404
 
     data = request.get_json()
     units_to_mobilize = data.get('units')
@@ -143,7 +143,7 @@ def handle_move_units(session_id):
     # validate the attempted troop movement
     if not validate_unit_movement(game_state,
                                   territory_a, territory_b, units_to_move):
-        return jsonify({'status': 'User cannot move units with 0 movement.'}), 400
+        return jsonify({'status': 'Invalid movement attempted.'}), 400
 
     move_units(game_state, territory_a, territory_b, units_to_move)
 

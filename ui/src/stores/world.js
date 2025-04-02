@@ -26,6 +26,14 @@ export const useWorldStore = defineStore("world", {
 
 			return this.countries[team].color;
 		},
+		getNeighboringTerritories(territoryName) {
+			const territory = this.getTerritory(territoryName);
+			const neighborNames = territory["neighbors"];
+
+			return neighborNames.map((tName) => {
+				return { ...this.getTerritory(tName), name: tName };
+			});
+		},
 		setThreeGlobeAndCountries(threeGlobeAndCountries) {
 			this.threeGlobeAndCountries = threeGlobeAndCountries;
 		},

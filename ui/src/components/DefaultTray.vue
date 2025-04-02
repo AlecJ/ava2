@@ -24,6 +24,10 @@ export default {
 			type: Object,
 			required: false,
 		},
+		neighboringTerritoriesData: {
+			type: Object,
+			required: false,
+		},
 		currentTurnNum: {
 			type: Number,
 			required: false,
@@ -90,8 +94,8 @@ export default {
 		},
 		showHalfScreen() {
 			return (
-				!!this.territoryData ||
-				(this.isPlacingMobilizationUnits && !this.isPurchasingUnits)
+				!this.showFullScreen &&
+				(!!this.territoryData || this.isPlacingMobilizationUnits)
 			);
 		},
 	},
@@ -119,6 +123,7 @@ export default {
 			:isLoading="isLoading"
 			:player="player"
 			:territoryData="territoryData"
+			:neighboringTerritoriesData="neighboringTerritoriesData"
 			:currentTurnNum="currentTurnNum"
 			:currentPhaseNum="currentPhaseNum"
 			:setIsSelectingTerritory="setIsSelectingTerritory"

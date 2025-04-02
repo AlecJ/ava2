@@ -53,7 +53,7 @@ button {
 	position: absolute;
 	bottom: 1.5rem;
 	// width: 20%;
-	width: calc(2rem + 14rem);
+	width: calc(2rem + 16rem);
 	height: 3rem;
 	margin-left: 0;
 

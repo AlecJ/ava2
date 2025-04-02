@@ -5,7 +5,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Alaska": {
 		"team": 4,
@@ -13,7 +13,7 @@
 		"is_ocean": false,
 		"power": 2,
 		"neighbors": ["ocean_tile_63", "Western Canada", "ocean_tile_64"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Algeria": {
 		"team": 1,
@@ -21,7 +21,10 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_12", "ocean_tile_13", "Libya"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 1 },
+			{ "type": "ARTILLERY", "count": 1 }
+		]
 	},
 	"Anglo Egypt": {
 		"team": 2,
@@ -36,7 +39,11 @@
 			"ocean_tile_15",
 			"ocean_tile_34"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Angola": {
 		"team": -1,
@@ -44,7 +51,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Antarctica": {
 		"team": -1,
@@ -52,7 +59,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Archangel": {
 		"team": 0,
@@ -65,7 +72,10 @@
 			"Russia",
 			"ocean_tile_4"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "TANK", "count": 1 }
+		]
 	},
 	"Australia": {
 		"team": 2,
@@ -78,7 +88,7 @@
 			"ocean_tile_40",
 			"ocean_tile_46"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 3 }]
 	},
 	"Balkans": {
 		"team": 1,
@@ -92,7 +102,11 @@
 			"Ukraine S.S.R.",
 			"ocean_tile_16"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Belgian Congo": {
 		"team": 2,
@@ -106,7 +120,7 @@
 			"Rhodesia",
 			"ocean_tile_23"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"Belorussia": {
 		"team": 1,
@@ -119,7 +133,7 @@
 			"West Russia",
 			"Ukraine S.S.R."
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 3 }]
 	},
 	"Borneo": {
 		"team": 3,
@@ -127,7 +141,7 @@
 		"is_ocean": false,
 		"power": 4,
 		"neighbors": ["ocean_tile_48"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Brazil": {
 		"team": 4,
@@ -135,7 +149,7 @@
 		"is_ocean": false,
 		"power": 3,
 		"neighbors": ["ocean_tile_18", "ocean_tile_22"],
-		"units": []
+		"starting_units": []
 	},
 	"Buryatia S.S.R.": {
 		"team": 0,
@@ -149,7 +163,7 @@
 			"ocean_tile_60",
 			"ocean_tile_62"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Caroline Islands": {
 		"team": 3,
@@ -157,12 +171,13 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_50"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Caucasus": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 4,
 		"neighbors": [
 			"Ukraine S.S.R.",
@@ -172,20 +187,25 @@
 			"Persia",
 			"ocean_tile_16"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 }
+		]
 	},
-	"Central America": {
+	"Panama": {
 		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
-		"power": 0,
+		"power": 1,
 		"neighbors": [
 			"Eastern United States",
-			"East Mexico",
+			"Mexico",
 			"ocean_tile_19",
 			"ocean_tile_20"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"Central United States": {
 		"team": 4,
@@ -195,13 +215,12 @@
 		"neighbors": [
 			"Eastern United States",
 			"Western United States",
-			"East Mexico",
-			"West Mexico",
+			"Mexico",
 			"Eastern Canada",
 			"Western Canada",
 			"ocean_tile_10"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Chile": {
 		"team": -1,
@@ -209,7 +228,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"China": {
 		"team": 4,
@@ -217,7 +236,10 @@
 		"is_ocean": false,
 		"power": 2,
 		"neighbors": ["Sinkiang", "Manchuria", "Kwangtung", "French Indochina"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Cyprus": {
 		"team": -1,
@@ -225,19 +247,27 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Eastern United States": {
 		"team": 4,
 		"is_capital": true,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 12,
 		"neighbors": [
 			"Eastern Canada",
 			"Central United States",
 			"ocean_tile_10"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "BOMBER", "count": 1 }
+		]
 	},
 	"East Indies": {
 		"team": 3,
@@ -245,23 +275,7 @@
 		"is_ocean": false,
 		"power": 4,
 		"neighbors": ["ocean_tile_37"],
-		"units": []
-	},
-	"East Mexico": {
-		"team": 4,
-		"is_capital": false,
-		"is_ocean": false,
-		"power": 1,
-		"neighbors": [
-			"West Mexico",
-			"Central America",
-			"Central United States",
-			"ocean_tile_10",
-			"ocean_tile_19",
-			"ocean_tile_20",
-			"ocean_tile_54"
-		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Eastern Canada": {
 		"team": 2,
@@ -275,7 +289,7 @@
 			"ocean_tile_1",
 			"ocean_tile_9"
 		],
-		"units": []
+		"starting_units": [{ "type": "TANK", "count": 1 }]
 	},
 	"Eastern Europe": {
 		"team": 1,
@@ -290,7 +304,11 @@
 			"Karelia S.S.R.",
 			"ocean_tile_5"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Eire": {
 		"team": -1,
@@ -298,7 +316,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Evenki National Okrug": {
 		"team": 0,
@@ -306,7 +324,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["Russia", "Novosibirsk", "Yakut S.S.R."],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Formosa": {
 		"team": -1,
@@ -314,7 +332,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"French Equitorial Africa": {
 		"team": 2,
@@ -327,7 +345,7 @@
 			"Belgian Congo",
 			"ocean_tile_23"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"French Indochina": {
 		"team": 3,
@@ -335,7 +353,10 @@
 		"is_ocean": false,
 		"power": 3,
 		"neighbors": ["China", "Kwangtung", "India", "ocean_tile_36"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"French Madagascar": {
 		"team": 2,
@@ -348,7 +369,7 @@
 			"ocean_tile_32",
 			"ocean_tile_29"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"French West Africa": {
 		"team": 2,
@@ -356,12 +377,13 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["French Equitorial Africa", "ocean_tile_17"],
-		"units": []
+		"starting_units": []
 	},
 	"Germany": {
 		"team": 1,
 		"is_capital": true,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 10,
 		"neighbors": [
 			"Western Europe",
@@ -370,7 +392,13 @@
 			"Southern Europe",
 			"ocean_tile_5"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "TANK", "count": 2 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "BOMBER", "count": 1 }
+		]
 	},
 	"Gibraltar": {
 		"team": 2,
@@ -378,7 +406,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_13"],
-		"units": []
+		"starting_units": []
 	},
 	"Greenland": {
 		"team": 4,
@@ -386,7 +414,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_2"],
-		"units": []
+		"starting_units": []
 	},
 	"Hawaiian Islands": {
 		"team": 4,
@@ -394,7 +422,10 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_52"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Himalaya": {
 		"team": -1,
@@ -402,7 +433,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Iceland": {
 		"team": -1,
@@ -410,7 +441,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"India": {
 		"team": 2,
@@ -418,7 +449,10 @@
 		"is_ocean": false,
 		"power": 3,
 		"neighbors": ["Persia", "French Indochina", "ocean_tile_35"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 }
+		]
 	},
 	"Italian East Africa": {
 		"team": 2,
@@ -431,15 +465,23 @@
 			"Rhodesia",
 			"ocean_tile_34"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"Japan": {
 		"team": 3,
 		"is_capital": true,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 8,
 		"neighbors": ["ocean_tile_60", "ocean_tile_61"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 4 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "BOMBER", "count": 1 }
+		]
 	},
 	"Karelia S.S.R.": {
 		"team": 0,
@@ -455,7 +497,10 @@
 			"ocean_tile_4",
 			"ocean_tile_5"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Kazahk S.S.R.": {
 		"team": 0,
@@ -469,7 +514,7 @@
 			"Sinkiang",
 			"Persia"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Kerguelen Islands": {
 		"team": -1,
@@ -477,7 +522,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Kwangtung": {
 		"team": 3,
@@ -490,7 +535,7 @@
 			"Manchuria",
 			"ocean_tile_59"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 3 }]
 	},
 	"Libya": {
 		"team": 1,
@@ -498,7 +543,10 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["Algeria", "Anglo Egypt", "ocean_tile_14"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 1 },
+			{ "type": "TANK", "count": 1 }
+		]
 	},
 	"Manchuria": {
 		"team": 3,
@@ -506,7 +554,10 @@
 		"is_ocean": false,
 		"power": 3,
 		"neighbors": ["Buryatia S.S.R.", "China", "Kwangtung", "ocean_tile_61"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Midway Island": {
 		"team": 4,
@@ -514,7 +565,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_56"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Mongolia": {
 		"team": -1,
@@ -522,7 +573,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Mozambique": {
 		"team": -1,
@@ -530,7 +581,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"New Guinea": {
 		"team": 3,
@@ -538,7 +589,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_47"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"New Zealand": {
 		"team": 2,
@@ -546,7 +597,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_41"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Norway": {
 		"team": 1,
@@ -559,7 +610,10 @@
 			"ocean_tile_5",
 			"ocean_tile_6"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Novosibirsk": {
 		"team": 0,
@@ -573,7 +627,7 @@
 			"Sinkiang",
 			"Yakut S.S.R."
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Okinawa": {
 		"team": 3,
@@ -581,7 +635,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_58"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Persia": {
 		"team": 2,
@@ -595,7 +649,7 @@
 			"Caucasus",
 			"ocean_tile_34"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Peru Argentina": {
 		"team": -1,
@@ -603,7 +657,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Philippine Islands": {
 		"team": 3,
@@ -611,7 +665,7 @@
 		"is_ocean": false,
 		"power": 3,
 		"neighbors": ["ocean_tile_49"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Rhodesia": {
 		"team": 2,
@@ -624,12 +678,13 @@
 			"Italian East Africa",
 			"ocean_tile_33"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"Russia": {
 		"team": 0,
 		"is_capital": true,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 8,
 		"neighbors": [
 			"Archangel",
@@ -639,7 +694,13 @@
 			"Evenki National Okrug",
 			"West Russia"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 2 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Sahara": {
 		"team": -1,
@@ -647,7 +708,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Saudi Arabia": {
 		"team": -1,
@@ -655,7 +716,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Sinkiang": {
 		"team": 4,
@@ -663,7 +724,7 @@
 		"is_ocean": false,
 		"power": 2,
 		"neighbors": ["Kazahk S.S.R.", "Novosibirsk", "China"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Solomon Islands": {
 		"team": 3,
@@ -671,15 +732,21 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_45"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Southern Europe": {
 		"team": 1,
 		"is_capital": false,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 6,
 		"neighbors": ["Western Europe", "Germany", "Balkans", "ocean_tile_14"],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 }
+		]
 	},
 	"Soviet Far East": {
 		"team": 0,
@@ -687,7 +754,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["Yakut S.S.R.", "Buryatia S.S.R.", "ocean_tile_62"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"Spain Portugal": {
 		"team": -1,
@@ -695,7 +762,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Sweden": {
 		"team": -1,
@@ -703,7 +770,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Switzerland": {
 		"team": -1,
@@ -711,7 +778,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Trans-Jordan": {
 		"team": 2,
@@ -724,7 +791,7 @@
 			"ocean_tile_34",
 			"ocean_tile_15"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Turkey": {
 		"team": -1,
@@ -732,7 +799,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Ukraine S.S.R.": {
 		"team": 1,
@@ -747,7 +814,12 @@
 			"West Russia",
 			"ocean_tile_16"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Union of South Africa": {
 		"team": 2,
@@ -755,12 +827,13 @@
 		"is_ocean": false,
 		"power": 2,
 		"neighbors": ["Rhodesia", "ocean_tile_27", "ocean_tile_28"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"United Kingdom": {
 		"team": 2,
 		"is_capital": true,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 8,
 		"neighbors": [
 			"ocean_tile_8",
@@ -769,7 +842,14 @@
 			"ocean_tile_7",
 			"ocean_tile_6"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 2 },
+			{ "type": "BOMBER", "count": 1 }
+		]
 	},
 	"Venezuela": {
 		"team": -1,
@@ -777,7 +857,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"Wake Island": {
 		"team": 3,
@@ -785,7 +865,7 @@
 		"is_ocean": false,
 		"power": 0,
 		"neighbors": ["ocean_tile_51"],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"West Indies": {
 		"team": 4,
@@ -793,9 +873,9 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": ["ocean_tile_19"],
-		"units": []
+		"starting_units": []
 	},
-	"West Mexico": {
+	"Mexico": {
 		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
@@ -803,10 +883,10 @@
 		"neighbors": [
 			"Western United States",
 			"Central United States",
-			"East Mexico",
+			"Panama",
 			"ocean_tile_54"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"West Russia": {
 		"team": 1,
@@ -821,7 +901,11 @@
 			"Archangel",
 			"Russia"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 3 },
+			{ "type": "ARTILLERY", "count": 1 },
+			{ "type": "TANK", "count": 1 }
+		]
 	},
 	"Western Canada": {
 		"team": 2,
@@ -837,7 +921,7 @@
 			"ocean_tile_64",
 			"ocean_tile_55"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 1 }]
 	},
 	"Western Europe": {
 		"team": 1,
@@ -852,12 +936,18 @@
 			"ocean_tile_5",
 			"ocean_tile_13"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "TANK", "count": 2 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Western United States": {
 		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
+		"has_factory": true,
 		"power": 10,
 		"neighbors": [
 			"Western Canada",
@@ -866,7 +956,11 @@
 			"ocean_tile_55",
 			"ocean_tile_54"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "INFANTRY", "count": 2 },
+			{ "type": "ANTI-AIRCRAFT", "count": 1 },
+			{ "type": "FIGHTER", "count": 1 }
+		]
 	},
 	"Yakut S.S.R.": {
 		"team": 0,
@@ -879,10 +973,10 @@
 			"Buryatia S.S.R.",
 			"Novosibirsk"
 		],
-		"units": []
+		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
 	"ocean_tile_1": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -892,10 +986,10 @@
 			"ocean_tile_2",
 			"ocean_tile_8"
 		],
-		"units": []
+		"starting_units": [{ "type": "TRANSPORT", "count": 1 }]
 	},
 	"ocean_tile_10": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -908,10 +1002,13 @@
 			"ocean_tile_11",
 			"ocean_tile_9"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "DESTROYER", "count": 1 },
+			{ "type": "TRANSPORT", "count": 2 }
+		]
 	},
 	"ocean_tile_11": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -920,13 +1017,12 @@
 			"ocean_tile_10",
 			"ocean_tile_19",
 			"ocean_tile_18",
-			"ocean_tile_12",
-			"ocean_tile_17"
+			"ocean_tile_12"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_12": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -935,13 +1031,14 @@
 			"ocean_tile_8",
 			"ocean_tile_9",
 			"ocean_tile_11",
+			"ocean_tile_18",
 			"ocean_tile_17",
 			"ocean_tile_13"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_13": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -952,10 +1049,10 @@
 			"ocean_tile_12",
 			"ocean_tile_14"
 		],
-		"units": []
+		"starting_units": [{ "type": "BATTLESHIP", "count": 1 }]
 	},
 	"ocean_tile_14": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -963,12 +1060,16 @@
 			"Southern Europe",
 			"Libya",
 			"ocean_tile_13",
-			"ocean_tile_15"
+			"ocean_tile_15",
+			"ocean_tile_16"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "BATTLESHIP", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 }
+		]
 	},
 	"ocean_tile_15": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -979,18 +1080,24 @@
 			"ocean_tile_16",
 			"ocean_tile_14"
 		],
-		"units": []
+		"starting_units": [{ "type": "DESTROYER", "count": 1 }]
 	},
 	"ocean_tile_16": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": ["Balkans", "Caucasus", "Ukraine S.S.R.", "ocean_tile_15"],
-		"units": []
+		"neighbors": [
+			"Balkans",
+			"Caucasus",
+			"Ukraine S.S.R.",
+			"ocean_tile_14",
+			"ocean_tile_15"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_17": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -998,43 +1105,43 @@
 			"French West Africa",
 			"ocean_tile_12",
 			"ocean_tile_18",
-			"ocean_tile_23",
-			"ocean_tile_11"
+			"ocean_tile_22",
+			"ocean_tile_23"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_18": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
 			"Brazil",
-			"ocean_tile_17",
 			"ocean_tile_11",
-			"ocean_tile_22",
-			"ocean_tile_19"
+			"ocean_tile_12",
+			"ocean_tile_17",
+			"ocean_tile_19",
+			"ocean_tile_22"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_19": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
 			"West Indies",
-			"Central America",
-			"East Mexico",
+			"Panama",
 			"ocean_tile_10",
 			"ocean_tile_18",
 			"ocean_tile_11",
 			"ocean_tile_20"
 		],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_2": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
@@ -1045,425 +1152,783 @@
 			"ocean_tile_3",
 			"ocean_tile_8"
 		],
-		"units": []
+		"starting_units": [
+			{ "type": "BATTLESHIP", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 }
+		]
 	},
 	"ocean_tile_20": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
-			"Central America",
-			"East Mexico",
+			"Panama",
 			"ocean_tile_19",
 			"ocean_tile_21",
 			"ocean_Tile_54"
 		],
-		"units": []
+		"starting_units": [{ "type": "DESTROYER", "count": 1 }]
 	},
 	"ocean_tile_21": {
-		"team": 0,
+		"team": 4,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": ["ocean_tile_20", "ocean_tile_25", "ocean_tile_43"],
+		"starting_units": []
+	},
+	"ocean_tile_22": {
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
-			"ocean_tile_20",
-			"ocean_tile_22",
-			"ocean_tile_25",
-			"ocean_tile_43"
+			"Brazil",
+			"ocean_tile_17",
+			"ocean_tile_18",
+			"ocean_tile_23",
+			"ocean_tile_24",
+			"ocean_tile_25"
 		],
-		"units": []
-	},
-	"ocean_tile_22": {
-		"team": 0,
-		"is_capital": false,
-		"is_ocean": true,
-		"power": 0,
-		"neighbors": [],
-		"units": []
+		"starting_units": []
 	},
 	"ocean_tile_23": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"French Equatorial Africa",
+			"Belgian Congo",
+			"ocean_tile_17",
+			"ocean_tile_12",
+			"ocean_tile_14",
+			"ocean_tile_27"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_24": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_22",
+			"ocean_tile_23",
+			"ocean_tile_25",
+			"ocean_tile_26",
+			"ocean_tile_27"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_25": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_21",
+			"ocean_tile_22",
+			"ocean_tile_24",
+			"ocean_tile_26",
+			"ocean_tile_42"
+		],
+		"starting_units": []
+	},
+	"ocean_tile_26": {
+		"team": 4,
+		"is_capital": false,
+		"is_ocean": true,
+		"power": 0,
+		"neighbors": ["ocean_tile_24", "ocean_tile_25", "ocean_tile_27"],
+		"starting_units": []
 	},
 	"ocean_tile_27": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Union of South Africa",
+			"ocean_tile_23",
+			"ocean_tile_24",
+			"ocean_tile_26",
+			"ocean_tile_28"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_28": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Union of South Africa",
+			"French Madagascar",
+			"ocean_tile_27",
+			"ocean_tile_29",
+			"ocean_tile_33"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_29": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"French Madagascar",
+			"ocean_tile_28",
+			"ocean_tile_30",
+			"ocean_tile_32"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_3": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"United Kingdom",
+			"Norway",
+			"ocean_tile_2",
+			"ocean_tile_4",
+			"ocean_tile_6"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_30": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_29",
+			"ocean_tile_31",
+			"ocean_tile_32",
+			"ocean_tile_38",
+			"ocean_tile_39"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_31": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_30",
+			"ocean_tile_32",
+			"ocean_tile_35",
+			"ocean_tile_37",
+			"ocean_tile_38"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_32": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"French Madagascar",
+			"ocean_tile_29",
+			"ocean_tile_30",
+			"ocean_tile_31",
+			"ocean_tile_33",
+			"ocean_tile_34",
+			"ocean_tile_35"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_33": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Rhodesia",
+			"French Madagascar",
+			"ocean_tile_28",
+			"ocean_tile_32",
+			"ocean_tile_34"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_34": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Italian East Africa",
+			"Anglo Egypt",
+			"Trans-Jordan",
+			"Persia",
+			"ocean_tile_15",
+			"ocean_tile_32",
+			"ocean_tile_33",
+			"ocean_tile_35"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_35": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"India",
+			"ocean_tile_31",
+			"ocean_tile_32",
+			"ocean_tile_34",
+			"ocean_tile_36",
+			"ocean_tile_37"
+		],
+		"starting_units": [
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "AIRCRAFT-CARRIER", "count": 1 },
+			{ "type": "DESTROYER", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 }
+		]
 	},
 	"ocean_tile_36": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"French Indochina",
+			"ocean_tile_35",
+			"ocean_tile_37",
+			"ocean_tile_48",
+			"ocean_tile_49",
+			"ocean_tile_59"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_37": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"East Indies",
+			"ocean_tile_31",
+			"ocean_tile_35",
+			"ocean_tile_36",
+			"ocean_tile_38",
+			"ocean_tile_47",
+			"ocean_tile_48"
+		],
+		"starting_units": [
+			{ "type": "FIGHTER", "count": 2 },
+			{ "type": "AIRCRAFT-CARRIER", "count": 1 },
+			{ "type": "BATTLESHIP", "count": 1 }
+		]
 	},
 	"ocean_tile_38": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Australia",
+			"ocean_tile_30",
+			"ocean_tile_31",
+			"ocean_tile_37",
+			"ocean_tile_39",
+			"ocean_tile_46",
+			"ocean_tile_47"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_39": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Australia",
+			"ocean_tile_30",
+			"ocean_tile_38",
+			"ocean_tile_40"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_4": {
 		"team": 0,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": ["Archangel", "Karelia S.S.R.", "ocean_tile_3"],
+		"starting_units": [{ "type": "SUBMARINE", "count": 1 }]
 	},
 	"ocean_tile_40": {
-		"team": 0,
+		"team": 2,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Australia",
+			"ocean_tile_39",
+			"ocean_tile_41",
+			"ocean_tile_46"
+		],
+		"starting_units": [
+			{ "type": "TRANSPORT", "count": 1 },
+			{ "type": "SUBMARINE", "count": 1 }
+		]
 	},
 	"ocean_tile_41": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"New Zealand",
+			"ocean_tile_40",
+			"ocean_tile_42",
+			"ocean_tile_44",
+			"ocean_tile_45",
+			"ocean_tile_46"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_42": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_25",
+			"ocean_tile_41",
+			"ocean_tile_43",
+			"ocean_tile_44"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_43": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_21",
+			"ocean_tile_42",
+			"ocean_tile_44",
+			"ocean_tile_53",
+			"ocean_tile_54"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_44": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_41",
+			"ocean_tile_42",
+			"ocean_tile_43",
+			"ocean_tile_45",
+			"ocean_tile_52",
+			"ocean_tile_53"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_45": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Solomon Islands",
+			"ocean_tile_41",
+			"ocean_tile_44",
+			"ocean_tile_46",
+			"ocean_tile_47",
+			"ocean_tile_50",
+			"ocean_tile_51",
+			"ocean_tile_52"
+		],
+		"starting_units": [{ "type": "SUBMARINE", "count": 1 }]
 	},
 	"ocean_tile_46": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Australia",
+			"ocean_tile_38",
+			"ocean_tile_40",
+			"ocean_tile_41",
+			"ocean_tile_45",
+			"ocean_tile_47"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_47": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"New Guinea",
+			"ocean_tile_37",
+			"ocean_tile_38",
+			"ocean_tile_45",
+			"ocean_tile_46",
+			"ocean_tile_48",
+			"ocean_tile_50"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_48": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Borneo",
+			"ocean_tile_36",
+			"ocean_tile_37",
+			"ocean_tile_47",
+			"ocean_tile_49",
+			"ocean_tile_50"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_49": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Philippine Islands",
+			"ocean_tile_36",
+			"ocean_tile_48",
+			"ocean_tile_50",
+			"ocean_tile_58",
+			"ocean_tile_59",
+			"ocean_tile_60"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_5": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Norway",
+			"Eastern Europe",
+			"Germany",
+			"Weestern Europe",
+			"Karelia S.S.R.",
+			"ocean_tile_6"
+		],
+		"starting_units": [
+			{ "type": "DESTROYER", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 },
+			{ "type": "SUBMARINE", "count": 2 }
+		]
 	},
 	"ocean_tile_50": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Caroline Islands",
+			"ocean_tile_45",
+			"ocean_tile_47",
+			"ocean_tile_48",
+			"ocean_tile_49",
+			"ocean_tile_51",
+			"ocean_tile_58"
+		],
+		"starting_units": [
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "AIRCRAFT-CARRIER", "count": 1 },
+			{ "type": "DESTROYER", "count": 1 }
+		]
 	},
 	"ocean_tile_51": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Wake Island",
+			"ocean_tile_45",
+			"ocean_tile_50",
+			"ocean_tile_52",
+			"ocean_tile_57",
+			"ocean_tile_58",
+			"ocean_tile_60"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_52": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Hawaiian Islands",
+			"ocean_tile_44",
+			"ocean_tile_45",
+			"ocean_tile_51",
+			"ocean_tile_53",
+			"ocean_tile_55",
+			"ocean_tile_56",
+			"ocean_tile_57"
+		],
+		"starting_units": [
+			{ "type": "FIGHTER", "count": 1 },
+			{ "type": "AIRCRAFT-CARRIER", "count": 1 },
+			{ "type": "SUBMARINE", "count": 1 }
+		]
 	},
 	"ocean_tile_53": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_43",
+			"ocean_tile_44",
+			"ocean_tile_52",
+			"ocean_tile_54",
+			"ocean_tile_55"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_54": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Mexico",
+			"Western United States",
+			"ocean_tile_20",
+			"ocean_tile_43",
+			"ocean_tile_53",
+			"ocean_tile_55"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_55": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Western United States",
+			"Western Canada",
+			"ocean_tile_52",
+			"ocean_tile_53",
+			"ocean_tile_54",
+			"ocean_tile_56",
+			"ocean_tile_64"
+		],
+		"starting_units": [
+			{ "type": "BATTLESHIP", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 }
+		]
 	},
 	"ocean_tile_56": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Midway Island",
+			"ocean_tile_52",
+			"ocean_tile_55",
+			"ocean_tile_57",
+			"ocean_tile_63",
+			"ocean_tile_64"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_57": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"ocean_tile_51",
+			"ocean_tile_52",
+			"ocean_tile_56",
+			"ocean_tile_60",
+			"ocean_tile_62",
+			"ocean_tile_63"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_58": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Okinawa",
+			"ocean_tile_49",
+			"ocean_tile_50",
+			"ocean_tile_51",
+			"ocean_tile_60"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_59": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Kwangtung",
+			"ocean_tile_36",
+			"ocean_tile_49",
+			"ocean_tile_60",
+			"ocean_tile_61"
+		],
+		"starting_units": [{ "type": "TRANSPORT", "count": 1 }]
 	},
 	"ocean_tile_6": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"United Kingdom",
+			"Norway",
+			"Western Europe",
+			"ocean_tile_3",
+			"ocean_tile_5",
+			"ocean_tile_7"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_60": {
-		"team": 0,
+		"team": 3,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Buryatia S.S.R.",
+			"Japan",
+			"ocean_tile_49",
+			"ocean_tile_51",
+			"ocean_tile_57",
+			"ocean_tile_58",
+			"ocean_tile_59",
+			"ocean_tile_61",
+			"ocean_tile_62"
+		],
+		"starting_units": [
+			{ "type": "BATTLESHIP", "count": 1 },
+			{ "type": "TRANSPORT", "count": 1 }
+		]
 	},
 	"ocean_tile_61": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": ["Japan", "Manchuria", "ocean_tile_59", "ocean_tile_60"],
+		"starting_units": []
 	},
 	"ocean_tile_62": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Buryatia S.S.R.",
+			"Soviet Far East",
+			"ocean_tile_57",
+			"ocean_tile_60",
+			"ocean_tile_63"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_63": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Alaska",
+			"Western Canada",
+			"ocean_tile_56",
+			"ocean_tile_57",
+			"ocean_tile_62",
+			"ocean_tile_64"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_64": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Alaska",
+			"Western Canada",
+			"ocean_tile_55",
+			"ocean_tile_56",
+			"ocean_tile_63"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_7": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"United Kingdom",
+			"Western Europe",
+			"ocean_tile_6",
+			"ocean_tile_8",
+			"ocean_tile_12"
+		],
+		"starting_units": []
 	},
 	"ocean_tile_8": {
-		"team": 0,
+		"team": 1,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"United Kingdom",
+			"ocean_tile_1",
+			"ocean_tile_2",
+			"ocean_tile_7",
+			"ocean_tile_9",
+			"ocean_tile_12"
+		],
+		"starting_units": [{ "type": "SUBMARINE", "count": 1 }]
 	},
 	"ocean_tile_9": {
-		"team": 0,
+		"team": 4,
 		"is_capital": false,
 		"is_ocean": true,
 		"power": 0,
-		"neighbors": [],
-		"units": []
+		"neighbors": [
+			"Eastern Canada",
+			"ocean_tile_1",
+			"ocean_tile_8",
+			"ocean_tile_10",
+			"ocean_tile_11",
+			"ocean_tile_12"
+		],
+		"starting_units": []
 	}
 }

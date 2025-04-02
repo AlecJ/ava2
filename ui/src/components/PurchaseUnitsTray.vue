@@ -1,5 +1,6 @@
 <script>
 import { unitIcons } from "@/data/unitIcons";
+import { unitData } from "@/data/unitData";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 export default {
@@ -14,24 +15,30 @@ export default {
 	},
 	data() {
 		return {
-			units: [
-				"INFANTRY",
-				"ARTILLERY",
-				"TANK",
-				"FIGHTER",
-				"BOMBER",
-				"BATTLESHIP",
-				"DESTROYER",
-				"AIRCRAFT-CARRIER",
-				"TRANSPORT",
-				"SUBMARINE",
-				"INDUSTRIAL-COMPLEX",
-				"ANTI-AIRCRAFT",
-			],
+			// units: [
+			// 	"INFANTRY",
+			// 	"ARTILLERY",
+			// 	"TANK",
+			// 	"FIGHTER",
+			// 	"BOMBER",
+			// 	"BATTLESHIP",
+			// 	"DESTROYER",
+			// 	"AIRCRAFT-CARRIER",
+			// 	"TRANSPORT",
+			// 	"SUBMARINE",
+			// 	"INDUSTRIAL-COMPLEX",
+			// 	"ANTI-AIRCRAFT",
+			// ],
 		};
 	},
 	watch: {},
-	computed: {},
+	computed: {
+		units() {
+			return Object.keys(unitData).map((unit) => {
+				return { type: unit, ...unitData[unit] };
+			});
+		},
+	},
 	methods: {
 		getUnitIconSrc(unit) {
 			const unitIcon = unitIcons.find((u) => u.name === unit);
@@ -67,15 +74,28 @@ export default {
 			<button
 				class="purchase-unit-button"
 				v-for="unit in units"
-				:key="`${unit}`"
-				@click="purchaseUnit(unit)"
+				:key="`${unit.type}`"
+				@click="purchaseUnit(unit.type)"
 			>
+				<div class="unit-name-and-cost">
+					<p class="cost">{{ unit.cost }}</p>
+					<p class="name">{{ unit.type }}</p>
+				</div>
+
 				<img
-					:src="getUnitIconSrc(unit)"
-					:alt="unit"
+					:src="getUnitIconSrc(unit.type)"
+					:alt="unit.type"
 					class="unit-icon"
-					:title="unit"
+					:title="unit.type"
 				/>
+				<div class="unit-details">
+					<p>attack: {{ unit.attack }}</p>
+					<p>defense: {{ unit.defense }}</p>
+					<p>movement: {{ unit.movement }}</p>
+				</div>
+				<div class="unit-description">
+					<p>{{ unit.description }}</p>
+				</div>
 			</button>
 		</div>
 	</div>
@@ -93,14 +113,48 @@ export default {
 
 		display: grid;
 		grid-template-columns: repeat(auto-fill, 150px);
+		gap: 1rem;
 
 		.purchase-unit-button {
 			width: 150px;
 			height: 200px;
+			padding: 0.2rem;
+
+			display: grid;
+			place-items: center;
+			grid-template-rows: 1fr 4fr 3fr 2fr;
+
+			.unit-name-and-cost {
+				display: grid;
+				grid-template-columns: 1fr 5fr;
+
+				.cost {
+					width: 1.6rem;
+					height: 1.6rem;
+					background-color: orange;
+					border-radius: 50%;
+
+					display: grid;
+					place-items: center;
+				}
+			}
 
 			.unit-icon {
-				width: 3rem;
+				width: 50%;
 				height: auto;
+			}
+
+			.unit-details {
+				display: grid;
+				grid-template-columns: auto auto;
+
+				justify-items: start;
+
+				font-size: 0.75rem;
+			}
+
+			.unit-description {
+				font-size: 0.75rem;
 			}
 		}
 	}

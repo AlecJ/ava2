@@ -104,23 +104,55 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
 def validate_unit_movement(game_state, territory_a_name, territory_b_name, units_to_move):
     """
     Validates that the unit can move to the new territory.
+
+    Validation:
+    - selected territory is a neighbor to the current territory
+    - all moving units have movement available and are in the current territory
+    - a land unit can not enter an ocean territory (loading on ships is separate behavior)
+    - a sea unit cannot enter a land territory
+    - a unit cannot move from a hostile territory (unless it started there???)
+    - 
+    - player has units to place
+    - territory has industrial complex and is owned by the player
+    - sea units must be in ocean with a neighboring industrial complex
+    - new industrial complex must be in a controlled territory without an existing one
+
+    :return bool:
     """
     territory_a = game_state.territories[territory_a_name]
+    territory_b_generic_data = TERRITORY_DATA[territory_b_name]
+    territory_b = game_state.territories[territory_b_name]
+    territory_b_is_ocean = territory_b_generic_data['is_ocean']
+    # is_controlled_by_player = player.team_num == selected_territory_data.team
 
-    # ensure all moving units are in territory A
+    # territories are neighbors
+    territory_a_data = TERRITORY_DATA[territory_a_name]
+    if not territory_b_name in territory_a_data['neighbors']:
+        return False
+
+    # all moving units are in territory A
     units_in_territory_a_ids = {unit.unit_id for unit in territory_a.units}
     moving_unit_ids = {unit.unit_id for unit in units_to_move}
-    if not set(units_in_territory_a_ids).issubset(moving_unit_ids):
+    if not set(moving_unit_ids).issubset(units_in_territory_a_ids):
         return False
 
-    # ensure all units_have movement remaining
-    if not all([unit.movement > 0 for unit in territory_a.units if unit.unit_id in moving_unit_ids]):
-        return False
+    for unit in territory_a.units:
+        if not unit.unit_id in moving_unit_ids:
+            continue
 
-    # make sure territories are neighbors
-    territory_a_data = TERRITORY_DATA[territory_a_name]
+        # all units have movement remaining
+        if unit.movement < 1:
+            return False
 
-    return territory_b_name in territory_a_data['neighbors']
+        # land units cannot enter ocean
+        if is_land_unit(unit.unit_type) and territory_b_is_ocean:
+            return False
+
+        # sea units cannot enter land
+        if is_sea_unit(unit.unit_type) and not territory_b_is_ocean:
+            return False
+
+    return True
 
 
 def move_units(game_state, territory_a_name, territory_b_name, units_to_move):
@@ -183,6 +215,15 @@ def end_turn(session, game_state):
     return
 
 
+def is_land_unit(unit_type):
+    """
+    Check if given unit type is in the list of land units.
+
+    :return bool:
+    """
+    return unit_type in ['INFANTRY', 'ARTILLERY', 'TANK', 'ANTI-AIRCRAFT']
+
+
 def is_sea_unit(unit_type):
     """
     Check if given unit type is in the list of sea units.
@@ -190,6 +231,15 @@ def is_sea_unit(unit_type):
     :return bool:
     """
     return unit_type in ['AIRCRAFT-CARRIER', 'TRANSPORT', 'BATTLESHIP', 'DESTROYER', 'SUBMARINE']
+
+
+def is_air_unit(unit_type):
+    """
+    Check if given unit type is in the list of sea units.
+
+    :return bool:
+    """
+    return unit_type in ['FIGHTER', 'BOMBER']
 
 
 def check_territory_has_adjacent_industrial_complex(game_state, player, selected_territory):

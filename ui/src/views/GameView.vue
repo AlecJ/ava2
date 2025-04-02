@@ -1,6 +1,7 @@
 <script>
 import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
+import { countries } from "@/data/countries";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
@@ -46,6 +47,12 @@ export default {
 		players() {
 			return this.sessionStore?.getPlayers;
 		},
+		currentTurnNum() {
+			return this.sessionStore?.getTurnNum;
+		},
+		currentPhaseNum() {
+			return this.sessionStore?.getPhaseNum;
+		},
 		selectedCountries() {
 			// TODO remove with above
 			return this.sessionStore?.players || [];
@@ -56,6 +63,14 @@ export default {
 		playerCountry() {
 			// TODO replace with above
 			return this.sessionStore?.playerCountry;
+		},
+		playerTeamNum() {
+			return countries.findIndex(
+				(country) => country.name === this.player.country
+			);
+		},
+		isThisPlayersTurn() {
+			return this.currentTurnNum % 5 === this.playerTeamNum;
 		},
 		isTestMode() {
 			return this.sessionStore?.isTesting;
@@ -77,11 +92,12 @@ export default {
 
 			return { ...territoryData, name: this.focusedCountry };
 		},
-		currentTurnNum() {
-			return this.sessionStore?.getTurnNum;
-		},
-		currentPhaseNum() {
-			return this.sessionStore?.getPhaseNum;
+		neighboringTerritoriesData() {
+			if (!this.focusedTerritoryData) return [];
+
+			return this.worldStore?.getNeighboringTerritories(
+				this.focusedCountry
+			);
 		},
 		hasMobilizeUnitsRemaining() {
 			return this.player.mobilization_units.length;
@@ -173,6 +189,7 @@ export default {
 		:isLoading="isLoading"
 		:player="player"
 		:territoryData="focusedTerritoryData"
+		:neighboringTerritoriesData="neighboringTerritoriesData"
 		:currentTurnNum="currentTurnNum"
 		:currentPhaseNum="currentPhaseNum"
 		:isPurchasingUnits="isPurchasingUnits"
@@ -191,14 +208,14 @@ export default {
 
 	<PurchaseUnitsButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:active="currentPhaseNum === 0"
+		:active="currentPhaseNum === 0 && isThisPlayersTurn"
 		:setPurchasingUnits="setPurchasingUnits"
 		:isPurchasingUnits="isPurchasingUnits"
 	/>
 
 	<PlaceMobilizationUnitsButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:active="currentPhaseNum === 4"
+		:active="currentPhaseNum === 4 && isThisPlayersTurn"
 		:setPlacingMobilizationUnits="setPlacingMobilizationUnits"
 		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
 	/>

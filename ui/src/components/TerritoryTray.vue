@@ -22,6 +22,11 @@ export default {
 			type: Object,
 			required: false,
 		},
+		neighboringTerritoriesData: {
+			type: Object,
+			required: false,
+			default: [],
+		},
 		currentTurnNum: {
 			type: Number,
 			required: false,
@@ -49,6 +54,7 @@ export default {
 			power: 0,
 			units: [],
 			isSelectingTerritory: false,
+			isLoadingTransports: false,
 		};
 	},
 	watch: {
@@ -126,6 +132,23 @@ export default {
 		selectedUnits() {
 			return this.units.filter((unit) => unit.selected);
 		},
+		neighboringTerritoriesWithTransports() {
+			const neighboringOceanTerritories =
+				this.neighboringTerritoriesData.filter(
+					(territory) => territory["is_ocean"]
+				);
+
+			const neighboringTerritoriesWithTransports =
+				neighboringOceanTerritories.filter((territory) => {
+					return territory["units"].some(
+						(unit) =>
+							unit.unit_type === "TRANSPORT" ||
+							unit.unit_type === "AIRCRAFT-CARRIER"
+					);
+				});
+
+			return neighboringTerritoriesWithTransports;
+		},
 	},
 	methods: {
 		resetData() {
@@ -158,6 +181,9 @@ export default {
 		switchTerritorySelectionMode(bool) {
 			this.isSelectingTerritory = bool;
 			this.setIsSelectingTerritory(bool);
+		},
+		switchLoadingTransportsMode(bool) {
+			this.isLoadingTransports = bool;
 		},
 		placeUnits() {
 			this.worldStore.mobilizeUnits(
@@ -208,14 +234,18 @@ export default {
 			<div class="unit-box-header">Units in Territory</div>
 			<!-- units will be sorted by remaining movement ascending -->
 			<UnitBox
-				v-if="!isSelectingTerritory"
+				v-if="!isSelectingTerritory && !isLoadingTransports"
 				:readOnly="!isPlayerTurn || !isMovementPhase"
 				:units="playerUnits"
 				:sortByMovement="true"
 			></UnitBox>
 
 			<div
-				v-if="friendlyUnits.length && !isSelectingTerritory"
+				v-if="
+					friendlyUnits.length &&
+					!isSelectingTerritory &&
+					!isLoadingTransports
+				"
 				class="friendly-units-in-territory"
 			>
 				Friendly Units in Territory:
@@ -223,17 +253,35 @@ export default {
 			</div>
 
 			<div
-				v-if="enemyUnits.length && !isSelectingTerritory"
+				v-if="
+					enemyUnits.length &&
+					!isSelectingTerritory &&
+					!isLoadingTransports
+				"
 				class="enemy-units-in-territory"
 			>
 				Enemy Units in Territory:
 				<UnitBox :units="enemyUnits" readOnly></UnitBox>
 			</div>
 
-			<div v-if="isSelectingTerritory" class="unit-box">
+			<div
+				v-if="isSelectingTerritory || isLoadingTransports"
+				class="unit-box"
+			>
 				<div class="selected-units">
 					Units to be Moved:
 					<UnitBox :units="selectedUnits" readOnly></UnitBox>
+				</div>
+			</div>
+
+			<div
+				v-if="isSelectingTerritory || isLoadingTransports"
+				class="unit-box"
+				v-for="territory in neighboringTerritoriesWithTransports"
+			>
+				<div class="selected-units">
+					Transports in {{ territory.name }}:
+					<UnitBox :units="territory.units"></UnitBox>
 				</div>
 			</div>
 
@@ -251,20 +299,34 @@ export default {
 			v-if="isPlayerTurn && isMovementPhase"
 		>
 			<button
-				v-if="!isSelectingTerritory"
+				v-if="!isSelectingTerritory && !isLoadingTransports"
 				:disabled="!selectedUnits.length"
 				@click="switchTerritorySelectionMode(true)"
 			>
 				Move Units
 			</button>
 			<button
-				v-if="isSelectingTerritory"
-				@click="switchTerritorySelectionMode(false)"
+				v-if="
+					!isSelectingTerritory &&
+					neighboringTerritoriesWithTransports.length &&
+					!isLoadingTransports
+				"
+				:disabled="!selectedUnits.length"
+				@click="switchLoadingTransportsMode(true)"
+			>
+				Load/Unload Ship
+			</button>
+			<button
+				v-if="isSelectingTerritory || isLoadingTransports"
+				@click="
+					switchTerritorySelectionMode(false);
+					switchLoadingTransportsMode(false);
+				"
 			>
 				Back
 			</button>
 			<button
-				v-if="isSelectingTerritory"
+				v-if="isSelectingTerritory || isLoadingTransports"
 				:disabled="!selectedTerritory"
 				@click="confirmUnitSelection"
 			>

@@ -55,6 +55,9 @@ export default {
 		selectedUnits() {
 			return this.playerUnits.filter((unit) => unit.selected);
 		},
+		mobilizationUnits() {
+			return this.player.mobilization_units;
+		},
 	},
 	methods: {
 		getUnitIconSrc(unit) {
@@ -84,18 +87,28 @@ export default {
 <template>
 	<div class="mobilization-tray">
 		<div class="mobilization-tray-title">Mobilize Units</div>
-		<div class="mobilization-tray-desc">
+		<div class="mobilization-tray-desc" v-if="mobilizationUnits.length">
 			Place your purchased units on territories you control with an
 			industrial complex. Sea units are placed in a sea zone adjacent to
 			an industrial complex.
 		</div>
-		<UnitBox class="mobilization-tray-units" :units="playerUnits">
+		<div class="mobilization-tray-desc" v-else>
+			You have no mobilization forces to place.<br />You can end your
+			turn.
+		</div>
+		<UnitBox
+			class="mobilization-tray-units"
+			v-if="mobilizationUnits.length"
+			:units="playerUnits"
+		>
 		</UnitBox>
-		<div>
+		<div v-if="mobilizationUnits.length">
 			Selected territory:
 			{{ selectedTerritory || "None" }}
 		</div>
-		<button @click="placeUnits">Place Units</button>
+		<button v-if="mobilizationUnits.length" @click="placeUnits">
+			Place Units
+		</button>
 	</div>
 </template>
 

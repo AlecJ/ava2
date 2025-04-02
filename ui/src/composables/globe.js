@@ -26,6 +26,7 @@ export function useGlobe() {
 				countryData;
 
 			const dataForTile = tileData[countryName];
+			if (!dataForTile) return; // TODO stopgap while territories.json is missing data (i.e., mexcio, central america)
 			const { team } = dataForTile;
 
 			const normalizedVertices = [];
