@@ -27,11 +27,11 @@ export const useWorldStore = defineStore("world", {
 			return this.countries[team].color;
 		},
 		getNeighboringTerritories(territoryName) {
-			const territory = this.getTerritory(territoryName);
+			const territory = this.territories[territoryName];
 			const neighborNames = territory["neighbors"];
 
 			return neighborNames.map((tName) => {
-				return { ...this.getTerritory(tName), name: tName };
+				return { ...this.territories[tName], name: tName };
 			});
 		},
 		setThreeGlobeAndCountries(threeGlobeAndCountries) {
@@ -141,6 +141,7 @@ export const useWorldStore = defineStore("world", {
 			sessionStore.setIsLoading(true);
 
 			try {
+				const playerId = sessionStore.getPlayerId;
 				const data = {
 					territoryA: territoryNameA,
 					territoryB: territoryNameB,
@@ -148,7 +149,57 @@ export const useWorldStore = defineStore("world", {
 				};
 
 				const response = await API.post(
-					`/game/${this.getSessionId}/moveunits`,
+					`/game/${this.getSessionId}/moveunits?pid=${playerId}`,
+					data
+				);
+				console.log("API Response:", response.data); // Debugging log
+				this.updateGameWorld(response.data.game_state);
+			} catch (error) {
+				console.error("API Error:", error.response.data.status);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
+		async loadTransport(territoryName, transport, units) {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const data = {
+					territoryName: territoryName,
+					transport: transport,
+					units: units,
+				};
+
+				const response = await API.post(
+					`/game/${this.getSessionId}/loadtransport?pid=${playerId}`,
+					data
+				);
+				console.log("API Response:", response.data); // Debugging log
+				this.updateGameWorld(response.data.game_state);
+			} catch (error) {
+				console.error("API Error:", error.response.data.status);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
+		async unloadTransport(seaTerritory, selectedTerritory, transport) {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const data = {
+					seaTerritory,
+					selectedTerritory,
+					transport,
+				};
+
+				const response = await API.post(
+					`/game/${this.getSessionId}/unloadtransport?pid=${playerId}`,
 					data
 				);
 				console.log("API Response:", response.data); // Debugging log

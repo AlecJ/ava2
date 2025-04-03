@@ -16,10 +16,8 @@ run with
 
 ## To Do
 
--   if a zone has sea units that can load, additional load units onto ships button
-
--   loading and unloading
--   fighters on carriers, infantry?
+-   loading and unloading carriers
+-   fighters and bombers on carriers
 
 -   plane movement (destroyed at end of turn if it does not end in a valid space
 -   friendly territory or sea zone with AC with space)
@@ -68,6 +66,8 @@ Confirm "Anglo-Egypt"
 -   check TODOs
 
 Future Work:
+
+-   centralize getUnitIconSrc and getColorForUnit
 
 -   maybe refactor defaultTray, loading should be consistent
 -   end turn should reset tray

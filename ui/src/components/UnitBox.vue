@@ -121,6 +121,16 @@ export default {
 						class="unit-icon"
 						:title="unit.unit_type"
 					/>
+					<div
+						v-if="unit.unit_type === 'TRANSPORT'"
+						class="cargo-dots"
+					>
+						<span
+							v-for="n in unit.cargo"
+							:key="n"
+							class="cargo-dot"
+						></span>
+					</div>
 				</button>
 			</div>
 		</div>
@@ -155,6 +165,7 @@ export default {
 			}
 
 			.unit-button {
+				position: relative;
 				width: 3rem; /* Adjust size */
 				height: 3rem;
 				margin: 0;
@@ -173,6 +184,22 @@ export default {
 				.unit-icon {
 					width: 3rem;
 					height: auto;
+				}
+
+				.cargo-dots {
+					position: absolute;
+					bottom: 0.25rem;
+					left: 50%;
+					transform: translateX(-50%);
+					display: flex;
+					gap: 3px;
+
+					.cargo-dot {
+						width: 6px;
+						height: 6px;
+						background-color: white;
+						border-radius: 50%;
+					}
 				}
 			}
 		}

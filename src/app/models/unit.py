@@ -10,17 +10,19 @@ A Unit is:
     Team ID
     Unit Type
     Remaining Movement
+    Cargo
 
 """
 
 
 class Unit:
-    def __init__(self, unit_id=None, team=None, unit_type=None, movement=None):
+    def __init__(self, unit_id=None, team=None, unit_type=None, movement=None, cargo=[]):
         self.unit_id = unit_id or str(uuid4())
         self.team = team
         self.unit_type = unit_type
         # 0 movement is valid
         self.movement = movement if movement is not None else UNIT_DATA[unit_type]['movement']
+        self.cargo = cargo
 
         # todo -- does this do anything
         if team is None or unit_type is None:
@@ -39,7 +41,8 @@ class Unit:
         """
         Checks if two units are the same based on their type, team, territory, and movement.
         """
-        return (self.unit_type == other.unit_type and
+        return (self.unit_id == other.unit_id and
+                self.unit_type == other.unit_type and
                 self.team == other.team and
                 self.movement == other.movement)
 
@@ -60,6 +63,7 @@ class Unit:
             'team': self.team,
             'unit_type': self.unit_type,
             'movement': self.movement,
+            'cargo': [unit.to_dict() for unit in self.cargo],
         }
 
     @classmethod
@@ -74,7 +78,8 @@ class Unit:
                 unit_id=data['unit_id'],
                 team=data['team'],
                 unit_type=data['unit_type'],
-                movement=data['movement']
+                movement=data['movement'],
+                cargo=[Unit.from_dict(unit) for unit in data.get('cargo', [])],
             )
         except KeyError as e:
             # TODO log error
