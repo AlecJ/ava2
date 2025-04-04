@@ -1,7 +1,3 @@
-# from uuid import uuid4
-# from enum import Enum
-
-
 from app.extensions import mongo
 from app.models.territory_data import TERRITORY_DATA
 from app.models.unit import Unit
@@ -107,6 +103,32 @@ class GameState:
             {'session_id': self.session_id},
             {'$set': self.to_dict()}
         )
+
+    def backup_game_state(self):
+        """
+        Backup the game state to a separate collection to allow players to undo.
+        """
+        mongo.db.game_state_backup.delete_many(
+            {'session_id': self.session_id})
+
+        mongo.db.game_state_backup.insert_one(self.to_dict())
+
+    def restore_game_state(self):
+        """
+        Restore the game state from a backup.
+        """
+        backup = mongo.db.game_state_backup.find_one(
+            {'session_id': self.session_id})
+
+        if not backup:
+            # TODO log error
+            return None
+
+        mongo.db.game_state.delete_one({'session_id': self.session_id})
+
+        mongo.db.game_state.insert_one(backup)
+
+        return GameState.from_dict(backup)
 
     @staticmethod
     def initialize_units(territory_data):

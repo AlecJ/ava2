@@ -50,7 +50,7 @@ class Unit:
         """
         This is necessary to enable Counters for checking if a list of units is a subset of another list.
 
-        See GameState.validate_unit_movement for more details.
+        See GameState.move_units for more details.
         """
         return hash((self.unit_type, self.team, self.movement))
 

@@ -7,8 +7,6 @@ from app.models.unit import Unit
 """
 purchase_unit
 
-validate_unit_movement
-
 move_units
 
 add_territory_power_to_player_ipcs
@@ -40,9 +38,9 @@ def purchase_unit(player, unit_type_to_purchase):
     return True
 
 
-def validate_unit_movement(game_state, territory_a_name, territory_b_name, units_to_move):
+def move_units(session, game_state, player, territory_a_name, territory_b_name, units_to_move):
     """
-    Validates that the unit can move to the new territory.
+    Validates and moves units from one territory to another.
 
     Validation:
     - selected territory is a neighbor to the current territory
@@ -50,71 +48,71 @@ def validate_unit_movement(game_state, territory_a_name, territory_b_name, units
     - a land unit can not enter an ocean territory (loading on ships is separate behavior)
     - a sea unit cannot enter a land territory
     - a unit cannot move from a hostile territory (unless it started there???)
-    - 
     - player has units to place
     - territory has industrial complex and is owned by the player
     - sea units must be in ocean with a neighboring industrial complex
     - new industrial complex must be in a controlled territory without an existing one
+    - anti-aircraft units can only move in non-combat phase
 
-    :return bool:
+    Additonal Rules:
+    - land and sea units must stop once they enter a hostile territory
+
+    :session: The current game session.
+    :game_state: The current game state.
+    :player: The player making the move.
+    :territory_a_name: The name of the territory to move
+    :territory_b_name: The name of the territory to move to
+    :units_to_move: The list of units to move.
+    :return bool: if the units were successfully moved.
     """
     territory_a = game_state.territories[territory_a_name]
-    territory_b_generic_data = TERRITORY_DATA[territory_b_name]
     territory_b = game_state.territories[territory_b_name]
+
+    territory_a_generic_data = TERRITORY_DATA[territory_a_name]
+    territory_b_generic_data = TERRITORY_DATA[territory_b_name]
+
     territory_b_is_ocean = territory_b_generic_data['is_ocean']
-    # is_controlled_by_player = player.team_num == selected_territory_data.team
+    territory_b_is_controlled_by_player = player.team_num == territory_b.team
 
     # territories are neighbors
-    territory_a_data = TERRITORY_DATA[territory_a_name]
-    if not territory_b_name in territory_a_data['neighbors']:
-        return False
+    if not territory_b_name in territory_a_generic_data['neighbors']:
+        return False, "Territories are not neighbors."
 
     # all moving units are in territory A
-    units_in_territory_a_ids = {unit.unit_id for unit in territory_a.units}
+    territory_a_unit_ids = {unit.unit_id for unit in territory_a.units}
     moving_unit_ids = {unit.unit_id for unit in units_to_move}
-    if not set(moving_unit_ids).issubset(units_in_territory_a_ids):
-        return False
 
-    for unit in territory_a.units:
-        if not unit.unit_id in moving_unit_ids:
-            continue
+    if not set(moving_unit_ids).issubset(territory_a_unit_ids):
+        return False, "Units are not in the selected territory."
 
-        # all units have movement remaining
+    for unit in units_to_move:
         if unit.movement < 1:
-            return False
-
-        # land units cannot enter ocean
+            return False, "Unit does not have enough movement."
         if is_land_unit(unit.unit_type) and territory_b_is_ocean:
-            return False
-
-        # sea units cannot enter land
+            return False, "Land units cannot enter ocean territories."
         if is_sea_unit(unit.unit_type) and not territory_b_is_ocean:
-            return False
+            return False, "Sea units cannot enter land territories."
+        if unit.unit_type == "ANTI-AIRCRAFT" and session.phase_num != PhaseNumber.NON_COMBAT_MOVE:
+            return False, "Anti-aircraft units can only move in non-combat phase."
+        if not is_air_unit(unit.unit_type) and is_hostile_territory(territory_b, player.team_num) and session.phase_num == PhaseNumber.NON_COMBAT_MOVE:
+            return False, "Land and sea units cannot move into hostile territories in the non-combat phase."
 
-    return True
+        """Validation Passed"""
 
+        if not is_air_unit(unit.unit_type) and is_hostile_territory(territory_b, player.team_num):
+            unit.movement = 1  # will be subtracted to 0 later
 
-def move_units(game_state, territory_a_name, territory_b_name, units_to_move):
-    """
-    Moves the units from territory A to territory B.
-    """
-    territory_a = game_state.territories[territory_a_name]
-    territory_b = game_state.territories[territory_b_name]
-
-    moving_unit_ids = [unit.unit_id for unit in units_to_move]
-
-    units_to_move = [
-        unit for unit in territory_a.units if unit.unit_id in moving_unit_ids]
-
-    # decrement moving units' remaining movement
     for unit in units_to_move:
         unit.movement -= 1
 
+    # remove units from territory A
     territory_a.units = [
         unit for unit in territory_a.units if unit.unit_id not in moving_unit_ids]
+
+    # add units to territory B
     territory_b.units.extend(units_to_move)
 
-    return
+    return True, None
 
 
 def load_transport_with_units(game_state, player, territory_name, transport, units_to_load):
@@ -204,38 +202,36 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     sea_territory = game_state.territories[sea_territory_name]
     sea_territory_generic_data = TERRITORY_DATA[sea_territory_name]
     if not sea_territory_generic_data["is_ocean"]:
-        return False
+        return False, "Sea territory is not an ocean?"
 
     # load transport from game_state, also ensures it exists in territory
     transport = retrieve_unit_from_territory(sea_territory, transport)
 
     # transport is owned by player
     if transport.team != player.team_num:
-        return False
+        return False, "Transport is not owned by player."
 
     # selected territory is land
     selected_territory = game_state.territories[selected_territory_name]
     selected_territory_generic_data = TERRITORY_DATA[selected_territory_name]
     if selected_territory_generic_data["is_ocean"]:
-        return False
+        return False, "Selected territory is not land."
 
     # selected territory neighbors the sea territory
     if selected_territory_name not in sea_territory_generic_data['neighbors']:
-        return False
+        return False, "Selected territory is not a neighbor of the sea territory."
 
-    # unit validation
+    """Validation Passed"""
+
+    # units cannot move after unloading
     for unit in transport.cargo:
-
-        # units must have movement available
-        # TODO untested
-        if unit.movement < 1:
-            return False
+        unit.movement = 0
 
     # move units to land territory
     selected_territory.units.extend(transport.cargo)
     transport.cargo = []
 
-    return True
+    return True, None
 
 
 def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
@@ -322,13 +318,35 @@ def end_turn(session, game_state):
     Increment each player's IPCS by the IPC value of their territories.
 
     Increment the turn timer by 1.
+
+    Validation:
+    - air units over water with no aircraft carrier are destroyed, otherwise load them automatically
     """
     for territory_name, territory in game_state.territories.items():
-        # if turn_num % 5 == 0:
-        add_territory_power_to_player_ipcs(session, territory_name, territory)
+        territory_is_ocean = TERRITORY_DATA[territory_name]["is_ocean"]
+
+        # if end of a full turn, add IPCs to players
+        if session.turn_num % 5 == 4:
+            add_territory_power_to_player_ipcs(
+                session, territory_name, territory)
+
+        # reset unit movement, remove air units from ocean
+        units_to_remove = []
 
         for unit in territory.units:
             unit.movement = UNIT_DATA[unit.unit_type]['movement']
+
+            # if a fighter or bomber is on the ocean with no carrier, destroy it
+            if is_air_unit(unit.unit_type) and territory_is_ocean:
+                attempt_to_load_air_unit_on_carrier(territory, unit)
+                # unit is removed from territory regardless
+                units_to_remove.append(unit)
+
+            # if a fighter or bomber ends in a non-friendly territory, destroy it
+            if is_air_unit(unit.unit_type) and territory.team != unit.team:
+                units_to_remove.append(unit)
+
+        [territory.units.remove(unit) for unit in units_to_remove]
 
     session.turn_num += 1
     session.phase_num = PhaseNumber.PURCHASE_UNITS
@@ -396,3 +414,33 @@ def retrieve_unit_from_territory(territory, unit_to_find):
 
     raise BaseException(
         "Unit could not be found in the specified territory. U ID: ${unit_to_find.unit_id}")
+
+
+def attempt_to_load_air_unit_on_carrier(territory, unit_to_load):
+    """
+    Check if there are any aircraft carriers in the territory and load the unit onto it.
+
+    :territory: The territory (class) to check.
+    :unit: The unit (class) to find.
+    :return bool: True if the unit was loaded onto a carrier, False otherwise.
+    """
+    for unit in territory.units:
+        if unit.unit_type == "AIRCRAFT-CARRIER":
+            if len(unit.cargo) < 2:
+                unit.cargo.append(unit_to_load)
+                return True
+
+    return False
+
+
+def is_hostile_territory(territory, player_team_num):
+    """
+    Check if a territory is controlled by a hostile player.
+
+    :territory: The territory (class) to check.
+    :player_team_num: The team number of the player.
+    :return bool: True if the territory is hostile, False otherwise.
+    """
+    hostile_team_numbers = [0, 2, 4] if player_team_num in [1, 3] else [1, 3]
+
+    return territory.team != player_team_num and territory.team in hostile_team_numbers

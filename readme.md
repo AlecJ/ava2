@@ -16,25 +16,10 @@ run with
 
 ## To Do
 
--   loading and unloading carriers
--   fighters and bombers on carriers
-
--   plane movement (destroyed at end of turn if it does not end in a valid space
--   friendly territory or sea zone with AC with space)
-
--   pre-combat movement phase (player may move into hostile territory)
--   units stop right away (cannot move) if they are in a hostile territory
--   cannot move anti aircraft
-
--   post-combat movement phase (player may not move into hostile territory)
--   units may not end in hostile territory
--   can move anti aircraft
-
--   able to undo turn
-
--   player key request validation
-
+-   player key request validation (except end phase/turn)
 -   prevent player from buying industrial complexs > territories owned
+
+SATURDAY
 
 Final tile fix in blender
 Eastern United States / Panama / Mexico
@@ -53,8 +38,18 @@ Confirm "Anglo-Egypt"
 
 -   finish territory data
 
+-   fighters and bombers can "launch" instead of unload
+-   if they don't launch, they lose movement equal to the ship's movement
+-   fighter and bombers automatically land on aircraft carriers they are in the same territory as
+-   mobilization: can place fighters and bombers in the same territories as ships as long as there is room in cargo
+
+SUNDAY
+
 -   combat
 -   territory capture
+-   tank can capture empty territory and move again (pre-combat)
+
+MONDAY
 
 -   polling for team select lobby (if first and waiting)
 
@@ -62,13 +57,28 @@ Confirm "Anglo-Egypt"
 -   add logging
 -   toast popup with api error status
 
+TUESDAY
+
+-   player key request validation (end phase/turn)
+
 -   backend tests
 -   check TODOs
 
 -   toast message for purchasing unit
+-   toast message for each phase
+
+WEDNESDAY
+
+-   compiling vue app
+-   hosting site
 
 Future Work:
 
+-   submarine logic
+-   bomber logic
+-   AA logic
+
+-   game log so players can see what happened (where combat happened, territories flipped)
 -   help screens - button while loading that explains the specific rules
 -   EndTurnButton disabled is number but should be boolean
 -   centralize getUnitIconSrc and getColorForUnit

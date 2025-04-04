@@ -19,6 +19,11 @@ export default {
 			required: false,
 			default: false,
 		},
+		currentPhaseNum: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
 	},
 	computed: {
 		unitsSortedByMovement() {
@@ -109,7 +114,11 @@ export default {
 					v-for="(unit, index) in group"
 					:key="`${index}-${unit.unit_type}`"
 					class="unit-button"
-					:disabled="sortByMovement && groupIndex <= 0"
+					:disabled="
+						(sortByMovement && groupIndex <= 0) ||
+						(unit.unit_type === 'ANTI-AIRCRAFT' &&
+							currentPhaseNum !== 3)
+					"
 					:style="{
 						backgroundColor: getColorForUnit(unit),
 					}"

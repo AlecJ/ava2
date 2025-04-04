@@ -305,6 +305,7 @@ export default {
 						: playerUnits
 				"
 				:sortByMovement="true"
+				:currentPhaseNum="currentPhaseNum"
 			></UnitBox>
 
 			<div

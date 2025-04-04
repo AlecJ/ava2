@@ -4,7 +4,7 @@ from app.models.session import Session, PhaseNumber
 from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
-from app.services.game import purchase_unit, mobilize_units, validate_unit_movement, move_units, load_transport_with_units, unload_transport, end_turn
+from app.services.game import purchase_unit, mobilize_units, move_units, load_transport_with_units, unload_transport, end_turn
 
 
 game_route = Blueprint('game_route', __name__)
@@ -66,20 +66,15 @@ def handle_purchase_unit(session_id):
 
 @game_route.route('/<string:session_id>/moveunits', methods=['POST'])
 def handle_move_units(session_id):
-    session = Session.get_session_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not session:
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
         return jsonify({'status': 'User cannot move units outside of combat and non-combat movement phases.'}), 400
 
-    game_state = GameState.get_game_state_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not game_state:
-        return jsonify({'status': 'Session ID not found.'}), 404
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
 
     # TODO for EVERY turn, validate player ID matches current player turn
     # validate all units are owned by the player
@@ -94,11 +89,11 @@ def handle_move_units(session_id):
     units_to_move = [Unit.from_dict(unit) for unit in units_to_move]
 
     # validate the attempted troop movement
-    if not validate_unit_movement(game_state,
-                                  territory_a, territory_b, units_to_move):
-        return jsonify({'status': 'Invalid movement attempted.'}), 400
-
-    move_units(game_state, territory_a, territory_b, units_to_move)
+    result, message = move_units(session, game_state, player,
+                                 territory_a, territory_b, units_to_move)
+    if not result:
+        message = message or 'Invalid troop movement.'
+        return jsonify({'status': message}), 400
 
     game_state.update()
 
@@ -112,20 +107,12 @@ def handle_move_units(session_id):
 
 @game_route.route('/<string:session_id>/loadtransport', methods=['POST'])
 def handle_load_transport(session_id):
-    session = Session.get_session_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not session:
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
         return jsonify({'status': 'User cannot load transports outside of combat and non-combat movement phases.'}), 400
-
-    game_state = GameState.get_game_state_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not game_state:
-        return jsonify({'status': 'Session ID not found.'}), 404
 
     player_id = request.args.get('pid')
     player = session.get_player_by_id(player_id)
@@ -161,20 +148,12 @@ def handle_load_transport(session_id):
 
 @game_route.route('/<string:session_id>/unloadtransport', methods=['POST'])
 def handle_unload_transport(session_id):
-    session = Session.get_session_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not session:
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
         return jsonify({'status': 'User cannot load transports outside of combat and non-combat movement phases.'}), 400
-
-    game_state = GameState.get_game_state_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not game_state:
-        return jsonify({'status': 'Session ID not found.'}), 404
 
     player_id = request.args.get('pid')
     player = session.get_player_by_id(player_id)
@@ -194,9 +173,11 @@ def handle_unload_transport(session_id):
     transport = Unit.from_dict(transport)
 
     # validate the attempted troop movement
-    if not unload_transport(game_state, player,
-                            sea_territory_name, selected_territory_name, transport):
-        return jsonify({'status': 'Invalid transport unloading.'}), 400
+    result, message = unload_transport(game_state, player,
+                                       sea_territory_name, selected_territory_name, transport)
+    if not result:
+        message = message or 'Invalid transport unloading.'
+        return jsonify({'status': message}), 400
 
     game_state.update()
 
@@ -208,9 +189,24 @@ def handle_unload_transport(session_id):
     return jsonify(response), 200
 
 
-# @game_route.route('/<string:session_id>/undo', methods=['POST'])
-def handle_undo_turn(session_id):
-    pass
+@game_route.route('/<string:session_id>/undophase', methods=['POST'])
+def handle_undo_phase(session_id):
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # if combat move or non-combat move, restore game state
+    if session.phase_num in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
+        game_state = game_state.restore_game_state()
+    else:
+        return jsonify({'status': 'Cannot undo phase outside of combat or non-combat movement.'}), 400
+
+    response = {
+        'status': 'Phase reset successfully.',
+        'session_id': game_state.session_id,
+        'game_state': game_state.to_dict(),
+    }
+    return jsonify(response), 200
 
 
 def handle_combat(session_id):
@@ -219,16 +215,8 @@ def handle_combat(session_id):
 
 @game_route.route('/<string:session_id>/mobilizeunits', methods=['POST'])
 def handle_mobilize_units(session_id):
-    session = Session.get_session_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not session:
-        return jsonify({'status': 'Session ID not found.'}), 404
-
-    game_state = GameState.get_game_state_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not game_state:
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     # ensure it is the mobilize phase
@@ -272,8 +260,14 @@ def handle_end_phase(session_id):
 
     session.update()
 
+    # Backup game state for undoing movement
+    if session.phase_num in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
+        game_state = GameState.get_game_state_by_session_id(
+            session_id, convert_to_class=True)
+        game_state.backup_game_state()
+
     response = {
-        'status': 'Turn ended successfully.',
+        'status': 'Phase ended successfully.',
         'session_id': session.session_id,
         'session': session.to_dict(sanitize_players=True),
     }
@@ -282,13 +276,8 @@ def handle_end_phase(session_id):
 
 @game_route.route('/<string:session_id>/endturn', methods=['POST'])
 def handle_end_turn(session_id):
-    session = Session.get_session_by_session_id(
-        session_id, convert_to_class=True)
-
-    game_state = GameState.get_game_state_by_session_id(
-        session_id, convert_to_class=True)
-
-    if not game_state:
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
     # TODO validate player has no forces waiting to mobilize
@@ -305,3 +294,20 @@ def handle_end_turn(session_id):
         'game_state': game_state.to_dict(),
     }
     return jsonify(response), 200
+
+
+def fetch_session_and_game_state(session_id):
+    """Fetch the session and game state by session ID."""
+    session = Session.get_session_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not session:
+        return None, None
+
+    game_state = GameState.get_game_state_by_session_id(
+        session_id, convert_to_class=True)
+
+    if not game_state:
+        return None, None
+
+    return session, game_state

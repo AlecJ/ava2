@@ -210,6 +210,24 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
+		async undoPhase() {
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const response = await API.post(
+					`/game/${this.getSessionId}/undophase?pid=${playerId}`
+				);
+				console.log("API Response:", response.data); // Debugging log
+				// sessionStore.setSession(response.data.session);
+				this.updateGameWorld(response.data.game_state);
+			} catch (error) {
+				console.error("API Error:", error.response.data.status);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
 		async endPhase() {
 			// also send player ID
 			const sessionStore = useSessionStore();

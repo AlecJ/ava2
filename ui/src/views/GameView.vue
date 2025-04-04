@@ -8,6 +8,7 @@ import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
 import DefaultTray from "@/components/DefaultTray.vue";
 import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
+import UndoTurnButton from "@/components/UndoTurnButton.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
 import PurchaseUnitsButton from "@/components/PurchaseUnitsButton.vue";
 import PlaceMobilizationUnitsButton from "@/components/PlaceMobilizationUnitsButton.vue";
@@ -21,6 +22,7 @@ export default {
 		DefaultTray,
 		PlayerBoard,
 		ThreeGlobe,
+		UndoTurnButton,
 		EndTurnButton,
 		PurchaseUnitsButton,
 		PlaceMobilizationUnitsButton,
@@ -219,6 +221,11 @@ export default {
 		:active="currentPhaseNum === 4 && isThisPlayersTurn"
 		:setPlacingMobilizationUnits="setPlacingMobilizationUnits"
 		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
+	/>
+
+	<UndoTurnButton
+		:currentPhaseNum="currentPhaseNum"
+		:isThisPlayersTurn="isThisPlayersTurn"
 	/>
 
 	<EndTurnButton
