@@ -56,7 +56,7 @@ export default {
 			teamName: null,
 			power: 0,
 			units: [],
-			neighboringLandUnits: [],
+			neighboringLandAndAirUnits: [],
 			isSelectingTerritory: false,
 			isLoadingTransports: false,
 			transportToUnload: null,
@@ -77,6 +77,7 @@ export default {
 				this.units = newVal.units;
 				this.units.sort((a, b) => a.movement - b.movement);
 				this.neighboringLandUnits = [];
+				this.neighboringLandAndAirUnits = [];
 				this.isSelectingTerritory = false;
 				this.transportToUnload = null;
 			} else {
@@ -87,7 +88,8 @@ export default {
 			}
 		},
 		neighboringTerritoriesData() {
-			this.neighboringLandUnits = this.calcNeighboringLandUnits();
+			this.neighboringLandAndAirUnits =
+				this.calcNeighboringLandAndAirUnits();
 		},
 	},
 	computed: {
@@ -148,9 +150,12 @@ export default {
 		},
 		transportsInTerritory() {
 			return this.playerUnits.filter(
-				(unit) =>
-					unit.unit_type === "TRANSPORT" ||
-					unit.unit_type === "AIRCRAFT-CARRIER"
+				(unit) => unit.unit_type === "TRANSPORT"
+			);
+		},
+		carriersInTerritory() {
+			return this.playerUnits.filter(
+				(unit) => unit.unit_type === "AIRCRAFT-CARRIER"
 			);
 		},
 		territoryHasTransports() {
@@ -212,7 +217,7 @@ export default {
 
 			this.switchTerritorySelectionMode(false);
 		},
-		calcNeighboringLandUnits() {
+		calcNeighboringLandAndAirUnits() {
 			return this.neighboringTerritoriesData
 				.filter((territory) => {
 					return !territory.is_ocean && territory.units?.length;
@@ -221,9 +226,14 @@ export default {
 					return territory.units
 						.filter(
 							(unit) =>
-								["INFANTRY", "TANK", "ARTILLERY"].includes(
-									unit.unit_type
-								) && unit.team === this.playerTeamNum
+								[
+									"INFANTRY",
+									"TANK",
+									"ARTILLERY",
+									"FIGHTER",
+									"BOMBER",
+								].includes(unit.unit_type) &&
+								unit.team === this.playerTeamNum
 						)
 						.map((unit) => {
 							return { ...unit, territory: territory.name };
@@ -278,17 +288,21 @@ export default {
 			<div class="unit-box-header" v-if="!isLoadingTransports">
 				Units in Territory
 			</div>
-			<div class="unit-box-header" v-if="transportToUnload">
+			<div class="unit-box-header" v-else-if="transportToUnload">
 				Unloading Transport
 			</div>
 
-			<div class="unit-box-header" v-else>Nearby Units to Load</div>
+			<div class="unit-box-header" v-else-if="!transportToUnload">
+				Nearby Units to Load
+			</div>
 			<!-- units will be sorted by remaining movement ascending -->
 			<UnitBox
 				v-if="!isSelectingTerritory && !transportToUnload"
 				:readOnly="!isPlayerTurn || !isMovementPhase"
 				:units="
-					isLoadingTransports ? neighboringLandUnits : playerUnits
+					isLoadingTransports
+						? neighboringLandAndAirUnits
+						: playerUnits
 				"
 				:sortByMovement="true"
 			></UnitBox>
@@ -332,8 +346,9 @@ export default {
 			<ShipLoadingTray
 				v-if="isLoadingTransports"
 				:territoryName="territoryName"
-				:landUnits="neighboringLandUnits"
+				:nearbyUnits="neighboringLandAndAirUnits"
 				:transports="transportsInTerritory"
+				:carriers="carriersInTerritory"
 				:transportToUnload="transportToUnload"
 				:setTransportToUnload="setTransportToUnload"
 			></ShipLoadingTray>

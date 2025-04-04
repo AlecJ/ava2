@@ -128,6 +128,7 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
     - units are owned by player
     - transports does not end with more than 2 units
     - transport can have 1 infantry and 1 other land unit
+    - carriers can have 2 air units (fighters or bombers)
     """
     # get sea territory
     sea_territory = game_state.territories[territory_name]
@@ -164,6 +165,14 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
         if unit.movement < 1:
             return False
 
+        # if transport, must be a land unit
+        if transport.unit_type == "TRANSPORT" and not is_land_unit(unit.unit_type):
+            return False
+
+        # if carrier, must be an air unit
+        if transport.unit_type == "AIRCRAFT-CARRIER" and not is_air_unit(unit.unit_type):
+            return False
+
         # add unit to transport
         transport.cargo.append(unit)
         unit_territory.units.remove(unit)
@@ -172,11 +181,10 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
     if len(transport.cargo) > 2:
         return False
 
-    # if at 2 units, one must be infantry
-    if len(transport.cargo) == 2 and not any(unit.unit_type == "INFANTRY" for unit in transport.cargo):
+    # full transports (2 units), one must be infantry
+    if (transport.unit_type == "TRANSPORT" and len(transport.cargo) == 2 and
+            not any(unit.unit_type == "INFANTRY" for unit in transport.cargo)):
         return False
-
-    # TODO AIRCRAFT-CARRIER can only hold fighters, up to 2
 
     return True
 

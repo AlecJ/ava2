@@ -13,25 +13,6 @@ export default {
 			required: true,
 		},
 	},
-	data() {
-		return {
-			// units: [
-			// 	"INFANTRY",
-			// 	"ARTILLERY",
-			// 	"TANK",
-			// 	"FIGHTER",
-			// 	"BOMBER",
-			// 	"BATTLESHIP",
-			// 	"DESTROYER",
-			// 	"AIRCRAFT-CARRIER",
-			// 	"TRANSPORT",
-			// 	"SUBMARINE",
-			// 	"INDUSTRIAL-COMPLEX",
-			// 	"ANTI-AIRCRAFT",
-			// ],
-		};
-	},
-	watch: {},
 	computed: {
 		units() {
 			return Object.keys(unitData).map((unit) => {
@@ -45,20 +26,6 @@ export default {
 
 			return unitIcon ? unitIcon.unitIcon : "";
 		},
-		// getColorForUnit(unit) {
-		// 	const unitCountry = countries[unit.team];
-
-		// 	const alpha = unit.selected ? "ff" : "40"; // Fully opaque if selected, semi-transparent if not
-
-		// 	return unitCountry
-		// 		? "#" + unitCountry.color.toString(16) + alpha
-		// 		: "#0c6f13"; // Default color
-		// },
-		// getTeamNameForUnit(unit) {
-		// 	const team = unit.team;
-
-		// 	return countries[team] ? countries[team].name : "Unknown";
-		// },
 	},
 };
 </script>
@@ -67,8 +34,8 @@ export default {
 	<div class="purchase-tray">
 		<div class="purchase-tray-title">Purchase Units</div>
 		<div class="purchase-tray-desc">
-			Units purchased now will be added to the game at the end of your
-			turn.
+			Units purchased now will be placed during the mobilization phase at
+			the end of your turn.
 		</div>
 		<div class="unit-board">
 			<button
@@ -108,17 +75,32 @@ export default {
 
 	display: grid;
 
+	.purchase-tray-title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.purchase-tray-desc {
+		font-size: 1rem;
+		text-align: center;
+		margin-bottom: 1rem;
+	}
+
 	.unit-board {
 		width: 100%;
 
 		display: grid;
 		grid-template-columns: repeat(auto-fill, 150px);
 		gap: 1rem;
+		overflow-y: auto;
+		overflow-x: hidden;
 
 		.purchase-unit-button {
 			width: 150px;
 			height: 200px;
 			padding: 0.2rem;
+			margin: 0 0.75rem;
 
 			display: grid;
 			place-items: center;
@@ -140,8 +122,10 @@ export default {
 			}
 
 			.unit-icon {
-				width: 50%;
-				height: auto;
+				// width: 100%;
+				max-width: 100%;
+				max-height: 100%;
+				// height: 100%;
 			}
 
 			.unit-details {

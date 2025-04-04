@@ -65,8 +65,12 @@ Confirm "Anglo-Egypt"
 -   backend tests
 -   check TODOs
 
+-   toast message for purchasing unit
+
 Future Work:
 
+-   help screens - button while loading that explains the specific rules
+-   EndTurnButton disabled is number but should be boolean
 -   centralize getUnitIconSrc and getColorForUnit
 
 -   maybe refactor defaultTray, loading should be consistent

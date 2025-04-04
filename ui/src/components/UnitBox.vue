@@ -122,7 +122,11 @@ export default {
 						:title="unit.unit_type"
 					/>
 					<div
-						v-if="unit.unit_type === 'TRANSPORT'"
+						v-if="
+							['TRANSPORT', 'AIRCRAFT-CARRIER'].includes(
+								unit.unit_type
+							)
+						"
 						class="cargo-dots"
 					>
 						<span

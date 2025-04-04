@@ -32,14 +32,14 @@ export const unitData = {
 		attack: 4,
 		defense: 1,
 		movement: 6,
-		description: "Strong flying unit.",
+		description: "Strategic flying unit.",
 	},
 	"AIRCRAFT-CARRIER": {
 		cost: 16,
 		attack: 1,
 		defense: 3,
 		movement: 2,
-		description: "Sea unit that can carry (2) fighters.",
+		description: "Sea unit that can carry 2 air units.",
 	},
 	TRANSPORT: {
 		cost: 8,

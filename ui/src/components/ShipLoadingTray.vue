@@ -9,7 +9,7 @@ export default {
 			type: String,
 			required: true,
 		},
-		landUnits: {
+		nearbyUnits: {
 			type: Array,
 			required: true,
 		},
@@ -17,14 +17,14 @@ export default {
 			type: Array,
 			required: true,
 		},
+		carriers: {
+			type: Array,
+			required: true,
+		},
 		neighboringTerritoriesData: {
 			type: Object,
 			required: false,
 			default: [],
-		},
-		isUnloadingTransport: {
-			type: Boolean,
-			required: false,
 		},
 		transportToUnload: {
 			type: Object,
@@ -41,12 +41,7 @@ export default {
 	},
 	computed: {
 		selectedUnits() {
-			return this.landUnits.filter((unit) => unit.selected);
-		},
-		transportsToRender() {
-			return !!this.transportToUnload
-				? [this.transportToUnload]
-				: this.transports;
+			return this.nearbyUnits.filter((unit) => unit.selected);
 		},
 	},
 	methods: {
@@ -105,10 +100,36 @@ export default {
 </script>
 
 <template>
-	<div class="ship-loading-tray">
-		<p>Transports</p>
+	<div
+		v-for="transportType in transportToUnload
+			? ['']
+			: ['TRANSPORT', 'AIRCRAFT-CARRIER']"
+		class="ship-loading-tray"
+	>
+		<p
+			v-if="
+				transportType === 'TRANSPORT' &&
+				transports.length &&
+				!transportToUnload
+			"
+		>
+			Transports
+		</p>
+		<p
+			v-if="
+				transportType === 'AIRCRAFT-CARRIER' &&
+				carriers.length &&
+				!transportToUnload
+			"
+		>
+			Aircraft Carriers
+		</p>
 		<div
-			v-for="transport in transportsToRender"
+			v-for="transport in transportToUnload
+				? [transportToUnload]
+				: transportType === 'TRANSPORT'
+					? transports
+					: carriers"
 			class="ship-row"
 			:key="transport.unit_id"
 		>
@@ -148,13 +169,19 @@ export default {
 				</div>
 			</div>
 			<button
+				v-if="!transportToUnload"
 				class="ship-load-button"
-				:disabled="transport.cargo?.length === 2"
+				:disabled="
+					transport.cargo?.length === 2 ||
+					!this.selectedUnits.length ||
+					this.selectedUnits.length > 2
+				"
 				@click="loadUnits(transport)"
 			>
 				Load
 			</button>
 			<button
+				v-if="!transportToUnload"
 				class="ship-unload-button"
 				:disabled="!transport.cargo?.length"
 				@click="unloadUnits(transport)"
@@ -179,7 +206,7 @@ export default {
 	.ship-row {
 		margin: 0.5rem 0;
 		display: grid;
-		grid-template-columns: 3rem 3fr 1fr 1fr;
+		grid-template-columns: 1fr 4fr 2fr 2fr;
 		place-items: center;
 
 		.ship-icon,

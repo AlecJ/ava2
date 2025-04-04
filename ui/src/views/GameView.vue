@@ -159,6 +159,7 @@ export default {
 			this.isPlacingMobilizationUnits = bool;
 		},
 		endPhase() {
+			this.setPlacingMobilizationUnits(false);
 			this.setPurchasingUnits(false);
 			this.worldStore.endPhase();
 		},
