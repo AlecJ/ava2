@@ -102,6 +102,7 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/purchaseunit?pid=${playerId}`,
 					data
 				);
+
 				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 			} catch (error) {
@@ -126,6 +127,7 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/mobilizeunits?pid=${playerId}`,
 					data
 				);
+
 				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 				this.updateGameWorld(response.data.game_state);
@@ -152,6 +154,7 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/moveunits?pid=${playerId}`,
 					data
 				);
+
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
@@ -177,6 +180,7 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/loadtransport?pid=${playerId}`,
 					data
 				);
+
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
@@ -202,6 +206,7 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/unloadtransport?pid=${playerId}`,
 					data
 				);
+
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
@@ -216,11 +221,12 @@ export const useWorldStore = defineStore("world", {
 
 			try {
 				const playerId = sessionStore.getPlayerId;
+
 				const response = await API.post(
 					`/game/${this.getSessionId}/undophase?pid=${playerId}`
 				);
+
 				console.log("API Response:", response.data); // Debugging log
-				// sessionStore.setSession(response.data.session);
 				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -234,11 +240,13 @@ export const useWorldStore = defineStore("world", {
 			sessionStore.setIsLoading(true);
 
 			try {
-				const response = await API.post(
-					`/game/${this.getSessionId}/endphase`
-				);
-				console.log("API Response:", response.data); // Debugging log
+				const playerId = sessionStore.getPlayerId;
 
+				const response = await API.post(
+					`/game/${this.getSessionId}/endphase?pid=${playerId}`
+				);
+
+				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -252,11 +260,13 @@ export const useWorldStore = defineStore("world", {
 			sessionStore.setIsLoading(true);
 
 			try {
-				const response = await API.post(
-					`/game/${this.getSessionId}/endturn`
-				);
-				console.log("API Response:", response.data); // Debugging log
+				const playerId = sessionStore.getPlayerId;
 
+				const response = await API.post(
+					`/game/${this.getSessionId}/endturn?pid=${playerId}`
+				);
+
+				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
 				sessionStore.setSession(response.data.session);
 			} catch (error) {

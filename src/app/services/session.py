@@ -76,7 +76,7 @@ def activate_game(session):
 def validate_player(session, player):
     """
     Validates:
-    - it is the given player's turn
+    - it is the player's turn
 
     :return bool:
     """

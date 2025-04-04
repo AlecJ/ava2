@@ -16,8 +16,8 @@ run with
 
 ## To Do
 
--   player key request validation (except end phase/turn)
 -   prevent player from buying industrial complexs > territories owned
+-   destroy excess industrial complexes during mobilization
 
 SATURDAY
 
@@ -63,6 +63,7 @@ TUESDAY
 
 -   backend tests
 -   check TODOs
+-   type checking functions
 
 -   toast message for purchasing unit
 -   toast message for each phase
