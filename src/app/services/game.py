@@ -16,7 +16,7 @@ end_turn
 """
 
 
-def purchase_unit(player, unit_type_to_purchase):
+def purchase_unit(game_state, player, unit_type_to_purchase):
     """
     Validate player has funds. Add unit to waiting pool (placed at end of round)
     and remove IPCs from player.
@@ -25,11 +25,16 @@ def purchase_unit(player, unit_type_to_purchase):
     """
     new_unit_data = UNIT_DATA[unit_type_to_purchase]
 
-    # ensure player has sufficient funds
+    # special rule, do not allow player to purchase an industrial complex
+    # if they have no where to place it
+    if unit_type_to_purchase == "INDUSTRIAL-COMPLEX":
+        if not player_can_purchase_industrial_complex(game_state, player):
+            return False
+
+    # player must have sufficient funds
     if player.ipcs < new_unit_data['cost']:
         return False
 
-    # remove IPCs
     player.ipcs -= new_unit_data['cost']
 
     # add unit to player
@@ -139,7 +144,7 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
 
     # transport is owned by player
     if transport.team != player.team_num:
-        return False
+        return False, "Transport is not owned by player."
 
     # unit validation
     for unit in units_to_load:
@@ -152,39 +157,39 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
 
         # each unit is in a friendly territory
         if unit_territory.team != player.team_num:
-            return False
+            return False, "Unit is not in a friendly territory."
 
         # each unit is in a territory that neighbors the sea territory
         if unit_territory_name not in sea_territory_generic_data['neighbors']:
-            return False
+            return False, "Unit is not in a neighboring territory."
 
         # units must have movement available
         # TODO untested
         if unit.movement < 1:
-            return False
+            return False, "Unit does not have enough movement."
 
         # if transport, must be a land unit
         if transport.unit_type == "TRANSPORT" and not is_land_unit(unit.unit_type):
-            return False
+            return False, "Transport can only load land units, excluding anti-aircraft."
 
         # if carrier, must be an air unit
         if transport.unit_type == "AIRCRAFT-CARRIER" and not is_air_unit(unit.unit_type):
-            return False
+            return False, "Carrier can only load air units."
 
-        # add unit to transport
+        # move unit to transport
         transport.cargo.append(unit)
         unit_territory.units.remove(unit)
 
     # final validation, transport can only have 2 units and 1 must be infantry if max
     if len(transport.cargo) > 2:
-        return False
+        return False, "Transport cannot have more than 2 units."
 
     # full transports (2 units), one must be infantry
     if (transport.unit_type == "TRANSPORT" and len(transport.cargo) == 2 and
             not any(unit.unit_type == "INFANTRY" for unit in transport.cargo)):
-        return False
+        return False, "Transport must have 1 infantry and 1 other land unit."
 
-    return True
+    return True, None
 
 
 def unload_transport(game_state, player, sea_territory_name, selected_territory_name, transport):
@@ -437,10 +442,66 @@ def is_hostile_territory(territory, player_team_num):
     """
     Check if a territory is controlled by a hostile player.
 
-    :territory: The territory (class) to check.
+    :territory: The territory to check.
     :player_team_num: The team number of the player.
     :return bool: True if the territory is hostile, False otherwise.
     """
     hostile_team_numbers = [0, 2, 4] if player_team_num in [1, 3] else [1, 3]
 
     return territory.team != player_team_num and territory.team in hostile_team_numbers
+
+
+def number_of_controlled_territories_for_player(game_state, player):
+    """
+    Get the number of controlled territories a player has.
+
+    :game_state: The current game state.
+    :player: The player to check.
+    :return int: The number of controlled territories.
+    """
+    count = 0
+
+    for territory in game_state.territories.values():
+        if territory.team == player.team_num:
+            count += 1
+
+    return count
+
+
+def number_of_industrial_complexes_owned_by_player(game_state, player):
+    """
+    Get the number of industrial complexes owned by a player.
+
+    :game_state: The current game state.
+    :player: The player to check.
+    :return int: The number of industrial complexes.
+    """
+    count = 0
+
+    for territory in game_state.territories.values():
+        if territory.team == player.team_num and territory.has_factory:
+            count += 1
+
+    return count
+
+
+def player_can_purchase_industrial_complex(game_state, player):
+    """
+    Players can only purchase an industrial complex if they have more controlled territories
+    than industrial complexes. This includes currently owned and purchased ones.
+
+    :game_state: The current game state.
+    :player: The player to check.
+    :return bool: True if the player can purchase an industrial complex, False otherwise.
+    """
+    number_of_controlled_territories = number_of_controlled_territories_for_player(
+        game_state, player)
+
+    number_of_industrial_complexes_owned = number_of_industrial_complexes_owned_by_player(
+        game_state, player)
+
+    number_of_purchased_industrial_complexes = len(
+        [unit for unit in player.mobilization_units if unit == "INDUSTRIAL-COMPLEX"])
+
+    return number_of_controlled_territories > (number_of_industrial_complexes_owned
+                                               + number_of_purchased_industrial_complexes)

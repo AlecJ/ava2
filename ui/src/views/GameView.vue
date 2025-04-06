@@ -60,18 +60,22 @@ export default {
 			return this.sessionStore?.players || [];
 		},
 		player() {
-			return this.sessionStore?.getPlayer;
+			return this.sessionStore?.getPlayer || {};
 		},
 		playerCountry() {
 			// TODO replace with above
-			return this.sessionStore?.playerCountry;
+			return this.sessionStore?.playerCountry || "";
 		},
 		playerTeamNum() {
+			if (!this.player) return -1;
+
 			return countries.findIndex(
 				(country) => country.name === this.player.country
 			);
 		},
 		isThisPlayersTurn() {
+			if (!this.player) return false;
+
 			return this.currentTurnNum % 5 === this.playerTeamNum;
 		},
 		isTestMode() {

@@ -1,6 +1,12 @@
-# AVA
+Hi,
 
-Tactical Espionage Strategy?
+Thanks for taking the time to check my github. I'm very proud of this project and hope it
+accurately demonstrates my skills as a developer.
+
+Best,
+Alec
+
+# Axis vs Allies
 
 ## Installation
 
@@ -15,11 +21,6 @@ run with
 `npm run dev`
 
 ## To Do
-
--   prevent player from buying industrial complexs > territories owned
--   destroy excess industrial complexes during mobilization
-
-SATURDAY
 
 Final tile fix in blender
 Eastern United States / Panama / Mexico
@@ -74,6 +75,9 @@ WEDNESDAY
 -   hosting site
 
 Future Work:
+
+-   scheduled tasks
+-   skip players turn after certain time
 
 -   submarine logic
 -   bomber logic
