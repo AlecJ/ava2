@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from app.services.session import join_session
 from app.models.session import Session
+from app.models.game_state import GameState
 
 
 session_route = Blueprint('session_route', __name__)
@@ -9,11 +10,14 @@ session_route = Blueprint('session_route', __name__)
 
 @session_route.route('/<string:session_id>', methods=['GET'])
 def handle_get_session(session_id):
+    """
+    Get session by session ID.
+    """
     session = Session.get_session_by_session_id(
         session_id, convert_to_class=True)
 
     if not session:
-        return jsonify({'status': 'ID not found.'}), 404
+        return jsonify({'status': 'Session not found.'}), 404
 
     response = {
         'status': 'Session found.',
@@ -36,6 +40,9 @@ def handle_get_session(session_id):
 
 @session_route.route('/create', methods=['POST'])
 def handle_create_session():
+    """
+    Create a new session.
+    """
     session = Session.create_session()
 
     session = session.to_dict()
@@ -49,6 +56,10 @@ def handle_create_session():
 
 @session_route.route('/join/<string:session_id>', methods=['POST'])
 def handle_join_session(session_id):
+    """
+    Join a session and handles player selection.
+
+    If the game reaches 5 players, the game will start."""
     # get country from data
     data = request.get_json()
     country_name = data.get('countryName')

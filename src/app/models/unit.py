@@ -16,21 +16,18 @@ A Unit is:
 
 
 class Unit:
-    def __init__(self, unit_id=None, team=None, unit_type=None, movement=None, cargo=[]):
+    def __init__(self, unit_id=None, team=None, unit_type=None, movement=None, cargo=None):
         self.unit_id = unit_id or str(uuid4())
         self.team = team
         self.unit_type = unit_type
         # 0 movement is valid
-        self.movement = movement if movement is not None else UNIT_DATA[unit_type]['movement']
-        self.cargo = cargo
+        self.movement = movement or UNIT_DATA[unit_type]['movement']
+        self.cargo = cargo if cargo is not None else []
 
         # todo -- does this do anything
         if team is None or unit_type is None:
             raise ValueError(
                 "Cannot instatiate Unit Class: Invalid data: missing required values.")
-
-    def __str__(self):
-        return f"Unit: {self.unit_type} Team: {self.team}"
 
     def __repr__(self):
         return (
@@ -58,6 +55,12 @@ class Unit:
         """
         Converts the Unit object to a dictionary for JSON serialization.
         """
+        # if len(self.cargo) > 0:
+        #     breakpoint()
+
+        # print(self.cargo)
+        # print(len(self.cargo))
+
         return {
             'unit_id': self.unit_id,
             'team': self.team,

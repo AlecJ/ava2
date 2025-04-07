@@ -57,7 +57,7 @@ export const useSessionStore = defineStore("session", {
 					await worldStore.getWorldData();
 				}
 			} catch (error) {
-				console.error("API Error:", error);
+				console.error("API Error:", error.response?.data?.status);
 			}
 
 			this.isLoading = false;
@@ -98,6 +98,11 @@ export const useSessionStore = defineStore("session", {
 				if (response.data?.player) {
 					this.setPlayer(response.data.player);
 					router.push({ query: { pid: `${this.playerId}` } });
+
+					if (response.data.session.status === "ACTIVE") {
+						const worldStore = useWorldStore();
+						await worldStore.getWorldData();
+					}
 				}
 			} catch (error) {
 				console.error("API Error:", error.response?.data?.status);

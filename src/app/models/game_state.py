@@ -20,15 +20,12 @@ A Territory is:
 
 
 class GameState:
-    def __init__(self, session_id, territories={}):
+    def __init__(self, session_id, territories=None):
         self.session_id = session_id
-        self.territories = territories
+        self.territories = territories if territories is not None else {}
 
         if not self.territories:
             self.territories = self.initialize_territories()
-
-    def __str__(self):
-        return f"Session {self.session_id}"
 
     def __repr__(self):
         return (
@@ -39,12 +36,13 @@ class GameState:
         """
         Converts the Session object to a dictionary for JSON serialization.
         """
-        return {
-            'session_id': self.session_id,
-            'territories': {
-                territory_name: territory.to_dict()
-                for territory_name, territory in self.territories.items()},
-        }
+
+        result = {'session_id': self.session_id, 'territories': {}}
+
+        for territory_name, territory in self.territories.items():
+            result['territories'][territory_name] = territory.to_dict()
+
+        return result
 
     @classmethod
     def from_dict(cls, data):
@@ -138,10 +136,11 @@ class GameState:
         result = []
 
         for unit in territory_data['starting_units']:
-            result.append(Unit(
-                unit_type=unit['type'],
-                team=territory_data['team'],
-            ))
+            for _ in range(unit['count']):
+                result.append(Unit(
+                    unit_type=unit['type'],
+                    team=territory_data['team'],
+                ))
 
         return result
 
@@ -157,6 +156,10 @@ class GameState:
                 continue
 
             units = self.initialize_units(territory_data)
+
+            # if territory_name == 'ocean_tile_37':
+            #     breakpoint()
+            # TODO -- remove this
 
             result[territory_name] = Territory(
                 team=territory_data['team'],

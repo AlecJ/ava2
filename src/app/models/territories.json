@@ -26,7 +26,7 @@
 			{ "type": "ARTILLERY", "count": 1 }
 		]
 	},
-	"Anglo Egypt": {
+	"Anglo-Egypt": {
 		"team": 2,
 		"is_capital": false,
 		"is_ocean": false,
@@ -115,7 +115,7 @@
 		"power": 1,
 		"neighbors": [
 			"French Equitorial Africa",
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"Italian East Africa",
 			"Rhodesia",
 			"ocean_tile_23"
@@ -194,7 +194,7 @@
 			{ "type": "ANTI-AIRCRAFT", "count": 1 }
 		]
 	},
-	"Panama": {
+	"Central America": {
 		"team": 4,
 		"is_capital": false,
 		"is_ocean": false,
@@ -202,8 +202,10 @@
 		"neighbors": [
 			"Eastern United States",
 			"Mexico",
+			"ocean_tile_10",
 			"ocean_tile_19",
-			"ocean_tile_20"
+			"ocean_tile_20",
+			"ocean_tile_54"
 		],
 		"starting_units": []
 	},
@@ -258,6 +260,7 @@
 		"neighbors": [
 			"Eastern Canada",
 			"Central United States",
+			"Central America",
 			"ocean_tile_10"
 		],
 		"starting_units": [
@@ -341,7 +344,7 @@
 		"power": 1,
 		"neighbors": [
 			"French West Africa",
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"Belgian Congo",
 			"ocean_tile_23"
 		],
@@ -460,7 +463,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": [
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"Belgian Congo",
 			"Rhodesia",
 			"ocean_tile_34"
@@ -542,7 +545,7 @@
 		"is_capital": false,
 		"is_ocean": false,
 		"power": 1,
-		"neighbors": ["Algeria", "Anglo Egypt", "ocean_tile_14"],
+		"neighbors": ["Algeria", "Anglo-Egypt", "ocean_tile_14"],
 		"starting_units": [
 			{ "type": "INFANTRY", "count": 1 },
 			{ "type": "TANK", "count": 1 }
@@ -786,7 +789,7 @@
 		"is_ocean": false,
 		"power": 1,
 		"neighbors": [
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"Persia",
 			"ocean_tile_34",
 			"ocean_tile_15"
@@ -883,7 +886,7 @@
 		"neighbors": [
 			"Western United States",
 			"Central United States",
-			"Panama",
+			"Central America",
 			"ocean_tile_54"
 		],
 		"starting_units": []
@@ -952,7 +955,7 @@
 		"neighbors": [
 			"Western Canada",
 			"Central United States",
-			"West Mexico",
+			"Mexico",
 			"ocean_tile_55",
 			"ocean_tile_54"
 		],
@@ -997,7 +1000,6 @@
 			"Eastern United States",
 			"Central United States",
 			"Central America",
-			"East Mexico",
 			"ocean_tile_19",
 			"ocean_tile_11",
 			"ocean_tile_9"
@@ -1075,7 +1077,7 @@
 		"power": 0,
 		"neighbors": [
 			"Trans-Jordan",
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"ocean_tile_34",
 			"ocean_tile_16",
 			"ocean_tile_14"
@@ -1132,7 +1134,7 @@
 		"power": 0,
 		"neighbors": [
 			"West Indies",
-			"Panama",
+			"Central America",
 			"ocean_tile_10",
 			"ocean_tile_18",
 			"ocean_tile_11",
@@ -1163,7 +1165,7 @@
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
-			"Panama",
+			"Central America",
 			"ocean_tile_19",
 			"ocean_tile_21",
 			"ocean_Tile_54"
@@ -1364,7 +1366,7 @@
 		"power": 0,
 		"neighbors": [
 			"Italian East Africa",
-			"Anglo Egypt",
+			"Anglo-Egypt",
 			"Trans-Jordan",
 			"Persia",
 			"ocean_tile_15",
@@ -1716,6 +1718,7 @@
 		"neighbors": [
 			"Mexico",
 			"Western United States",
+			"Central America",
 			"ocean_tile_20",
 			"ocean_tile_43",
 			"ocean_tile_53",

@@ -26,7 +26,13 @@ export function useGlobe() {
 				countryData;
 
 			const dataForTile = tileData[countryName];
-			if (!dataForTile) return; // TODO stopgap while territories.json is missing data (i.e., mexcio, central america)
+
+			if (!dataForTile) {
+				console.log(countryName, "not found in tileData");
+
+				return; // TODO stopgap while territories.json is missing data (i.e., mexcio, central america)
+			}
+
 			const { team } = dataForTile;
 
 			const normalizedVertices = [];
@@ -51,7 +57,7 @@ export function useGlobe() {
 			const material = new THREE.MeshBasicMaterial({
 				transparent: true,
 				opacity: 0, // Make the mesh invisible
-				side: THREE.FrontSide,
+				side: THREE.DoubleSide,
 				polygonOffset: true, // Prevent z-fighting
 				polygonOffsetFactor: 1,
 				polygonOffsetUnits: 1,
@@ -137,6 +143,10 @@ export function useGlobe() {
 			mesh.add(outline); // Add outline as a child of the mesh
 
 			mesh.userData = { name: countryName, outline };
+
+			if (countryName === "Eastern United States") {
+				console.log(mesh);
+			}
 
 			// Add the mesh to the country group
 			group.add(mesh);

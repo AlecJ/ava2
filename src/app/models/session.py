@@ -40,9 +40,10 @@ class PhaseNumber(Enum):
 
 
 class Session:
-    def __init__(self, session_id=uuid4(), players=[], status=SessionStatus.TEAM_SELECT, turn_num=0, phase_num=PhaseNumber.PURCHASE_UNITS):
-        self.session_id = str(session_id)
-        self.players = players
+    def __init__(self, session_id=None, players=None, status=SessionStatus.TEAM_SELECT, turn_num=0, phase_num=PhaseNumber.PURCHASE_UNITS):
+        self.session_id = str(
+            session_id) if session_id is not None else str(uuid4())
+        self.players = players if players is not None else []
         self.status = status
         self.turn_num = turn_num
         self.phase_num = phase_num
@@ -52,9 +53,6 @@ class Session:
     @property
     def chosen_countries(self):
         return [player.country for player in self.players]
-
-    def __str__(self):
-        return f"Session {self.session_id} (Status: {self.status.name}, Turn: {self.turn_num})"
 
     def __repr__(self):
         return (
@@ -113,11 +111,11 @@ class Session:
         """
         result = mongo.db.session.find_one({'session_id': session_id})
 
-        # remove mongo ObjectID
-        del result['_id']
-
         if not result:
             return None
+
+        # remove mongo ObjectID
+        del result['_id']
 
         if convert_to_class:
             return Session.from_dict(result)

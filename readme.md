@@ -22,33 +22,18 @@ run with
 
 ## To Do
 
-Final tile fix in blender
-Eastern United States / Panama / Mexico
-
-Ocean Tiles
-11 and 17 do NOT border
-12 and 18 DO border
-14 and 16 DO border
-17 and 22 DO border
-17 and 11 do NOT border
-21 and 22 do NOT border
-
-22: 17, 18, 23, 24, 25
-ocean_tile_26 missing
-Confirm "Anglo-Egypt"
-
--   finish territory data
+-   combat
+-   territory capture
+-   tank can capture empty territory and move again (pre-combat)
 
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
 -   fighter and bombers automatically land on aircraft carriers they are in the same territory as
 -   mobilization: can place fighters and bombers in the same territories as ships as long as there is room in cargo
 
-SUNDAY
-
--   combat
--   territory capture
--   tank can capture empty territory and move again (pre-combat)
+-   submarine logic
+-   bomber logic
+-   AA logic
 
 MONDAY
 
@@ -76,12 +61,10 @@ WEDNESDAY
 
 Future Work:
 
+-   ocean territories occupied by no one
+
 -   scheduled tasks
 -   skip players turn after certain time
-
--   submarine logic
--   bomber logic
--   AA logic
 
 -   game log so players can see what happened (where combat happened, territories flipped)
 -   help screens - button while loading that explains the specific rules

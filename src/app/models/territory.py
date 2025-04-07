@@ -19,17 +19,14 @@ A Unit is:
 
 
 class Territory:
-    def __init__(self, team, units=[], has_factory=False):
+    def __init__(self, team, units=None, has_factory=None):
         self.team = team
-        self.units = units
-        self.has_factory = has_factory
-
-    def __str__(self):
-        return f"Territory: Team: {self.team}"
+        self.units = units if units is not None else []
+        self.has_factory = has_factory if has_factory is not None else False
 
     def __repr__(self):
         return (
-            f"<Territory(team={self.team}>"
+            f"<Territory(team={self.team}, units={len(self.units)}, has_factory={self.has_factory}>"
         )
 
     def to_dict(self):

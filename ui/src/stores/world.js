@@ -71,11 +71,6 @@ export const useWorldStore = defineStore("world", {
 			// this.isLoading = true;
 
 			try {
-				// console.log(
-				// 	"Fetching game state from API:",
-				// 	`/game/${this.getSessionId}`
-				// );
-
 				const response = await API.get(`/game/${this.getSessionId}`);
 
 				console.log("API Response:", response.data); // Debugging log

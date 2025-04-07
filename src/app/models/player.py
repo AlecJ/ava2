@@ -29,9 +29,6 @@ class Player:
         # logging, or error handling?
         # session cannot be null, neither name nor country
 
-    def __str__(self):
-        return f"Player {self.player_id} (Country: {self.country})"
-
     def __repr__(self):
         return (
             f"<Player(player_id={self.player_id}, "

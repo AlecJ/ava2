@@ -35,8 +35,9 @@ def join_session(session_id, country):
         game_state = GameState.create_game_state(session.session_id)
 
         # initializes some data for the first turn
+        session.turn_num = -1
         end_turn(session, game_state)
-        session.turn_num = 0
+
         game_state.update()
 
     return session, new_player

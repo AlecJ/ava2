@@ -343,6 +343,7 @@ def end_turn(session, game_state):
 
             # if a fighter or bomber is on the ocean with no carrier, destroy it
             if is_air_unit(unit.unit_type) and territory_is_ocean:
+                print(territory_name)
                 attempt_to_load_air_unit_on_carrier(territory, unit)
                 # unit is removed from territory regardless
                 units_to_remove.append(unit)
@@ -351,7 +352,16 @@ def end_turn(session, game_state):
             if is_air_unit(unit.unit_type) and territory.team != unit.team:
                 units_to_remove.append(unit)
 
-        [territory.units.remove(unit) for unit in units_to_remove]
+        if units_to_remove:
+            print(territory_name)
+            print(units_to_remove)
+            print(territory.units)
+
+            [territory.units.remove(unit) for unit in units_to_remove]
+
+            print('after')
+            print(territory.units)
+            print('---')
 
     session.turn_num += 1
     session.phase_num = PhaseNumber.PURCHASE_UNITS
@@ -421,7 +431,7 @@ def retrieve_unit_from_territory(territory, unit_to_find):
         "Unit could not be found in the specified territory. U ID: ${unit_to_find.unit_id}")
 
 
-def attempt_to_load_air_unit_on_carrier(territory, unit_to_load):
+def attempt_to_load_air_unit_on_carrier(territory, air_unit):
     """
     Check if there are any aircraft carriers in the territory and load the unit onto it.
 
@@ -431,10 +441,17 @@ def attempt_to_load_air_unit_on_carrier(territory, unit_to_load):
     """
     for unit in territory.units:
         if unit.unit_type == "AIRCRAFT-CARRIER":
-            if len(unit.cargo) < 2:
-                unit.cargo.append(unit_to_load)
-                return True
+            print(f"cargo: {unit.cargo}")
+            if len(unit.cargo) >= 2:
+                print(f"Carrier is full, cannot load {air_unit.unit_type}")
+                return False
 
+            print(
+                f"Loading {air_unit.unit_type} onto {unit.unit_type}")
+            unit.cargo.append(air_unit)
+            return True
+
+    print(f"No available carrier for {air_unit.unit_type} in {territory}")
     return False
 
 

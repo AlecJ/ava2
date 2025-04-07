@@ -228,6 +228,7 @@ export default {
 	/>
 
 	<UndoTurnButton
+		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:currentPhaseNum="currentPhaseNum"
 		:isThisPlayersTurn="isThisPlayersTurn"
 	/>
