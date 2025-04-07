@@ -6,7 +6,7 @@ from app.models.unit import Unit
 from app.services.session import validate_player
 from app.services.game import (purchase_unit, mobilize_units, move_units,
                                load_transport_with_units, unload_transport,
-                               get_combat_territories, end_turn)
+                               get_battles, end_turn)
 
 
 game_route = Blueprint('game_route', __name__)
@@ -187,8 +187,8 @@ def handle_unload_transport(session_id):
     return jsonify(response), 200
 
 
-@game_route.route('/<string:session_id>/combatterritories', methods=['GET'])
-def handle_get_combat_territories(session_id):
+@game_route.route('/<string:session_id>/battles', methods=['GET'])
+def handle_get_battles(session_id):
     # Fetch the session and game state by session ID
     session, game_state = fetch_session_and_game_state(session_id)
     if not session or not game_state:
@@ -198,7 +198,7 @@ def handle_get_combat_territories(session_id):
     if session.phase_num != PhaseNumber.COMBAT:
         return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
 
-    combat_territories = get_combat_territories(game_state)
+    combat_territories = get_battles(game_state)
 
     response = {
         'status': 'Combat territories retrieved successfully.',

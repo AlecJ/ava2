@@ -77,7 +77,6 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     territory_b_generic_data = TERRITORY_DATA[territory_b_name]
 
     territory_b_is_ocean = territory_b_generic_data['is_ocean']
-    territory_b_is_controlled_by_player = player.team_num == territory_b.team
 
     # territories are neighbors
     if not territory_b_name in territory_a_generic_data['neighbors']:
@@ -88,13 +87,6 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
         territory_a, Unit.from_dict(unit)) for unit in units_to_move]
     if not all(units_to_move):
         return False, "All/some units are not in the territory."
-
-    # # all moving units are in territory A
-    # territory_a_unit_ids = {unit.unit_id for unit in territory_a.units}
-    # moving_unit_ids = {unit.unit_id for unit in units_to_move}
-
-    # if not set(moving_unit_ids).issubset(territory_a_unit_ids):
-    #     return False, "Units are not in the selected territory."
 
     for unit in units_to_move:
         if unit.movement < 1:
@@ -110,8 +102,16 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         """Validation Passed"""
 
-        if not is_air_unit(unit.unit_type) and is_hostile_territory(territory_b, player.team_num):
-            unit.movement = 1  # will be subtracted to 0 later
+        # if entering a territory with hostile units, add a battle to the game state
+        if is_hostile_territory(territory_b, player.team_num):
+            new_battle = {'location': territory_b_name,
+                          'attack_from': territory_a_name,
+                          'attacker': player.team_num, }
+            game_state.battles.append(new_battle)
+
+            # land and sea units must stop once they enter a hostile territory
+            if not is_air_unit(unit.unit_type):
+                unit.movement = 1  # will be subtracted to 0 later
 
     for unit in units_to_move:
         unit.movement -= 1
@@ -251,57 +251,92 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     return True, None
 
 
-def get_combat_territories(game_state):
+def get_battles(game_state):
     """
     Get all territories that are currently in combat.
     Sort battles by sea first, and then land.
     Order is important because they are resolved in order.
 
+    Battles are also stored in the game_state to track where attackers
+    would retreat to.
+
     :param game_state: The current game state.
     :return: List of territories in combat.
     """
-    axis_team_numbers = [1, 3]
-    allies_team_numbers = [0, 2, 4]
+    # axis_team_numbers = [1, 3]
+    # allies_team_numbers = [0, 2, 4]
 
-    combat_territories = []
+    # combat_territories = []
 
-    for territory_name, territory in game_state.territories.items():
-        axis_unit_seen = False
-        allies_unit_seen = False
+    # for territory_name, territory in game_state.territories.items():
+    #     axis_unit_seen = False
+    #     allies_unit_seen = False
 
-        for unit in territory.units:
+    #     for unit in territory.units:
 
-            if unit.team in axis_team_numbers:
-                axis_unit_seen = True
+    #         if unit.team in axis_team_numbers:
+    #             axis_unit_seen = True
 
-                if allies_unit_seen:
-                    break
+    #             if allies_unit_seen:
+    #                 break
 
-            if unit.team in allies_team_numbers:
-                allies_unit_seen = True
+    #         if unit.team in allies_team_numbers:
+    #             allies_unit_seen = True
 
-                if axis_unit_seen:
-                    break
+    #             if axis_unit_seen:
+    #                 break
 
-        if axis_unit_seen and allies_unit_seen:
-            combat_territories.append(territory_name)
+    #     if axis_unit_seen and allies_unit_seen:
+
+    #         combat_territories.append(territory_name)
 
     # sea battles are handled before land battles
     # this is important for amphibious assaults
-    combat_territories.sort(key=lambda x: TERRITORY_DATA[x]['is_ocean'])
-
-    return combat_territories
+    return game_state.battles.sort(key=lambda x: TERRITORY_DATA[x]['is_ocean'])
 
 
-def combat_attack():
-    pass
+def combat_opening_fire(game_state, territory_name):
+    """
+    In the first round of combat, some special units can fire before
+    the main combat begins.
+
+    Anti-aircraft guns can fire at air units as if the air units
+    are passing over the territory.
+
+    Battleships can attack land units during an amphibious assault
+    if there was no sea battle in the sea territory.
+
+    (Ocean combat) submarines get to attack before the main combat
+    begins.
+
+    Any units destroyed in opening fire do not get to fire back.
+    """
+    # Anti aircraft guns
+    # Battleship bombardment
+    # Submarine attack
 
 
-def combat_retreat():
+def combat_attack(game_state, territory_name):
+    """
+    Main combat attack intiated by the attacker.
+
+    Each combat must have at least one attack and combat is resolved
+    only when a side loses all of its units, or the attacker retreats.
+    """
+
+
+def combat_retreat(game_state, territory_name):
     pass
 
 
 def combat_select_destroyed_units():
+    pass
+
+
+def combat_roll(unit, is_attacking=True):
+    """
+    Roll for a unit's attack or defense.
+    """
     pass
 
 

@@ -22,6 +22,8 @@ run with
 
 ## To Do
 
+-   unit box team undefined
+
 -   combat
 -   territory capture
 -   tank can capture empty territory and move again (pre-combat)
@@ -34,6 +36,8 @@ run with
 -   submarine logic
 -   bomber logic
 -   AA logic
+
+-   refactor getPlayerTeamNum
 
 MONDAY
 

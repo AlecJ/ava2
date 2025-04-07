@@ -11,7 +11,7 @@ export const useWorldStore = defineStore("world", {
 		countries: countries,
 		territories: {},
 		threeGlobeAndCountries: null,
-		combatTerritories: [],
+		battles: [],
 	}),
 	actions: {
 		initTerritories() {
@@ -65,8 +65,8 @@ export const useWorldStore = defineStore("world", {
 					territory.has_factory;
 			}
 		},
-		setCombatTerritories(combatTerritories) {
-			this.combatTerritories = combatTerritories;
+		setBattles(battles) {
+			this.battles = battles;
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -214,18 +214,18 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
-		async fetchCombatTerritories() {
+		async fetchBattles() {
 			// also send player ID
 			const sessionStore = useSessionStore();
 			sessionStore.setIsLoading(true);
 
 			try {
 				const response = await API.get(
-					`/game/${this.getSessionId}/combatterritories`
+					`/game/${this.getSessionId}/battles`
 				);
 
 				console.log("API Response:", response.data); // Debugging log
-				this.setCombatTerritories(response.data.combat_territories);
+				this.setBattles(response.data.combat_territories);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
 			} finally {
@@ -268,7 +268,7 @@ export const useWorldStore = defineStore("world", {
 
 				// if in combat phase, get combat territories
 				if (response.data.session.phaseNum === 2) {
-					await this.fetchCombatTerritories();
+					await this.fetchBattles();
 				}
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -309,6 +309,6 @@ export const useWorldStore = defineStore("world", {
 			const sessionStore = useSessionStore();
 			return sessionStore.playerId;
 		},
-		getCombatTerritories: (state) => state.combatTerritories,
+		getBattles: (state) => state.battles,
 	},
 });

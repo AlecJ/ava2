@@ -1,4 +1,5 @@
 <script>
+import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
 import { countries } from "@/data/countries";
 import { unitIcons } from "@/data/unitIcons";
@@ -26,6 +27,7 @@ export default {
 	},
 	data() {
 		return {
+			sessionStore: null,
 			worldStore: null,
 			playerUnits: [],
 		};
@@ -48,9 +50,7 @@ export default {
 	},
 	computed: {
 		playerTeamNum() {
-			return countries.findIndex(
-				(country) => country.name === this.player.country
-			);
+			return this.sessionStore?.getPlayerTeamNum;
 		},
 		selectedUnits() {
 			return this.playerUnits.filter((unit) => unit.selected);
@@ -73,6 +73,7 @@ export default {
 		},
 	},
 	created() {
+		this.sessionStore = useSessionStore();
 		this.worldStore = useWorldStore();
 	},
 	mounted() {

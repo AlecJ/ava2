@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { API } from "@/services/api";
 
 import { useWorldStore } from "@/stores/world";
+import { countries } from "@/data/countries";
 
 export const useSessionStore = defineStore("session", {
 	state: () => ({
@@ -61,7 +62,7 @@ export const useSessionStore = defineStore("session", {
 						console.log(
 							"Combat phase detected, fetching combat territories"
 						);
-						await worldStore.fetchCombatTerritories();
+						await worldStore.fetchBattles();
 					}
 				}
 			} catch (error) {
@@ -127,6 +128,11 @@ export const useSessionStore = defineStore("session", {
 			if (!state.players) return null;
 			return state.players.find(
 				(player) => player.country === state.playerCountry
+			);
+		},
+		getPlayerTeamNum: (state) => {
+			return countries.findIndex(
+				(country) => country.name === state.playerCountry
 			);
 		},
 		getIsLoading: (state) => state.isLoading,

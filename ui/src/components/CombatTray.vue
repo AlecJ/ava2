@@ -1,4 +1,5 @@
 <script>
+import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import UnitBox from "@/components/UnitBox.vue";
@@ -11,6 +12,7 @@ export default {
 	props: {},
 	data() {
 		return {
+			sessionStore: null,
 			worldStore: null,
 			selectedBattle: null,
 		};
@@ -27,14 +29,34 @@ export default {
 	},
 	computed: {
 		battleList() {
-			return this.worldStore?.getCombatTerritories || [];
+			return this.worldStore?.getBattles || [];
 		},
 		selectedTerritory() {
+			if (!this.selectedBattle) return null;
+
 			return this.worldStore?.getTerritory(this.selectedBattle);
+		},
+		playerTeamNum() {
+			return this.sessionStore?.getPlayerTeamNum;
+		},
+		playerUnits() {
+			if (!this.selectedTerritory) return [];
+
+			return this.selectedTerritory.units.filter(
+				(unit) => unit.team === this.playerTeamNum
+			);
+		},
+		enemyUnits() {
+			if (!this.selectedTerritory) return [];
+
+			return this.selectedTerritory.units.filter(
+				(unit) => unit.team !== this.playerTeamNum
+			);
 		},
 	},
 	methods: {},
 	created() {
+		this.sessionStore = useSessionStore();
 		this.worldStore = useWorldStore();
 	},
 };
@@ -44,7 +66,11 @@ export default {
 	<div class="combat-tray">
 		<div class="battle-list">
 			<div class="battle-list-header">Current Battles</div>
+			<div v-if="battleList.length === 0">
+				No battles available. You can skip this phase.
+			</div>
 			<button
+				v-else
 				v-for="battle in battleList"
 				:key="battle"
 				class="battle-button"
@@ -54,9 +80,23 @@ export default {
 				{{ battle }}
 			</button>
 		</div>
-		<div class="current-battle-tray">
-			{{ selectedTerritory }}
+		<div v-if="battleList.length > 0" class="current-battle-tray">
+			<div class="unit-tray-container">
+				<div class="left-column">
+					Your Units
+					<UnitBox :units="playerUnits" readOnly></UnitBox>
+				</div>
+				<div class="right-column">
+					Enemy Units
+					<UnitBox :units="enemyUnits" readOnly></UnitBox>
+				</div>
+			</div>
+			<div class="battle-tray-buttons">
+				<button class="battle-tray-button">Attack</button>
+				<button class="battle-tray-button">Retreat</button>
+			</div>
 		</div>
+		<div v-else-if="false" class="casualty-tray">Casualty Tray</div>
 	</div>
 </template>
 
@@ -82,6 +122,9 @@ export default {
 		border-right: 2px solid #ccc; // remove
 		// border-radius: 8px; // remove
 
+		text-align: center;
+		font-size: 1rem;
+
 		.battle-list-header {
 			font-size: clamp(1rem, 5vw, 1.3rem);
 			font-weight: bold;
@@ -96,6 +139,49 @@ export default {
 
 			&.selected {
 				border: 1px solid gold;
+			}
+		}
+	}
+
+	.current-battle-tray {
+		width: 100%;
+		height: 100%;
+
+		display: grid;
+		justify-items: center;
+		grid-template-rows: 5fr 1fr;
+
+		.unit-tray-container {
+			width: 100%;
+			padding: 0 1rem;
+
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+
+			.left-column,
+			.right-column {
+				padding: 0 1rem;
+				overflow-y: auto;
+				display: grid;
+				grid-template-rows: 5rem 1fr;
+				justify-items: center;
+				font-size: 1.5rem;
+			}
+
+			.left-column {
+				border-right: 2px solid #ccc;
+			}
+		}
+
+		.battle-tray-buttons {
+			width: 50%;
+
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			place-items: center;
+
+			Button {
+				width: 6rem;
 			}
 		}
 	}
