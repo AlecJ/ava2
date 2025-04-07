@@ -219,8 +219,7 @@
 			"Western United States",
 			"Mexico",
 			"Eastern Canada",
-			"Western Canada",
-			"ocean_tile_10"
+			"Western Canada"
 		],
 		"starting_units": [{ "type": "INFANTRY", "count": 2 }]
 	},
@@ -998,7 +997,6 @@
 		"power": 0,
 		"neighbors": [
 			"Eastern United States",
-			"Central United States",
 			"Central America",
 			"ocean_tile_19",
 			"ocean_tile_11",
@@ -1029,6 +1027,7 @@
 		"is_ocean": true,
 		"power": 0,
 		"neighbors": [
+			"Algeria",
 			"ocean_tile_7",
 			"ocean_tile_8",
 			"ocean_tile_9",

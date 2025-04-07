@@ -106,7 +106,11 @@ export default {
 			Selected territory:
 			{{ selectedTerritory || "None" }}
 		</div>
-		<button v-if="mobilizationUnits.length" @click="placeUnits">
+		<button
+			v-if="mobilizationUnits.length"
+			:disabled="!selectedTerritory"
+			@click="placeUnits"
+		>
 			Place Units
 		</button>
 	</div>

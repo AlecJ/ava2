@@ -54,6 +54,8 @@ TUESDAY
 -   toast message for purchasing unit
 -   toast message for each phase
 
+-   fix loading spinners
+
 WEDNESDAY
 
 -   compiling vue app
@@ -61,6 +63,9 @@ WEDNESDAY
 
 Future Work:
 
+-   ampibious assault with sea battle: player unloads as if they win battle, sea battles are always handled first, if the player loses the battle, the units are removed from the land territory before that battle occurs (if still happening)
+
+-   prevent attempt to unload to sea
 -   ocean territories occupied by no one
 
 -   scheduled tasks

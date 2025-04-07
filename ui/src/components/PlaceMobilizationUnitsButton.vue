@@ -31,12 +31,11 @@ export default {
 
 <style scoped lang="scss">
 button {
-	position: absolute;
-	top: 45%;
+	position: relative;
 	width: calc(2rem + 15rem);
 	height: 3rem;
-	left: -2rem;
-	margin-left: 0;
+	left: 0;
+	margin: 0;
 
 	background-color: rgba(33, 32, 32, 0.931);
 	border: 2px solid white;
@@ -46,7 +45,7 @@ button {
 	transition: left 0.3s ease;
 
 	&:hover:not(:disabled) {
-		left: 0%;
+		left: 2rem;
 	}
 
 	&:disabled {

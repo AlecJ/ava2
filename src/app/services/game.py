@@ -65,9 +65,9 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     :session: The current game session.
     :game_state: The current game state.
     :player: The player making the move.
-    :territory_a_name: The name of the territory to move
+    :territory_a_name: The name of the territory to move from
     :territory_b_name: The name of the territory to move to
-    :units_to_move: The list of units to move.
+    :units_to_move: The list of units to move (as dict).
     :return bool: if the units were successfully moved.
     """
     territory_a = game_state.territories[territory_a_name]
@@ -83,12 +83,18 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     if not territory_b_name in territory_a_generic_data['neighbors']:
         return False, "Territories are not neighbors."
 
-    # all moving units are in territory A
-    territory_a_unit_ids = {unit.unit_id for unit in territory_a.units}
-    moving_unit_ids = {unit.unit_id for unit in units_to_move}
+    # fetch units from game_state and validate they are in territory A
+    units_to_move = [retrieve_unit_from_territory(
+        territory_a, Unit.from_dict(unit)) for unit in units_to_move]
+    if not all(units_to_move):
+        return False, "All/some units are not in the territory."
 
-    if not set(moving_unit_ids).issubset(territory_a_unit_ids):
-        return False, "Units are not in the selected territory."
+    # # all moving units are in territory A
+    # territory_a_unit_ids = {unit.unit_id for unit in territory_a.units}
+    # moving_unit_ids = {unit.unit_id for unit in units_to_move}
+
+    # if not set(moving_unit_ids).issubset(territory_a_unit_ids):
+    #     return False, "Units are not in the selected territory."
 
     for unit in units_to_move:
         if unit.movement < 1:
@@ -112,7 +118,7 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
     # remove units from territory A
     territory_a.units = [
-        unit for unit in territory_a.units if unit.unit_id not in moving_unit_ids]
+        unit for unit in territory_a.units if unit not in units_to_move]
 
     # add units to territory B
     territory_b.units.extend(units_to_move)
@@ -141,6 +147,8 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
 
     # load transport from game_state, also ensures it exists in territory
     transport = retrieve_unit_from_territory(sea_territory, transport)
+    if not transport:
+        return False, "Transport not found in territory."
 
     # transport is owned by player
     if transport.team != player.team_num:
@@ -154,6 +162,8 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
         # fetch unit from game_state
         unit = Unit.from_dict(unit)
         unit = retrieve_unit_from_territory(unit_territory, unit)
+        if not unit:
+            return False, "Unit not found in territory."
 
         # each unit is in a friendly territory
         if unit_territory.team != player.team_num:
@@ -211,6 +221,8 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
 
     # load transport from game_state, also ensures it exists in territory
     transport = retrieve_unit_from_territory(sea_territory, transport)
+    if not transport:
+        return False, "Transport not found in territory."
 
     # transport is owned by player
     if transport.team != player.team_num:
@@ -237,6 +249,60 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     transport.cargo = []
 
     return True, None
+
+
+def get_combat_territories(game_state):
+    """
+    Get all territories that are currently in combat.
+    Sort battles by sea first, and then land.
+    Order is important because they are resolved in order.
+
+    :param game_state: The current game state.
+    :return: List of territories in combat.
+    """
+    axis_team_numbers = [1, 3]
+    allies_team_numbers = [0, 2, 4]
+
+    combat_territories = []
+
+    for territory_name, territory in game_state.territories.items():
+        axis_unit_seen = False
+        allies_unit_seen = False
+
+        for unit in territory.units:
+
+            if unit.team in axis_team_numbers:
+                axis_unit_seen = True
+
+                if allies_unit_seen:
+                    break
+
+            if unit.team in allies_team_numbers:
+                allies_unit_seen = True
+
+                if axis_unit_seen:
+                    break
+
+        if axis_unit_seen and allies_unit_seen:
+            combat_territories.append(territory_name)
+
+    # sea battles are handled before land battles
+    # this is important for amphibious assaults
+    combat_territories.sort(key=lambda x: TERRITORY_DATA[x]['is_ocean'])
+
+    return combat_territories
+
+
+def combat_attack():
+    pass
+
+
+def combat_retreat():
+    pass
+
+
+def combat_select_destroyed_units():
+    pass
 
 
 def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
@@ -270,13 +336,28 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
         if unit_type not in player.mobilization_units:
             return False
 
-        # if land unit, it must have be land and have industrial complex
-        if not is_sea_unit(unit_type) and unit_type != "INDUSTRIAL-COMPLEX" and (is_ocean or not has_factory or not is_controlled_by_player):
-            return False
+        # if land unit, the selected territory must be land and have an industrial complex
+        if is_land_unit(unit_type):
+            can_place_in_land = not is_ocean and is_controlled_by_player and has_factory
+
+            if not can_place_in_land:
+                return False
 
         # if sea unit, it must be be sea and have an adjacent controlled industrial complex
-        if is_sea_unit(unit_type) and unit_type != "INDUSTRIAL-COMPLEX" and (not is_ocean or not has_adjacent_industrial_complex):
-            return False
+        if is_sea_unit(unit_type):
+            can_place_in_sea = is_ocean and has_adjacent_industrial_complex
+
+            if not can_place_in_sea:
+                return False
+
+        # if air unit, it can be placed in a sea territory with a carrier or a land territory
+        if is_air_unit(unit_type):
+            can_place_in_sea = is_ocean and has_adjacent_industrial_complex and can_mobilize_air_unit_in_sea(
+                selected_territory_data, units_to_mobilize)
+            can_place_in_land = not is_ocean and is_controlled_by_player and has_factory
+
+            if not (can_place_in_sea or can_place_in_land):
+                return False
 
         # if industrial complex, it must be a controlled land without an existing one
         if unit_type == "INDUSTRIAL-COMPLEX" and (is_ocean or has_factory or not is_controlled_by_player):
@@ -427,8 +508,31 @@ def retrieve_unit_from_territory(territory, unit_to_find):
         if unit == unit_to_find:
             return unit
 
-    raise BaseException(
-        "Unit could not be found in the specified territory. U ID: ${unit_to_find.unit_id}")
+    return False
+
+
+def can_mobilize_air_unit_in_sea(territory, units_to_mobilize):
+    """
+    Air units can be mobilized in a sea territory if there is an aircraft carrier with room.
+    This also includes carriers in the mobilization forces.
+
+    Count the total cargo available in the territory and the mobilization forces and
+    check if there is room for all air units.
+
+    :territory: The territory (class) to check.
+    :units_to_mobilize: The list of units to mobilize.
+    :return bool: True if there is room for air units.
+    """
+    current_cargo_space_available_in_territory = sum(
+        [2 - len(unit.cargo) for unit in territory.units if unit.unit_type == "AIRCRAFT-CARRIER"])
+
+    count_of_carriers_in_mobilization_forces = 2 * len(
+        [unit for unit in units_to_mobilize if unit['unit_type'] == "AIRCRAFT-CARRIER"])
+
+    count_of_air_units_in_mobilization_forces = len(
+        [unit for unit in units_to_mobilize if is_air_unit(unit['unit_type'])])
+
+    return count_of_air_units_in_mobilization_forces <= current_cargo_space_available_in_territory + count_of_carriers_in_mobilization_forces
 
 
 def attempt_to_load_air_unit_on_carrier(territory, air_unit):
@@ -465,7 +569,12 @@ def is_hostile_territory(territory, player_team_num):
     """
     hostile_team_numbers = [0, 2, 4] if player_team_num in [1, 3] else [1, 3]
 
-    return territory.team != player_team_num and territory.team in hostile_team_numbers
+    # check if territory has units controlled by the hostile team
+    for unit in territory.units:
+        if unit.team in hostile_team_numbers:
+            return True
+
+    return False
 
 
 def number_of_controlled_territories_for_player(game_state, player):

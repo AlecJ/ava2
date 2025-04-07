@@ -6,11 +6,11 @@ export default {
 			required: false,
 			default: false,
 		},
-		setPurchasingUnits: {
+		setShowBattles: {
 			type: Function,
 			required: true,
 		},
-		isPurchasingUnits: {
+		showBattles: {
 			type: Boolean,
 			required: false,
 			default: false,
@@ -23,20 +23,16 @@ export default {
 	<button
 		:disabled="!active"
 		@mousedown.prevent.stop
-		@click="
-			() => {
-				setPurchasingUnits(!isPurchasingUnits);
-			}
-		"
+		@click="setShowBattles(!showBattles)"
 	>
-		Purchase Units
+		View Battles
 	</button>
 </template>
 
 <style scoped lang="scss">
 button {
 	position: relative;
-	width: calc(2rem + 11rem);
+	width: calc(2rem + 10rem);
 	height: 3rem;
 	left: 0;
 	margin: 0;

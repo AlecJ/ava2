@@ -21,7 +21,7 @@ class Unit:
         self.team = team
         self.unit_type = unit_type
         # 0 movement is valid
-        self.movement = movement or UNIT_DATA[unit_type]['movement']
+        self.movement = movement if movement is not None else UNIT_DATA[unit_type]['movement']
         self.cargo = cargo if cargo is not None else []
 
         # todo -- does this do anything
@@ -55,12 +55,6 @@ class Unit:
         """
         Converts the Unit object to a dictionary for JSON serialization.
         """
-        # if len(self.cargo) > 0:
-        #     breakpoint()
-
-        # print(self.cargo)
-        # print(len(self.cargo))
-
         return {
             'unit_id': self.unit_id,
             'team': self.team,

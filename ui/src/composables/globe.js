@@ -144,10 +144,6 @@ export function useGlobe() {
 
 			mesh.userData = { name: countryName, outline };
 
-			if (countryName === "Eastern United States") {
-				console.log(mesh);
-			}
-
 			// Add the mesh to the country group
 			group.add(mesh);
 		});

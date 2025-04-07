@@ -1,6 +1,7 @@
 <script>
 import TerritoryTray from "@/components/TerritoryTray.vue";
 import PurchaseUnitsTray from "@/components/PurchaseUnitsTray.vue";
+import CombatTray from "@/components/CombatTray.vue";
 import PlaceMobilizationUnitsTray from "@/components/PlaceMobilizationUnitsTray.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
@@ -8,6 +9,7 @@ export default {
 	components: {
 		TerritoryTray,
 		PurchaseUnitsTray,
+		CombatTray,
 		PlaceMobilizationUnitsTray,
 		LoadingSpinner,
 	},
@@ -46,6 +48,11 @@ export default {
 		purchaseUnit: {
 			type: Function,
 			required: true,
+		},
+		showBattles: {
+			type: Boolean,
+			required: false,
+			default: false,
 		},
 		isPlacingMobilizationUnits: {
 			type: Boolean,
@@ -90,7 +97,7 @@ export default {
 	},
 	computed: {
 		showFullScreen() {
-			return this.isPurchasingUnits;
+			return this.isPurchasingUnits || this.showBattles;
 		},
 		showHalfScreen() {
 			return (
@@ -134,6 +141,8 @@ export default {
 			v-if="isPurchasingUnits && !forceClose"
 			:purchaseUnit="purchaseUnit"
 		/>
+
+		<CombatTray v-if="showBattles && !forceClose" />
 
 		<PlaceMobilizationUnitsTray
 			v-if="isPlacingMobilizationUnits && !forceClose"

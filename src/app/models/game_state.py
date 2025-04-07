@@ -157,10 +157,6 @@ class GameState:
 
             units = self.initialize_units(territory_data)
 
-            # if territory_name == 'ocean_tile_37':
-            #     breakpoint()
-            # TODO -- remove this
-
             result[territory_name] = Territory(
                 team=territory_data['team'],
                 units=units,

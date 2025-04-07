@@ -4,7 +4,9 @@ from app.models.session import Session, PhaseNumber
 from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
-from app.services.game import purchase_unit, mobilize_units, move_units, load_transport_with_units, unload_transport, end_turn
+from app.services.game import (purchase_unit, mobilize_units, move_units,
+                               load_transport_with_units, unload_transport,
+                               get_combat_territories, end_turn)
 
 
 game_route = Blueprint('game_route', __name__)
@@ -81,9 +83,6 @@ def handle_move_units(session_id):
     territory_a = data.get('territoryA')
     territory_b = data.get('territoryB')
     units_to_move = data.get('units')
-
-    # cast json units to class objects
-    units_to_move = [Unit.from_dict(unit) for unit in units_to_move]
 
     result, message = move_units(session, game_state, player,
                                  territory_a, territory_b, units_to_move)
@@ -184,6 +183,27 @@ def handle_unload_transport(session_id):
         'status': 'Transport loading action handled successfully.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
+    }
+    return jsonify(response), 200
+
+
+@game_route.route('/<string:session_id>/combatterritories', methods=['GET'])
+def handle_get_combat_territories(session_id):
+    # Fetch the session and game state by session ID
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # Must be in combat phase
+    if session.phase_num != PhaseNumber.COMBAT:
+        return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
+
+    combat_territories = get_combat_territories(game_state)
+
+    response = {
+        'status': 'Combat territories retrieved successfully.',
+        'session_id': game_state.session_id,
+        'combat_territories': combat_territories,
     }
     return jsonify(response), 200
 

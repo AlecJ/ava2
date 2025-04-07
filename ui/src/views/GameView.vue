@@ -8,10 +8,11 @@ import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
 import DefaultTray from "@/components/DefaultTray.vue";
 import PlayerBoard from "@/components/PlayerBoard.vue";
 import ThreeGlobe from "@/components/ThreeGlobe.vue";
+import PurchaseUnitsButton from "@/components/PurchaseUnitsButton.vue";
+import CombatButton from "@/components/CombatButton.vue";
+import PlaceMobilizationUnitsButton from "@/components/PlaceMobilizationUnitsButton.vue";
 import UndoTurnButton from "@/components/UndoTurnButton.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
-import PurchaseUnitsButton from "@/components/PurchaseUnitsButton.vue";
-import PlaceMobilizationUnitsButton from "@/components/PlaceMobilizationUnitsButton.vue";
 
 export default {
 	name: "GameView",
@@ -22,10 +23,11 @@ export default {
 		DefaultTray,
 		PlayerBoard,
 		ThreeGlobe,
+		PurchaseUnitsButton,
+		CombatButton,
+		PlaceMobilizationUnitsButton,
 		UndoTurnButton,
 		EndTurnButton,
-		PurchaseUnitsButton,
-		PlaceMobilizationUnitsButton,
 	},
 	data() {
 		return {
@@ -37,6 +39,7 @@ export default {
 			isPlacingMobilizationUnits: false,
 			selectedTerritoryForMovement: null,
 			selectedTerritory: null,
+			showBattles: false,
 		};
 	},
 	computed: {
@@ -161,6 +164,9 @@ export default {
 		setPurchasingUnits(bool) {
 			this.isPurchasingUnits = bool;
 		},
+		setShowBattles(bool) {
+			this.showBattles = bool;
+		},
 		setPlacingMobilizationUnits(bool) {
 			this.isPlacingMobilizationUnits = bool;
 		},
@@ -201,8 +207,8 @@ export default {
 		:currentPhaseNum="currentPhaseNum"
 		:isPurchasingUnits="isPurchasingUnits"
 		:purchaseUnit="purchaseUnit"
+		:showBattles="showBattles"
 		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
-		:placeUnit="() => {}"
 		:setIsSelectingTerritory="setIsSelectingTerritory"
 		:selectedTerritory="selectedTerritory"
 	/>
@@ -213,19 +219,28 @@ export default {
 		:currentTurnNum="currentTurnNum"
 	/>
 
-	<PurchaseUnitsButton
-		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:active="currentPhaseNum === 0 && isThisPlayersTurn"
-		:setPurchasingUnits="setPurchasingUnits"
-		:isPurchasingUnits="isPurchasingUnits"
-	/>
+	<div class="tray-buttons">
+		<PurchaseUnitsButton
+			v-if="!showLandingPopUp && !showTeamSelectPopUp"
+			:active="currentPhaseNum === 0 && isThisPlayersTurn"
+			:setPurchasingUnits="setPurchasingUnits"
+			:isPurchasingUnits="isPurchasingUnits"
+		/>
 
-	<PlaceMobilizationUnitsButton
-		v-if="!showLandingPopUp && !showTeamSelectPopUp"
-		:active="currentPhaseNum === 4 && isThisPlayersTurn"
-		:setPlacingMobilizationUnits="setPlacingMobilizationUnits"
-		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
-	/>
+		<CombatButton
+			v-if="!showLandingPopUp && !showTeamSelectPopUp"
+			:active="currentPhaseNum === 2 && isThisPlayersTurn"
+			:setShowBattles="setShowBattles"
+			:showBattles="showBattles"
+		/>
+
+		<PlaceMobilizationUnitsButton
+			v-if="!showLandingPopUp && !showTeamSelectPopUp"
+			:active="currentPhaseNum === 4 && isThisPlayersTurn"
+			:setPlacingMobilizationUnits="setPlacingMobilizationUnits"
+			:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
+		/>
+	</div>
 
 	<UndoTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
@@ -253,4 +268,12 @@ export default {
 	<BackgroundStars />
 </template>
 
-<style scoped></style>
+<style scoped>
+.tray-buttons {
+	position: absolute;
+	top: 40%;
+	left: -2rem;
+	display: grid;
+	gap: 1rem;
+}
+</style>
