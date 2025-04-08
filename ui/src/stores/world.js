@@ -225,7 +225,7 @@ export const useWorldStore = defineStore("world", {
 				);
 
 				console.log("API Response:", response.data); // Debugging log
-				this.setBattles(response.data.combat_territories);
+				this.setBattles(response.data.battles);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
 			} finally {

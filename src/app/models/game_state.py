@@ -168,3 +168,24 @@ class GameState:
             )
 
         return result
+
+    def add_battle(self, attacking_player, territory_name, attacking_from):
+        """
+        Add a battle to the game state.
+        This is used to track where attackers would retreat to.
+
+        :param game_state: The current game state.
+        :param attacking_player: The team number of the player initiating the attack.
+        :param territory_name: The name of the territory being attacked.
+        :param attacking_from: The name of the territory the attack is coming from.
+        :return: The battle as a dict.
+        """
+        new_battle = {
+            'location': territory_name,
+            'attack_from': attacking_from,
+            'attacker': attacking_player
+        }
+
+        # Prevent duplicates for a single turn
+        if not new_battle in self.battles:
+            self.battles.append(new_battle)

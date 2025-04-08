@@ -63,18 +63,21 @@ export default {
 			return this.sessionStore?.players || [];
 		},
 		player() {
-			return this.sessionStore?.getPlayer || {};
+			const player = this.sessionStore?.getPlayer;
+
+			if (!player) return {};
+
+			return {
+				...player,
+				team: this.playerTeamNum,
+			};
 		},
 		playerCountry() {
 			// TODO replace with above
 			return this.sessionStore?.playerCountry || "";
 		},
 		playerTeamNum() {
-			if (!this.player) return -1;
-
-			return countries.findIndex(
-				(country) => country.name === this.player.country
-			);
+			return this.sessionStore?.getPlayerTeamNum;
 		},
 		isThisPlayersTurn() {
 			if (!this.player) return false;

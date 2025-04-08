@@ -104,10 +104,8 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         # if entering a territory with hostile units, add a battle to the game state
         if is_hostile_territory(territory_b, player.team_num):
-            new_battle = {'location': territory_b_name,
-                          'attack_from': territory_a_name,
-                          'attacker': player.team_num, }
-            game_state.battles.append(new_battle)
+            game_state.add_battle(
+                player.team_num, territory_b_name, territory_a_name)
 
             # land and sea units must stop once they enter a hostile territory
             if not is_air_unit(unit.unit_type):
@@ -239,8 +237,12 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
         return False, "Selected territory is not a neighbor of the sea territory."
 
     """Validation Passed"""
+    # if entering a territory with hostile units, add a battle to the game state
+    if is_hostile_territory(selected_territory, player.team_num):
+        game_state.add_battle(
+            player.team_num, selected_territory_name, sea_territory_name)
 
-    # units cannot move after unloading
+        # units cannot move after unloading
     for unit in transport.cargo:
         unit.movement = 0
 
@@ -292,7 +294,11 @@ def get_battles(game_state):
 
     # sea battles are handled before land battles
     # this is important for amphibious assaults
-    return game_state.battles.sort(key=lambda x: TERRITORY_DATA[x]['is_ocean'])
+    sorted_battles = sorted(
+        game_state.battles,
+        key=lambda x: TERRITORY_DATA[x['location']]['is_ocean']
+    )
+    return sorted_battles
 
 
 def combat_opening_fire(game_state, territory_name):

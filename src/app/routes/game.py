@@ -198,12 +198,12 @@ def handle_get_battles(session_id):
     if session.phase_num != PhaseNumber.COMBAT:
         return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
 
-    combat_territories = get_battles(game_state)
+    battles = get_battles(game_state)
 
     response = {
         'status': 'Combat territories retrieved successfully.',
         'session_id': game_state.session_id,
-        'combat_territories': combat_territories,
+        'battles': battles,
     }
     return jsonify(response), 200
 

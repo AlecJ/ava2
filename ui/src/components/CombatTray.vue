@@ -29,7 +29,9 @@ export default {
 	},
 	computed: {
 		battleList() {
-			return this.worldStore?.getBattles || [];
+			const battles = this.worldStore?.getBattles || [];
+
+			return battles.map((battle) => battle.location);
 		},
 		selectedTerritory() {
 			if (!this.selectedBattle) return null;

@@ -1,7 +1,6 @@
 <script>
 import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
-import { countries } from "@/data/countries";
 import { unitIcons } from "@/data/unitIcons";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import UnitBox from "@/components/UnitBox.vue";
@@ -39,7 +38,7 @@ export default {
 					this.playerUnits = [...this.player.mobilization_units].map(
 						(unit) => ({
 							unit_type: unit,
-							team: this.playerTeamNum,
+							team: newPlayer.team,
 						})
 					);
 				}
@@ -49,9 +48,6 @@ export default {
 		},
 	},
 	computed: {
-		playerTeamNum() {
-			return this.sessionStore?.getPlayerTeamNum;
-		},
 		selectedUnits() {
 			return this.playerUnits.filter((unit) => unit.selected);
 		},
