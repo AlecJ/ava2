@@ -1,3 +1,5 @@
+from random import randint
+
 from app.models.territory_data import TERRITORY_DATA
 from app.models.unit_data import UNIT_DATA
 from app.models.session import Session, PhaseNumber
@@ -253,52 +255,20 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     return True, None
 
 
-def get_battles(game_state):
+def sort_battles(game_state):
     """
-    Get all territories that are currently in combat.
     Sort battles by sea first, and then land.
     Order is important because they are resolved in order.
 
-    Battles are also stored in the game_state to track where attackers
-    would retreat to.
-
     :param game_state: The current game state.
-    :return: List of territories in combat.
+    :return: Bool, if the sorting was successful.
     """
-    # axis_team_numbers = [1, 3]
-    # allies_team_numbers = [0, 2, 4]
-
-    # combat_territories = []
-
-    # for territory_name, territory in game_state.territories.items():
-    #     axis_unit_seen = False
-    #     allies_unit_seen = False
-
-    #     for unit in territory.units:
-
-    #         if unit.team in axis_team_numbers:
-    #             axis_unit_seen = True
-
-    #             if allies_unit_seen:
-    #                 break
-
-    #         if unit.team in allies_team_numbers:
-    #             allies_unit_seen = True
-
-    #             if axis_unit_seen:
-    #                 break
-
-    #     if axis_unit_seen and allies_unit_seen:
-
-    #         combat_territories.append(territory_name)
-
-    # sea battles are handled before land battles
-    # this is important for amphibious assaults
-    sorted_battles = sorted(
+    game_state.battles = sorted(
         game_state.battles,
         key=lambda x: TERRITORY_DATA[x['location']]['is_ocean']
     )
-    return sorted_battles
+
+    return True
 
 
 def combat_opening_fire(game_state, territory_name):
@@ -320,6 +290,7 @@ def combat_opening_fire(game_state, territory_name):
     # Anti aircraft guns
     # Battleship bombardment
     # Submarine attack
+    pass
 
 
 def combat_attack(game_state, territory_name):
@@ -329,21 +300,104 @@ def combat_attack(game_state, territory_name):
     Each combat must have at least one attack and combat is resolved
     only when a side loses all of its units, or the attacker retreats.
     """
+    # TODO, some battles can be chosen out of order
+    # get the first battle, they are ordered and must be resolved in order
+    battle = game_state.battles[0]
+
+    if battle.get('location') != territory_name:
+        return False, "Territory is not the current battle."
+
+    # if battle.get('is_resolving_turn'):
+    #     return False, "Cannot attack. Battle has casualties to resolve."
+
+    # TODO cannot handle two battles simultaneously, if another battle is ongoing, stop
+
+    # if this is the first round of combat, perform opening fire
+    if battle.get('turn') == 0:
+        combat_opening_fire(game_state, territory_name)
+
+    # get the attacking and defending units
+    territory = game_state.territories[territory_name]
+
+    attacker_team_num = battle.get('attacker')
+    defending_team_numbers = get_hostile_team_nums_for_player(
+        attacker_team_num)
+
+    attacking_units = [
+        unit for unit in territory.units if unit.team == attacker_team_num]
+    defending_units = [
+        unit for unit in territory.units if unit.team in defending_team_numbers]
+
+    # roll for attack and defense
+    battle['attacker_rolls'] = [combat_roll(unit, is_attacker=True)
+                                for unit in attacking_units]
+    battle['defender_rolls'] = [combat_roll(unit, is_attacker=False)
+                                for unit in defending_units]
+
+    battle['is_resolving_turn'] = True
+
+    return True, None
+
+
+def combat_roll(unit, is_attacker=True):
+    """
+    Roll for a unit's attack or defense.
+
+    A roll is a HIT if it is less than or equal to the unit's attack or defense value.
+
+    :param unit: The unit to roll for.
+    :param is_attacker: True if the unit is attacking, False if defending.
+    :return: Dict, with the roll and bool if the roll was successful.
+    """
+    unit_type_data = UNIT_DATA[unit.unit_type]
+
+    roll_to_hit = unit_type_data['attack'] if is_attacker else unit_type_data['defense']
+
+    roll = randint(1, 6)
+
+    return {'unit': unit.unit_id, 'roll': roll, 'result': roll <= roll_to_hit}
 
 
 def combat_retreat(game_state, territory_name):
-    pass
-
-
-def combat_select_destroyed_units():
-    pass
-
-
-def combat_roll(unit, is_attacking=True):
     """
-    Roll for a unit's attack or defense.
+    End combat and retreat the attacker to the territory they attacked from.
     """
     pass
+
+
+def combat_select_casualties():
+    """
+    This is where units are actually removed and the battle is concluded.
+    """
+    pass
+
+    # # resolve combat
+    # attacker_hits = sum(roll['result'] for roll in battle.attacker_rolls)
+    # defender_hits = sum(roll['result'] for roll in battle.defender_rolls)
+
+    # # if either side has lost all units, resolve combat
+    # attacker_eliminated = len(attacking_units) - defender_hits <= 0
+    # defender_eliminated = len(defending_units) - attacker_hits <= 0
+
+    # # if attacker loses all units, resolve right away
+    # if attacker_eliminated:
+    #     defender_casualties = combat_auto_select_defender_casualties()
+
+    #     # otherwise resolve after attacker selects casualties
+
+    # # if combat is not over
+    # is_resolving_turn = False
+    # turn += 1
+
+
+def combat_auto_select_defender_casualties():
+    """
+    Defender does not choose which units to lose. Instead, they will be
+    selected from the least to most valuable.
+    """
+    result = []
+
+    return result
 
 
 def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
@@ -465,7 +519,6 @@ def end_turn(session, game_state):
 
             # if a fighter or bomber is on the ocean with no carrier, destroy it
             if is_air_unit(unit.unit_type) and territory_is_ocean:
-                print(territory_name)
                 attempt_to_load_air_unit_on_carrier(territory, unit)
                 # unit is removed from territory regardless
                 units_to_remove.append(unit)
@@ -475,15 +528,7 @@ def end_turn(session, game_state):
                 units_to_remove.append(unit)
 
         if units_to_remove:
-            print(territory_name)
-            print(units_to_remove)
-            print(territory.units)
-
             [territory.units.remove(unit) for unit in units_to_remove]
-
-            print('after')
-            print(territory.units)
-            print('---')
 
     session.turn_num += 1
     session.phase_num = PhaseNumber.PURCHASE_UNITS
@@ -539,7 +584,8 @@ def check_territory_has_adjacent_industrial_complex(game_state, player, selected
 
 def retrieve_unit_from_territory(territory, unit_to_find):
     """
-    This is used to find the db unit in a territory when we are given the unit separately.
+    This is used to find the db unit in a territory when we are given the unit
+    from the frontend. This is used for moving and loading units.
 
     :territory: The territory (class) to check.
     :unit: The unit (class) to find.
@@ -608,7 +654,7 @@ def is_hostile_territory(territory, player_team_num):
     :player_team_num: The team number of the player.
     :return bool: True if the territory is hostile, False otherwise.
     """
-    hostile_team_numbers = [0, 2, 4] if player_team_num in [1, 3] else [1, 3]
+    hostile_team_numbers = get_hostile_team_nums_for_player(player_team_num)
 
     # check if territory has units controlled by the hostile team
     for unit in territory.units:
@@ -672,3 +718,13 @@ def player_can_purchase_industrial_complex(game_state, player):
 
     return number_of_controlled_territories > (number_of_industrial_complexes_owned
                                                + number_of_purchased_industrial_complexes)
+
+
+def get_hostile_team_nums_for_player(player_team_num):
+    """
+    Get the team numbers of the hostile players for a given player.
+
+    :player_team_num: The team number of the player.
+    :return list: A list of team numbers for the hostile players.
+    """
+    return [0, 2, 4] if player_team_num in [1, 3] else [1, 3]

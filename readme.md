@@ -22,11 +22,10 @@ run with
 
 ## To Do
 
--   unit box team undefined
-
 -   combat
 -   territory capture
 -   tank can capture empty territory and move again (pre-combat)
+-   cannot end combat phase until all combats have been handled
 
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
@@ -37,17 +36,25 @@ run with
 -   bomber logic
 -   AA logic
 
+-   ampibious assault with sea battle: player unloads as if they win battle, sea battles are always handled first, if the player loses the battle, the units are removed from the land territory before that battle occurs (if still happening)
+
+-   Transports must have at least 1 movement point remaining to unload any units
+-   prevent attempt to unload to sea or when unavailable
+
 -   refactor getPlayerTeamNum
+-   battles sorted once at start of combat phase
 
-MONDAY
+##
 
+-   west russia border removed
 -   polling for team select lobby (if first and waiting)
 
 -   remove console logs
 -   add logging
 -   toast popup with api error status
+-   :param game_state:
 
-TUESDAY
+##
 
 -   player key request validation (end phase/turn)
 
@@ -60,16 +67,15 @@ TUESDAY
 
 -   fix loading spinners
 
-WEDNESDAY
+##
 
 -   compiling vue app
 -   hosting site
 
 Future Work:
 
--   ampibious assault with sea battle: player unloads as if they win battle, sea battles are always handled first, if the player loses the battle, the units are removed from the land territory before that battle occurs (if still happening)
+-   opening mobilization units, close territory data
 
--   prevent attempt to unload to sea
 -   ocean territories occupied by no one
 
 -   scheduled tasks

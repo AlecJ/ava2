@@ -183,7 +183,12 @@ class GameState:
         new_battle = {
             'location': territory_name,
             'attack_from': attacking_from,
-            'attacker': attacking_player
+            'attacker': attacking_player,
+            'turn': 0,
+            'result': None,
+            'attacker_rolls': [],
+            'defender_rolls': [],
+            'is_resolving_turn': False,
         }
 
         # Prevent duplicates for a single turn

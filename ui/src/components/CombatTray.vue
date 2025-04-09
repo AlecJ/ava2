@@ -29,34 +29,58 @@ export default {
 	},
 	computed: {
 		battleList() {
-			const battles = this.worldStore?.getBattles || [];
+			return this.worldStore?.getBattles || [];
+		},
+		selectedTerritoryIndex() {
+			if (!this.selectedBattle) return -1;
 
-			return battles.map((battle) => battle.location);
+			return this.battleList.findIndex(
+				(battle) => battle === this.selectedBattle
+			);
 		},
 		selectedTerritory() {
 			if (!this.selectedBattle) return null;
 
-			return this.worldStore?.getTerritory(this.selectedBattle);
+			return this.worldStore?.getTerritory(this.selectedBattle.location);
 		},
 		playerTeamNum() {
 			return this.sessionStore?.getPlayerTeamNum;
 		},
 		playerUnits() {
-			if (!this.selectedTerritory) return [];
+			if (!this.selectedTerritory || !this.selectedBattle) return [];
 
-			return this.selectedTerritory.units.filter(
-				(unit) => unit.team === this.playerTeamNum
-			);
+			return this.selectedTerritory.units
+				.filter((unit) => unit.team === this.playerTeamNum)
+				.map((unit) => ({
+					...unit,
+					roll: this.selectedBattle.attacker_rolls.find(
+						(roll) => roll.unit_id === unit.id
+					),
+				}));
 		},
 		enemyUnits() {
-			if (!this.selectedTerritory) return [];
+			if (!this.selectedTerritory || !this.selectedBattle) return [];
 
-			return this.selectedTerritory.units.filter(
-				(unit) => unit.team !== this.playerTeamNum
-			);
+			return this.selectedTerritory.units
+				.filter((unit) => unit.team !== this.playerTeamNum)
+				.map((unit) => ({
+					...unit,
+					roll: this.selectedBattle.defender_rolls.find(
+						(roll) => roll.unit_id === unit.id
+					),
+				}));
 		},
 	},
-	methods: {},
+	methods: {
+		attack() {
+			if (!this.selectedBattle || this.selectedTerritoryIndex !== 0)
+				return;
+
+			console.log(this.selectedTerritoryIndex);
+
+			this.worldStore?.combatAttack(this.selectedBattle.location);
+		},
+	},
 	created() {
 		this.sessionStore = useSessionStore();
 		this.worldStore = useWorldStore();
@@ -79,7 +103,7 @@ export default {
 				:class="{ selected: battle === selectedBattle }"
 				@click="selectedBattle = battle"
 			>
-				{{ battle }}
+				{{ battle.location }}
 			</button>
 		</div>
 		<div v-if="battleList.length > 0" class="current-battle-tray">
@@ -94,8 +118,19 @@ export default {
 				</div>
 			</div>
 			<div class="battle-tray-buttons">
-				<button class="battle-tray-button">Attack</button>
-				<button class="battle-tray-button">Retreat</button>
+				<button
+					class="battle-tray-button"
+					:disabled="!selectedBattle"
+					@click="attack"
+				>
+					Attack
+				</button>
+				<button
+					class="battle-tray-button"
+					:disabled="!selectedBattle || selectedBattle.turn === 0"
+				>
+					Retreat
+				</button>
 			</div>
 		</div>
 		<div v-else-if="false" class="casualty-tray">Casualty Tray</div>

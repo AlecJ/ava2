@@ -102,7 +102,7 @@ export default {
 	<div class="unit-box">
 		<!-- units will be sorted by remaining movement ascending -->
 		<div
-			v-for="(group, groupIndex) in unitGroups"
+			v-for="(group, groupIndex, unitTypeIndex) in unitGroups"
 			:key="groupIndex"
 			class="unit-box-group"
 		>
@@ -122,7 +122,7 @@ export default {
 					:style="{
 						backgroundColor: getColorForUnit(unit),
 					}"
-					:onClick="() => toggle(unit)"
+					@click="toggle(unit)"
 				>
 					<img
 						:src="getUnitIconSrc(unit)"
@@ -130,6 +130,19 @@ export default {
 						class="unit-icon"
 						:title="unit.unit_type"
 					/>
+					<div
+						v-if="unit.roll"
+						class="roll-indicator"
+						:class="{
+							success: unit.roll.result,
+							failure: !unit.roll.result,
+						}"
+						:style="{
+							animationDelay: `${(unitTypeIndex + index) * 0.15}s`,
+						}"
+					>
+						{{ unit.roll.roll }}
+					</div>
 					<div
 						v-if="
 							['TRANSPORT', 'AIRCRAFT-CARRIER'].includes(
@@ -153,10 +166,7 @@ export default {
 <style scoped lang="scss">
 .unit-box {
 	width: 100%;
-	// height: 100%;
-
 	padding: 0;
-	// background-color: rgba(0, 0, 0, 0.4);
 
 	p {
 		padding-bottom: 0.5rem;
@@ -173,23 +183,20 @@ export default {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
 
-			button:active {
-				cursor: pointer;
-			}
-
-			.unit-button {
+			button {
 				position: relative;
-				width: 3rem; /* Adjust size */
+				width: 3rem;
 				height: 3rem;
-				margin: 0;
 
-				border-radius: 50%; /* Makes it circular */
-				background-color: #00000000; /* Default color */
+				margin: 0;
+				margin-bottom: 0.5rem;
+
+				border-radius: 50%;
+				background-color: #00000000;
 				border: none;
 				display: flex;
 				justify-content: center;
 				align-items: center;
-
 				transition:
 					background-color 0.3s ease,
 					transform 0.2s ease;
@@ -199,20 +206,41 @@ export default {
 					height: auto;
 				}
 
-				.cargo-dots {
+				.roll-indicator {
 					position: absolute;
-					bottom: 0.25rem;
-					left: 50%;
-					transform: translateX(-50%);
-					display: flex;
-					gap: 3px;
+					width: 1.5rem;
+					height: 1.5rem;
+					transform: translate(80%, -60%);
 
-					.cargo-dot {
-						width: 6px;
-						height: 6px;
-						background-color: white;
-						border-radius: 50%;
+					border-radius: 50%;
+					display: grid;
+					place-items: center;
+
+					font-size: 0.8rem;
+					font-weight: bold;
+					color: white;
+
+					animation: indicatorAnimation 1s ease-in forwards;
+					opacity: 0;
+
+					&.success {
+						background-color: rgb(17, 122, 17);
 					}
+
+					&.failure {
+						background-color: rgb(255, 43, 43);
+					}
+				}
+			}
+
+			@keyframes indicatorAnimation {
+				from {
+					opacity: 0;
+					transform: translate(80%, -60%);
+				}
+				to {
+					opacity: 1;
+					transform: translate(80%, -80%);
 				}
 			}
 		}

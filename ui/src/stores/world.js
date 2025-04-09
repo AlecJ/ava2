@@ -232,6 +232,33 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
+		async combatAttack(selectedTerritory) {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const data = {
+					selectedTerritory,
+				};
+
+				const response = await API.post(
+					`/game/${this.getSessionId}/attack?pid=${playerId}`,
+					data
+				);
+
+				console.log("API Response:", response.data); // Debugging log
+				this.setBattles(response.data.battles);
+			} catch (error) {
+				console.error("API Error:", error);
+				console.error("API Error:", error.response.data.status);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
+		async combatRetreat() {},
+		async combatSelectCasualties() {},
 		async undoPhase() {
 			const sessionStore = useSessionStore();
 			sessionStore.setIsLoading(true);
@@ -267,7 +294,7 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setSession(response.data.session);
 
 				// if in combat phase, get combat territories
-				if (response.data.session.phaseNum === 2) {
+				if (response.data.session.phase_num === 2) {
 					await this.fetchBattles();
 				}
 			} catch (error) {
