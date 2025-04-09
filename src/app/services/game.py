@@ -355,7 +355,7 @@ def combat_roll(unit, is_attacker=True):
 
     roll = randint(1, 6)
 
-    return {'unit': unit.unit_id, 'roll': roll, 'result': roll <= roll_to_hit}
+    return {'unit_id': unit.unit_id, 'roll': roll, 'result': roll <= roll_to_hit}
 
 
 def combat_retreat(game_state, territory_name):
@@ -365,39 +365,133 @@ def combat_retreat(game_state, territory_name):
     pass
 
 
-def combat_select_casualties():
+def combat_select_casualties(game_state, territory_name, casualty_units):
     """
     This is where units are actually removed and the battle is concluded.
+    Remove the attacker's selected casualties, and auto-remove the defenders
+    casualties.
+
+    This also handles resolving combat.
+
+    If either force is wiped out, the combat is automatically ended.
+
+    :param game_state: The current game state.
+    :param territory_name: The name of the territory.
+    :param casualty_units: The list of units to remove.
+    :return: Bool, if the casualties were successfully selected.
     """
-    pass
+    territory = game_state.territories[territory_name]
+    battle = game_state.battles[0]
 
-    # # resolve combat
-    # attacker_hits = sum(roll['result'] for roll in battle.attacker_rolls)
-    # defender_hits = sum(roll['result'] for roll in battle.defender_rolls)
+    if battle.get('location') != territory_name:
+        return False, "Territory is not the current battle."
 
-    # # if either side has lost all units, resolve combat
-    # attacker_eliminated = len(attacking_units) - defender_hits <= 0
-    # defender_eliminated = len(defending_units) - attacker_hits <= 0
+    attacker_team_num = battle.get('attacker')
 
-    # # if attacker loses all units, resolve right away
-    # if attacker_eliminated:
-    #     defender_casualties = combat_auto_select_defender_casualties()
+    defending_team_numbers = get_hostile_team_nums_for_player(
+        attacker_team_num)
 
-    #     # otherwise resolve after attacker selects casualties
+    # Convert request units to game_state units
+    attacker_casualties = [retrieve_unit_from_territory(
+        territory, unit) for unit in casualty_units]
 
-    # # if combat is not over
-    # is_resolving_turn = False
-    # turn += 1
+    if not all(attacker_casualties):
+        return False, "Some units are not in the territory."
+
+    # Make sure the user selected a unit for each casualty
+    attacker_casualty_count = sum(roll['result']
+                                  for roll in battle['defender_rolls'])
+
+    if (len(attacker_casualties) != attacker_casualty_count):
+        return False, "Number of selected units does not match the number of casualties."
+
+    # Special rule, if the attacker has selected a battleship, add it to the list of hit battleships,
+    # if it is already there, only then do we remove it
+    # (battleships take two hits to destroy)
+    first_hit_battleships = []
+
+    for unit in attacker_casualties:
+        if unit.unit_type == "BATTLESHIP" and unit.unit_id not in battle['hit_battleships']:
+            battle['hit_battleships'].append(unit.unit_id)
+            first_hit_battleships.append(unit)
+
+    attacker_casualties = [
+        unit for unit in attacker_casualties if unit not in first_hit_battleships]
+
+    # Auto select defender casualties
+    defender_casualty_count = sum(roll['result']
+                                  for roll in battle['attacker_rolls'])
+
+    defender_casualties = combat_auto_select_defender_casualties(
+        territory, battle, defending_team_numbers, defender_casualty_count)
+
+    # Remove casualties from game
+    territory.units = [
+        unit for unit in territory.units if unit not in attacker_casualties + defender_casualties]
+
+    # If either side has lost all units, resolve combat
+    attacking_units = [
+        unit for unit in territory.units if unit.team == attacker_team_num]
+    defending_units = [
+        unit for unit in territory.units if unit.team in defending_team_numbers]
+
+    # if there are no attacking units, the defender wins (includes draws)
+    if not attacking_units:
+        battle['result'] = 'defender'
+
+    # if there are attacking units and no defending units
+    elif attacking_units and not defending_units:
+        battle['result'] = 'attacker'
+
+    battle['attacker_rolls'] = []
+    battle['defender_rolls'] = []
+    battle['is_resolving_turn'] = False
+    battle['turn'] += 1
+
+    return True, None
 
 
-def combat_auto_select_defender_casualties():
+def combat_auto_select_defender_casualties(territory, battle, defending_team_numbers, defender_casualty_count):
     """
     Defender does not choose which units to lose. Instead, they will be
     selected from the least to most valuable.
-    """
-    result = []
 
-    return result
+    Prioritize battleship first hits and then lowest to most valuable units.
+
+    :param territory: The territory the battle is in.
+    :param defender_casualty_count: The number of casualties to select.
+    :return: List of units to remove.
+    """
+    units_to_remove = []
+
+    defending_units = [
+        unit for unit in territory.units if unit.team in defending_team_numbers]
+
+    # sort units by value
+    unit_priority = {"SUBMARINE": 1, "TRANSPORT": 2}
+
+    defending_units.sort(
+        key=lambda unit: (UNIT_DATA[unit.unit_type]['cost'],
+                          unit_priority.get(unit.unit_type, 0)))
+
+    # for each battleship in the list, check if it has been hit
+    # if it hasn't been hit, add it to the list of hit battleships
+    # and reduce casualty count by one
+    for unit in defending_units:
+        if unit.unit_type == "BATTLESHIP" and unit.unit_id not in battle['hit_battleships']:
+            battle['hit_battleships'].append(unit.unit_id)
+            defender_casualty_count -= 1
+
+    # now start selecting units as casualties
+    for unit in defending_units:
+        if defender_casualty_count <= 0:
+            break
+
+        # remove unit from territory
+        units_to_remove.append(unit)
+        defender_casualty_count -= 1
+
+    return units_to_remove
 
 
 def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
@@ -585,12 +679,17 @@ def check_territory_has_adjacent_industrial_complex(game_state, player, selected
 def retrieve_unit_from_territory(territory, unit_to_find):
     """
     This is used to find the db unit in a territory when we are given the unit
-    from the frontend. This is used for moving and loading units.
+    from the frontend. This is used for moving and loading units, and removing
+    casualties during combat.
 
     :territory: The territory (class) to check.
     :unit: The unit (class) to find.
     :return unit: The same unit in the given territory.
     """
+    # convert dict to unit if needed
+    if isinstance(unit_to_find, dict):
+        unit_to_find = Unit.from_dict(unit_to_find)
+
     for unit in territory.units:
         if unit == unit_to_find:
             return unit

@@ -15,6 +15,7 @@ export default {
 			sessionStore: null,
 			worldStore: null,
 			selectedBattle: null,
+			playerUnits: [],
 		};
 	},
 	watch: {
@@ -25,6 +26,22 @@ export default {
 				}
 			},
 			immediate: true,
+		},
+		selectedTerritory: {
+			handler(newTerritory) {
+				if (!newTerritory || !this.selectedBattle) return;
+
+				this.playerUnits = [...this.selectedTerritory.units]
+					.filter((unit) => unit.team === this.playerTeamNum)
+					.map((unit) => ({
+						...unit,
+						roll: this.selectedBattle.attacker_rolls.find(
+							(roll) => roll.unit_id === unit.unit_id
+						),
+					}));
+			},
+			immediate: true,
+			deep: true,
 		},
 	},
 	computed: {
@@ -46,18 +63,6 @@ export default {
 		playerTeamNum() {
 			return this.sessionStore?.getPlayerTeamNum;
 		},
-		playerUnits() {
-			if (!this.selectedTerritory || !this.selectedBattle) return [];
-
-			return this.selectedTerritory.units
-				.filter((unit) => unit.team === this.playerTeamNum)
-				.map((unit) => ({
-					...unit,
-					roll: this.selectedBattle.attacker_rolls.find(
-						(roll) => roll.unit_id === unit.id
-					),
-				}));
-		},
 		enemyUnits() {
 			if (!this.selectedTerritory || !this.selectedBattle) return [];
 
@@ -66,9 +71,29 @@ export default {
 				.map((unit) => ({
 					...unit,
 					roll: this.selectedBattle.defender_rolls.find(
-						(roll) => roll.unit_id === unit.id
+						(roll) => roll.unit_id === unit.unit_id
 					),
 				}));
+		},
+		isSelectingCasualties() {
+			return this.selectedBattle?.is_resolving_turn;
+		},
+		attackerCasualtyCount() {
+			if (!this.selectedBattle) return 0;
+
+			return this.selectedBattle.defender_rolls.filter(
+				(roll) => roll.result
+			).length;
+		},
+		selectedUnits() {
+			return this.playerUnits.filter((unit) => unit.selected);
+		},
+		selectCasualtiesEnabled() {
+			// TODO change to disabled??
+			return (
+				!this.selectedBattle ||
+				this.selectedUnits.length !== this.attackerCasualtyCount
+			);
 		},
 	},
 	methods: {
@@ -76,9 +101,16 @@ export default {
 			if (!this.selectedBattle || this.selectedTerritoryIndex !== 0)
 				return;
 
-			console.log(this.selectedTerritoryIndex);
-
 			this.worldStore?.combatAttack(this.selectedBattle.location);
+		},
+		selectCasualties() {
+			if (!this.selectedBattle || this.selectedTerritoryIndex !== 0)
+				return;
+
+			this.worldStore?.combatSelectCasualties(
+				this.selectedBattle.location,
+				this.selectedUnits
+			);
 		},
 	},
 	created() {
@@ -110,14 +142,17 @@ export default {
 			<div class="unit-tray-container">
 				<div class="left-column">
 					Your Units
-					<UnitBox :units="playerUnits" readOnly></UnitBox>
+					<UnitBox
+						:units="playerUnits"
+						:readOnly="!isSelectingCasualties"
+					></UnitBox>
 				</div>
 				<div class="right-column">
 					Enemy Units
 					<UnitBox :units="enemyUnits" readOnly></UnitBox>
 				</div>
 			</div>
-			<div class="battle-tray-buttons">
+			<div v-if="!isSelectingCasualties" class="battle-tray-buttons">
 				<button
 					class="battle-tray-button"
 					:disabled="!selectedBattle"
@@ -130,6 +165,22 @@ export default {
 					:disabled="!selectedBattle || selectedBattle.turn === 0"
 				>
 					Retreat
+				</button>
+			</div>
+			<div v-else class="battle-tray-buttons">
+				<div class="casualty-count">
+					Casualties to select: {{ selectedUnits.length || 0 }} /
+					{{ attackerCasualtyCount }}
+				</div>
+				<button
+					class="battle-tray-button"
+					:disabled="
+						!selectedBattle ||
+						selectedUnits.length !== attackerCasualtyCount
+					"
+					@click="selectCasualties"
+				>
+					Resolve Combat Turn
 				</button>
 			</div>
 		</div>
@@ -211,14 +262,25 @@ export default {
 		}
 
 		.battle-tray-buttons {
-			width: 50%;
+			width: 100%;
 
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			gap: 3rem;
+			grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 			place-items: center;
 
-			Button {
-				width: 6rem;
+			* {
+				min-width: 6rem;
+				justify-self: start;
+
+				&:first-child {
+					justify-self: end;
+				}
+			}
+
+			.casualty-count {
+				font-size: 1rem;
+				padding-right: 1rem;
 			}
 		}
 	}

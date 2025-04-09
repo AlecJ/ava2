@@ -251,14 +251,39 @@ export const useWorldStore = defineStore("world", {
 				console.log("API Response:", response.data); // Debugging log
 				this.setBattles(response.data.battles);
 			} catch (error) {
-				console.error("API Error:", error);
 				console.error("API Error:", error.response.data.status);
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
 		},
 		async combatRetreat() {},
-		async combatSelectCasualties() {},
+		async combatSelectCasualties(selectedTerritory, selectedUnits) {
+			// also send player ID
+			const sessionStore = useSessionStore();
+			sessionStore.setIsLoading(true);
+
+			try {
+				const playerId = sessionStore.getPlayerId;
+				const data = {
+					selectedTerritory,
+					selectedUnits,
+				};
+
+				const response = await API.post(
+					`/game/${this.getSessionId}/casualties?pid=${playerId}`,
+					data
+				);
+
+				console.log("API Response:", response.data); // Debugging log
+				this.updateGameWorld(response.data.game_state);
+				this.setBattles(response.data.battles);
+			} catch (error) {
+				console.error("API Error:", error);
+				console.error("API Error:", error.response.data.status);
+			} finally {
+				sessionStore.setIsLoading(false);
+			}
+		},
 		async undoPhase() {
 			const sessionStore = useSessionStore();
 			sessionStore.setIsLoading(true);

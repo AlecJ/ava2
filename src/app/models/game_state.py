@@ -189,6 +189,7 @@ class GameState:
             'attacker_rolls': [],
             'defender_rolls': [],
             'is_resolving_turn': False,
+            'hit_battleships': [],
         }
 
         # Prevent duplicates for a single turn

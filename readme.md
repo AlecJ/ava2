@@ -25,12 +25,17 @@ run with
 -   combat
 -   territory capture
 -   tank can capture empty territory and move again (pre-combat)
+-   air units cannot capture territories
+-   hit marker on battleships with one hit
+
 -   cannot end combat phase until all combats have been handled
 
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
 -   fighter and bombers automatically land on aircraft carriers they are in the same territory as
 -   mobilization: can place fighters and bombers in the same territories as ships as long as there is room in cargo
+
+##
 
 -   submarine logic
 -   bomber logic

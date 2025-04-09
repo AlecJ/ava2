@@ -4,9 +4,9 @@ from app.models.session import Session, PhaseNumber
 from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
-from app.services.game import (purchase_unit, mobilize_units, move_units,
-                               load_transport_with_units, unload_transport,
-                               sort_battles, combat_attack, end_turn)
+from app.services.game import (purchase_unit, mobilize_units, move_units, load_transport_with_units,
+                               unload_transport, sort_battles, combat_attack, combat_select_casualties,
+                               end_turn)
 
 
 game_route = Blueprint('game_route', __name__)
@@ -245,6 +245,48 @@ def handle_combat_attack(session_id):
     return jsonify(response), 200
 
 
+@game_route.route('/<string:session_id>/casualties', methods=['POST'])
+def handle_combat_casualties(session_id):
+    # Fetch the session and game state by session ID
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # Must be the player's turn
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
+
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
+
+    # Must be in combat phase
+    if session.phase_num != PhaseNumber.COMBAT:
+        return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
+
+    # Process the request
+    data = request.get_json()
+    selected_territory = data.get('selectedTerritory')
+    selected_units = data.get('selectedUnits')
+
+    # breakpoint()
+    result, message = combat_select_casualties(
+        game_state, selected_territory, selected_units)
+
+    if not result:
+        message = message or 'Invalid casualty selection.'
+        return jsonify({'status': message}), 400
+
+    game_state.update()
+
+    response = {
+        'status': 'Combat territories retrieved successfully.',
+        'session_id': game_state.session_id,
+        'game_state': game_state.to_dict(),
+        'battles': game_state.battles,
+    }
+    return jsonify(response), 200
+
+
 @game_route.route('/<string:session_id>/undophase', methods=['POST'])
 def handle_undo_phase(session_id):
     # Fetch the session and game state by session ID
@@ -339,6 +381,9 @@ def handle_end_phase(session_id):
     if session.phase_num == PhaseNumber.COMBAT:
         sort_battles(game_state)
         game_state.update()
+
+    # If exiting the combat phase, remove all resolved battles
+    # from the game_state
 
     response = {
         'status': 'Phase ended successfully.',

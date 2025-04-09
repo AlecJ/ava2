@@ -138,7 +138,7 @@ export default {
 							failure: !unit.roll.result,
 						}"
 						:style="{
-							animationDelay: `${(unitTypeIndex + index) * 0.15}s`,
+							animationDelay: `${(unitTypeIndex + index) * 0.12}s`,
 						}"
 					>
 						{{ unit.roll.roll }}
