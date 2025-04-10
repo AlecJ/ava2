@@ -470,22 +470,21 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
     if not all(attacker_casualties):
         return False, "Some units are not in the territory."
 
-    # Make sure the user selected a unit for each casualty
-    attacker_casualty_count = sum(roll['result']
-                                  for roll in battle['defender_rolls'])
-
-    if (len(attacker_casualties) != attacker_casualty_count):
-        return False, "Number of selected units does not match the number of casualties."
-
-    # Special rule, if the attacker has selected a battleship, add it to the list of hit battleships,
-    # if it is already there, only then do we remove it
-    # (battleships take two hits to destroy)
+    # Special rule, Battleships take two hits to destroy
     first_hit_battleships = []
 
     for unit in attacker_casualties:
-        if unit.unit_type == "BATTLESHIP" and unit.unit_id not in battle['hit_battleships']:
-            battle['hit_battleships'].append(unit.unit_id)
-            first_hit_battleships.append(unit)
+        if unit.unit_type == "BATTLESHIP":
+
+            # A battleship is sent twice by the frontend to represent two hits,
+            # or once to represent one hit.
+            if unit.unit_id not in battle['hit_battleships']:
+                first_hit_battleships.append(unit.unit_id)
+                battle['hit_battleships'].append(unit.unit_id)
+
+            # if the battleship has been hit, remove it from the list of living battleships
+            elif unit.unit_id in first_hit_battleships:
+                first_hit_battleships.remove(unit.unit_id)
 
     attacker_casualties = [
         unit for unit in attacker_casualties if unit not in first_hit_battleships]
@@ -501,11 +500,24 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
     territory.units = [
         unit for unit in territory.units if unit not in attacker_casualties + defender_casualties]
 
-    # If either side has lost all units, resolve combat
     attacking_units = [
         unit for unit in territory.units if unit.team == attacker_team_num]
+
     defending_units = [
         unit for unit in territory.units if unit.team in defending_team_numbers]
+
+    # Make sure the user selected a unit for each casualty, or all remaining units
+    # Either the casualties equals the number of defender hits or there
+    # are no attacker units left
+
+    attacker_casualty_count = sum(roll['result']
+                                  for roll in battle['defender_rolls'])
+
+    # Verify the attacker has selected the correct number of casualties
+    if attacking_units and len(attacker_casualties) + len(first_hit_battleships) != attacker_casualty_count:
+        return False, "Number of selected units does not match the number of casualties."
+
+    # If either side has lost all units, resolve combat
 
     # if there are no attacking units, the defender wins (includes draws)
     if not attacking_units:

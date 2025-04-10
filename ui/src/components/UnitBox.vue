@@ -83,14 +83,12 @@ export default {
 				: "#0c6f13"; // Default color if no country is found
 
 			// Handle battleship-specific logic
-			if (unit.unit_type === "BATTLESHIP" && !unit.is_battleship_hit) {
-				if (unit.selectedCount === 0) {
-					return `linear-gradient(to right, ${baseColor}50 50%, ${baseColor}50 50%)`;
-				} else if (unit.selectedCount === 1) {
-					return `linear-gradient(to right, ${baseColor}ff 50%, ${baseColor}50 50%)`;
-				} else if (unit.selectedCount === 2) {
-					return `linear-gradient(to right, ${baseColor}ff 50%, ${baseColor}ff 50%)`;
-				}
+			if (
+				unit.unit_type === "BATTLESHIP" &&
+				!unit.is_battleship_hit &&
+				unit.selectedCount === 1
+			) {
+				return `linear-gradient(to right, ${baseColor}ff 50%, ${baseColor}50 50%)`;
 			}
 
 			// Default logic for other units
@@ -108,19 +106,18 @@ export default {
 		toggle(unit) {
 			if (this.readOnly) return;
 
+			// special battleship logic (can be selected twice)
+			if (unit.unit_type === "BATTLESHIP" && !unit.is_battleship_hit) {
+				if (!unit.selectedCount && !this.canAddToSelectedUnits) return;
+
+				unit.selectedCount = unit.selectedCount
+					? (unit.selectedCount + 1) % 3
+					: 1;
+				return;
+			}
+
 			if (!unit.selected) {
 				if (!this.canAddToSelectedUnits) return;
-
-				// special battleship logic (can be selected twice)
-				if (
-					unit.unit_type === "BATTLESHIP" &&
-					!unit.is_battleship_hit
-				) {
-					unit.selectedCount = unit.selectedCount
-						? (unit.selectedCount + 1) % 3
-						: 1;
-					return;
-				}
 
 				unit.selected = true;
 			} else {

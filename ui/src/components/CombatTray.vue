@@ -80,8 +80,26 @@ export default {
 				(roll) => roll.result
 			).length;
 		},
+		maxPossibleCasualtyCount() {
+			if (!this.selectedBattle) return 0;
+
+			return this.playerUnits.reduce(
+				(acc, unit) =>
+					acc +
+					(unit.unit_type === "BATTLESHIP" && !unit.is_battleship_hit
+						? 2
+						: 1),
+				0
+			);
+		},
 		selectedUnits() {
-			return this.playerUnits.filter((unit) => unit.selected);
+			return this.playerUnits
+				.filter((unit) => unit.selected || unit.selectedCount > 0)
+				.flatMap((unit) =>
+					unit.selected
+						? [unit]
+						: Array(unit.selectedCount).fill(unit)
+				);
 		},
 	},
 	methods: {
@@ -94,17 +112,9 @@ export default {
 		selectCasualties() {
 			if (!this.selectedBattle) return;
 
-			const selectedUnits = this.playerUnits
-				.filter((unit) => unit.selected || unit.selectedCount > 0)
-				.flatMap((unit) =>
-					unit.selected
-						? [unit]
-						: Array(unit.selectedCount).fill(unit)
-				);
-
 			this.worldStore?.combatSelectCasualties(
 				this.selectedBattle.location,
-				selectedUnits
+				this.selectedUnits
 			);
 		},
 		updatePlayerUnits() {
@@ -165,7 +175,11 @@ export default {
 							attackerCasualtyCount === 0
 						"
 						:canAddToSelectedUnits="
-							selectedUnits < attackerCasualtyCount
+							selectedUnits.length <
+							Math.min(
+								attackerCasualtyCount,
+								maxPossibleCasualtyCount
+							)
 						"
 					></UnitBox>
 				</div>
@@ -195,13 +209,22 @@ export default {
 			<div v-else class="battle-tray-buttons">
 				<div class="casualty-count">
 					Casualties to select: {{ selectedUnits.length || 0 }} /
-					{{ attackerCasualtyCount }}
+					{{
+						Math.min(
+							attackerCasualtyCount,
+							maxPossibleCasualtyCount
+						)
+					}}
 				</div>
 				<button
 					class="battle-tray-button"
 					:disabled="
 						!selectedBattle ||
-						selectedUnits.length !== attackerCasualtyCount
+						selectedUnits.length !==
+							Math.min(
+								attackerCasualtyCount,
+								maxPossibleCasualtyCount
+							)
 					"
 					@click="selectCasualties"
 				>
