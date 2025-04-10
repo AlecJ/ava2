@@ -6,7 +6,7 @@ from app.models.unit import Unit
 from app.services.session import validate_player
 from app.services.game import (purchase_unit, mobilize_units, move_units, load_transport_with_units,
                                unload_transport, sort_battles, combat_attack, combat_select_casualties,
-                               remove_resolved_battles, end_turn)
+                               combat_retreat, remove_resolved_battles, end_turn)
 
 
 game_route = Blueprint('game_route', __name__)
@@ -237,7 +237,7 @@ def handle_combat_attack(session_id):
     game_state.update()
 
     response = {
-        'status': 'Combat territories retrieved successfully.',
+        'status': 'Combat attack successful.',
         'session_id': game_state.session_id,
         'battles': game_state.battles,
     }
@@ -279,6 +279,45 @@ def handle_combat_casualties(session_id):
 
     response = {
         'status': 'Combat turn ended successfully.',
+        'session_id': game_state.session_id,
+        'game_state': game_state.to_dict(),
+        'battles': game_state.battles,
+    }
+    return jsonify(response), 200
+
+
+@game_route.route('/<string:session_id>/retreat', methods=['POST'])
+def handle_combat_retreat(session_id):
+    # Fetch the session and game state by session ID
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # Must be the player's turn
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
+
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
+
+    # Must be in combat phase
+    if session.phase_num != PhaseNumber.COMBAT:
+        return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
+
+    # Process the request
+    data = request.get_json()
+    selected_territory = data.get('selectedTerritory')
+
+    result, message = combat_retreat(game_state, selected_territory)
+
+    if not result:
+        message = message or 'Invalid combat retreat.'
+        return jsonify({'status': message}), 400
+
+    game_state.update()
+
+    response = {
+        'status': 'Combat retreat successful.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
         'battles': game_state.battles,

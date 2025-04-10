@@ -22,11 +22,13 @@ run with
 
 ## To Do
 
--   hit marker on battleships with one hit
--   cannot end combat phase until all combats have been handled
+-   see what units are in a transport during combat?
 
--   retreat
--   amphibious assault retreat
+-   double check ocean retreat (should be done)
+-   air retreat?
+
+-   if amphibious assault and ocean loses, destroy units that would retreat to boats, evaluate removing battle
+-   If a transport unit is lost during amphibious ocean battle, the units unloaded should have been removed.
 
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
@@ -73,11 +75,11 @@ run with
 -   compiling vue app
 -   hosting site
 
+##
+
 Future Work:
 
 -   opening mobilization units, close territory data
-
--   ocean territories occupied by no one
 
 -   scheduled tasks
 -   skip players turn after certain time

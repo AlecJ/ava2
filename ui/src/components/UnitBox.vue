@@ -107,7 +107,11 @@ export default {
 			if (this.readOnly) return;
 
 			// special battleship logic (can be selected twice)
-			if (unit.unit_type === "BATTLESHIP" && !unit.is_battleship_hit) {
+			if (
+				unit.selectedCount !== undefined &&
+				unit.unit_type === "BATTLESHIP" &&
+				!unit.is_battleship_hit
+			) {
 				if (!unit.selectedCount && !this.canAddToSelectedUnits) return;
 
 				unit.selectedCount = unit.selectedCount

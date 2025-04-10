@@ -281,6 +281,7 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
         if not has_enemy_units:
             selected_territory.team = player.team_num
 
+        # TODO do not duplicate for each unload, add to existing
         if has_enemy_units:
             game_state.add_battle(
                 player.team_num, selected_territory_name, sea_territory_name)
@@ -306,7 +307,7 @@ def sort_battles(game_state):
     """
     game_state.battles = sorted(
         game_state.battles,
-        key=lambda x: TERRITORY_DATA[x['location']]['is_ocean']
+        key=lambda x: not TERRITORY_DATA[x['location']]['is_ocean']
     )
 
     return True
@@ -428,13 +429,6 @@ def combat_roll(unit, is_attacker=True):
     return {'unit_id': unit.unit_id, 'roll': roll, 'result': roll <= roll_to_hit}
 
 
-def combat_retreat(game_state, territory_name):
-    """
-    End combat and retreat the attacker to the territory they attacked from.
-    """
-    pass
-
-
 def combat_select_casualties(game_state, territory_name, casualty_units):
     """
     This is where units are actually removed and the battle is concluded.
@@ -487,7 +481,7 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
                 first_hit_battleships.remove(unit.unit_id)
 
     attacker_casualties = [
-        unit for unit in attacker_casualties if unit not in first_hit_battleships]
+        unit for unit in attacker_casualties if unit.unit_id not in first_hit_battleships]
 
     # Auto select defender casualties
     defender_casualty_count = sum(roll['result']
@@ -580,6 +574,128 @@ def combat_auto_select_defender_casualties(territory, battle, defending_team_num
         defender_casualty_count -= 1
 
     return units_to_remove
+
+
+def combat_retreat(game_state, territory_name):
+    """
+    End combat and retreat the attacker to the territory they attacked from.
+
+    For a retreat to be possible, the battle must be on its second round.
+    There should also only be one battle that is unresolved and ongoing.
+
+    Amphibious assault retreats make the units reload onto the transports
+    they came from.
+
+    :param game_state: The current game state.
+    :param territory_name: The name of the territory.
+    :return: Bool, if the retreat was successful.
+    """
+    # breakpoint()
+
+    battle_territory = game_state.territories[territory_name]
+    battle_territory_generic_data = TERRITORY_DATA[territory_name]
+
+    # fetch ongoing battle
+    battle = next((battle for battle in game_state.battles if battle.get(
+        'turn') > 0 and not battle.get('result') and not battle.get('is_resolving_turn')), None)
+
+    if not battle or battle.get('location') != territory_name:
+        return False, "Territory is not the current battle."
+
+    retreat_territory_name = battle.get('attack_from')
+    retreat_territory = game_state.territories[retreat_territory_name]
+    retreat_territory_generic_data = TERRITORY_DATA[retreat_territory_name]
+
+    # get retreating units
+    attacker_team_num = battle.get('attacker')
+    retreating_units = [
+        unit for unit in battle_territory.units if unit.team == attacker_team_num]
+
+    # if we are retreating from land to ocean
+    if not battle_territory_generic_data['is_ocean'] and retreat_territory_generic_data['is_ocean']:
+
+        # This means the attacker is retreating during an amphibious assault
+
+        # Load units onto transports
+        load_retreating_units_onto_transports(
+            game_state, battle_territory, retreat_territory, attacker_team_num)
+
+    # else just move the units
+    else:
+        battle_territory.units = [
+            unit for unit in battle_territory.units if unit not in retreating_units]
+
+        retreat_territory.units.extend(retreating_units)
+
+    # finally mark the battle as a loss for the attacker
+    battle['result'] = 'defender'
+
+    return True, None
+
+
+def load_retreating_units_onto_transports(game_state, battle_territory, sea_territory, attacker_team_num):
+    """
+    Load all units onto transports in the sea territory.
+
+    This happens when an attacker retreats during an amphibious assault.
+
+    There must be a transport for each unit retreating, otherwise they would have been
+    destroyed before the retreat.
+
+    Excess units are destroyed (although this shouldn't happen.)
+
+    :param game_state: The current game state.
+    :param battle_territory: The territory the battle is in.
+    :param sea_territory: The sea territory the units are retreating to.
+    :param attacker_team_num: The team number of the attacker.
+    :return: Bool, if the units were successfully loaded.
+    """
+    # get the retreating units
+    retreating_units = [
+        unit for unit in battle_territory.units if unit.team == attacker_team_num]
+
+    # sort the retreating units by infantry first
+    retreating_units.sort(
+        key=lambda unit: (unit.unit_type != "INFANTRY", UNIT_DATA[unit.unit_type]['cost']))
+
+    # get the transports in the sea territory
+    transports = [unit for unit in sea_territory.units if unit.unit_type ==
+                  "TRANSPORT" and unit.team == attacker_team_num]
+
+    # for each transport, load one infantry
+    for transport in transports:
+        if not retreating_units:
+            break
+
+        # find the infantry unit
+        infantry_unit = next(
+            (unit for unit in retreating_units if unit.unit_type == "INFANTRY"), None)
+
+        if infantry_unit:
+            transport.cargo.append(infantry_unit)
+            battle_territory.units.remove(infantry_unit)
+            retreating_units.remove(infantry_unit)
+
+    # now iterate again...
+    # for each transport, load one remaining unit
+    for transport in transports:
+        if not retreating_units:
+            break
+
+        land_unit = next((unit for unit in retreating_units), None)
+
+        if land_unit:
+            transport.cargo.append(land_unit)
+            battle_territory.units.remove(land_unit)
+            retreating_units.remove(land_unit)
+
+    # TODO this should never happen, log it if it does
+    # if there are any remaining units, they are destroyed
+    if retreating_units:
+        for unit in retreating_units:
+            battle_territory.units.remove(unit)
+
+    return True
 
 
 def remove_resolved_battles(game_state):

@@ -68,6 +68,10 @@ export default {
 					roll: this.selectedBattle.defender_rolls.find(
 						(roll) => roll.unit_id === unit.unit_id
 					),
+					is_battleship_hit:
+						this.selectedBattle.hit_battleships.includes(
+							unit.unit_id
+						),
 				}));
 		},
 		isSelectingCasualties() {
@@ -108,7 +112,11 @@ export default {
 
 			this.worldStore?.combatAttack(this.selectedBattle.location);
 		},
-		retreat() {},
+		retreat() {
+			if (!this.selectedBattle) return;
+
+			this.worldStore?.combatRetreat(this.selectedBattle.location);
+		},
 		selectCasualties() {
 			if (!this.selectedBattle) return;
 
@@ -202,6 +210,7 @@ export default {
 				<button
 					class="battle-tray-button"
 					:disabled="!selectedBattle || selectedBattle.turn === 0"
+					@click="retreat"
 				>
 					Retreat
 				</button>
