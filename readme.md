@@ -22,9 +22,11 @@ run with
 
 ## To Do
 
--   air units cannot capture territories
 -   hit marker on battleships with one hit
 -   cannot end combat phase until all combats have been handled
+
+-   retreat
+-   amphibious assault retreat
 
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement

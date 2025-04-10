@@ -104,30 +104,39 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         """Validation Passed"""
 
-        # If entering an enemy territory, either capture it (no enemy units) or create a battle
-        is_enemy_territory = is_hostile_territory(territory_b, player.team_num)
+    # If entering an enemy territory, either capture it (no enemy units) or create a battle
+    is_enemy_territory = is_hostile_territory(territory_b, player.team_num)
 
-        has_enemy_units = has_hostile_units(territory_b, player.team_num)
+    has_enemy_units = has_hostile_units(territory_b, player.team_num)
 
-        if is_enemy_territory:
+    moving_force_has_land_unit = any(is_land_unit(unit.unit_type)
+                                     for unit in units_to_move)
 
-            if not has_enemy_units:
-                territory_b.team = player.team_num
+    # Either capture empty enemy territories or create a battle
+    if is_enemy_territory:
 
-            if has_enemy_units:
-                game_state.add_battle(
-                    player.team_num, territory_b_name, territory_a_name)
+        if not has_enemy_units and moving_force_has_land_unit:
+            territory_b.team = player.team_num
 
-                # Tanks lose movement only if there are hostile units in the territory
-                if unit.unit_type == "TANK":
-                    unit.movement = 1
+        if has_enemy_units:
+            game_state.add_battle(
+                player.team_num, territory_b_name, territory_a_name)
 
-            # land and sea units must stop once they enter a hostile territory
-            if not is_air_unit(unit.unit_type) and not unit.unit_type == "TANK":
-                unit.movement = 1  # will be subtracted to 0 later
-
+    # Adjust movement of all moving units
     for unit in units_to_move:
         unit.movement -= 1
+
+        # Land and sea units must stop once they enter a hostile territory
+        # Tanks lose movement only if there are hostile units in the territory
+        if (
+            is_enemy_territory
+            and not is_air_unit(unit.unit_type)
+            and (
+                not unit.unit_type == "TANK"
+                or (unit.unit_type == "TANK" and has_enemy_units)
+            )
+        ):
+            unit.movement = 0  # will be subtracted to 0 later
 
     # remove units from territory A
     territory_a.units = [
@@ -200,7 +209,7 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
             return False, "Unit does not have enough movement."
 
         # if transport, must be a land unit
-        if transport.unit_type == "TRANSPORT" and not is_land_unit(unit.unit_type):
+        if transport.unit_type == "TRANSPORT" and (not is_land_unit(unit.unit_type) or unit.unit_type == "ANTI-AIRCRAFT"):
             return False, "Transport can only load land units, excluding anti-aircraft."
 
         # if carrier, must be an air unit

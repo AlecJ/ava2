@@ -125,6 +125,7 @@ export default {
 				showTerritoryData &&
 				!isPurchasingUnits &&
 				!isPlacingMobilizationUnits &&
+				!showBattles &&
 				!forceClose
 			"
 			:isLoading="isLoading"

@@ -94,6 +94,10 @@ export default {
 	},
 	computed: {
 		countryFlagSrc() {
+			if (this.territoryData?.is_ocean)
+				return new URL("@/assets/flags/tidal-wave.png", import.meta.url)
+					.href;
+
 			const country = countries.find((c) => c.name === this.teamName);
 
 			return country ? country.flagIcon : "";

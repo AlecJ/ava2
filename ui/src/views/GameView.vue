@@ -179,9 +179,15 @@ export default {
 			this.isPlacingMobilizationUnits = bool;
 		},
 		endPhase() {
-			this.setPlacingMobilizationUnits(false);
+			this.setIsSelectingTerritory(false);
 			this.setPurchasingUnits(false);
+			this.setShowBattles(false);
 			this.worldStore.endPhase();
+		},
+		endTurn() {
+			this.setIsSelectingTerritory(false);
+			this.setPlacingMobilizationUnits(false);
+			this.worldStore.endTurn();
 		},
 	},
 	created() {
@@ -259,7 +265,7 @@ export default {
 	<EndTurnButton
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:endPhase="endPhase"
-		:endTurn="this.worldStore.endTurn"
+		:endTurn="endTurn"
 		:currentPhaseNum="currentPhaseNum"
 		:disabled="hasUnresolvedBattles || hasMobilizeUnitsRemaining"
 	/>

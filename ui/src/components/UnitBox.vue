@@ -24,6 +24,11 @@ export default {
 			required: false,
 			default: 0,
 		},
+		canAddToSelectedUnits: {
+			type: Boolean,
+			required: false,
+			default: true,
+		},
 	},
 	computed: {
 		unitsSortedByMovement() {
@@ -73,12 +78,27 @@ export default {
 		},
 		getColorForUnit(unit) {
 			const unitCountry = countries[unit.team];
+			const baseColor = unitCountry
+				? `#${unitCountry.color.toString(16)}`
+				: "#0c6f13"; // Default color if no country is found
 
-			const alpha = this.readOnly ? "aa" : unit.selected ? "ff" : "50"; // Fully opaque if selected, semi-transparent if not
+			// Handle battleship-specific logic
+			if (unit.unit_type === "BATTLESHIP" && !unit.is_battleship_hit) {
+				if (unit.selectedCount === 0) {
+					return `linear-gradient(to right, ${baseColor}50 50%, ${baseColor}50 50%)`;
+				} else if (unit.selectedCount === 1) {
+					return `linear-gradient(to right, ${baseColor}ff 50%, ${baseColor}50 50%)`;
+				} else if (unit.selectedCount === 2) {
+					return `linear-gradient(to right, ${baseColor}ff 50%, ${baseColor}ff 50%)`;
+				}
+			}
 
-			return unitCountry
-				? "#" + unitCountry.color.toString(16) + alpha
-				: "#0c6f13"; // Default color
+			// Default logic for other units
+			const alpha =
+				this.readOnly || unit.selected || unit.selectedCount > 0
+					? "ff"
+					: "50"; // Fully opaque if selected, semi-transparent if not
+			return `${baseColor}${alpha}`;
 		},
 		getTeamNameForUnit(unit) {
 			const team = unit.team;
@@ -89,6 +109,19 @@ export default {
 			if (this.readOnly) return;
 
 			if (!unit.selected) {
+				if (!this.canAddToSelectedUnits) return;
+
+				// special battleship logic (can be selected twice)
+				if (
+					unit.unit_type === "BATTLESHIP" &&
+					!unit.is_battleship_hit
+				) {
+					unit.selectedCount = unit.selectedCount
+						? (unit.selectedCount + 1) % 3
+						: 1;
+					return;
+				}
+
 				unit.selected = true;
 			} else {
 				unit.selected = !unit.selected;
@@ -120,7 +153,7 @@ export default {
 							currentPhaseNum !== 3)
 					"
 					:style="{
-						backgroundColor: getColorForUnit(unit),
+						background: getColorForUnit(unit),
 					}"
 					@click="toggle(unit)"
 				>
@@ -157,6 +190,15 @@ export default {
 							class="cargo-dot"
 						></span>
 					</div>
+					<div
+						v-if="
+							unit.unit_type === 'BATTLESHIP' &&
+							unit.is_battleship_hit
+						"
+						class="battleship-hit-marker"
+					>
+						<span class="hit-marker"></span>
+					</div>
 				</button>
 			</div>
 		</div>
@@ -183,7 +225,7 @@ export default {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
 
-			button {
+			.unit-button {
 				position: relative;
 				width: 3rem;
 				height: 3rem;
@@ -192,7 +234,7 @@ export default {
 				margin-bottom: 0.5rem;
 
 				border-radius: 50%;
-				background-color: #00000000;
+				background-color: transparent;
 				border: none;
 				display: flex;
 				justify-content: center;
@@ -206,7 +248,8 @@ export default {
 					height: auto;
 				}
 
-				.cargo-dots {
+				.cargo-dots,
+				.battleship-hit-marker {
 					position: absolute;
 					bottom: 0.25rem;
 					left: 50%;
@@ -214,11 +257,17 @@ export default {
 					display: flex;
 					gap: 3px;
 
-					.cargo-dot {
+					.cargo-dot,
+					.hit-marker {
 						width: 6px;
 						height: 6px;
 						background-color: white;
 						border-radius: 50%;
+					}
+
+					.hit-marker {
+						background-color: red;
+						opacity: 0.8;
 					}
 				}
 

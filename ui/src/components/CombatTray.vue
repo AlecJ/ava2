@@ -83,13 +83,6 @@ export default {
 		selectedUnits() {
 			return this.playerUnits.filter((unit) => unit.selected);
 		},
-		selectCasualtiesEnabled() {
-			// TODO change to disabled??
-			return (
-				!this.selectedBattle ||
-				this.selectedUnits.length !== this.attackerCasualtyCount
-			);
-		},
 	},
 	methods: {
 		attack() {
@@ -101,9 +94,17 @@ export default {
 		selectCasualties() {
 			if (!this.selectedBattle) return;
 
+			const selectedUnits = this.playerUnits
+				.filter((unit) => unit.selected || unit.selectedCount > 0)
+				.flatMap((unit) =>
+					unit.selected
+						? [unit]
+						: Array(unit.selectedCount).fill(unit)
+				);
+
 			this.worldStore?.combatSelectCasualties(
 				this.selectedBattle.location,
-				this.selectedUnits
+				selectedUnits
 			);
 		},
 		updatePlayerUnits() {
@@ -116,6 +117,11 @@ export default {
 					roll: this.selectedBattle.attacker_rolls.find(
 						(roll) => roll.unit_id === unit.unit_id
 					),
+					is_battleship_hit:
+						this.selectedBattle.hit_battleships.includes(
+							unit.unit_id
+						),
+					selectedCount: 0,
 				}));
 		},
 	},
@@ -154,7 +160,13 @@ export default {
 					Your Units
 					<UnitBox
 						:units="playerUnits"
-						:readOnly="!isSelectingCasualties"
+						:readOnly="
+							!isSelectingCasualties ||
+							attackerCasualtyCount === 0
+						"
+						:canAddToSelectedUnits="
+							selectedUnits < attackerCasualtyCount
+						"
 					></UnitBox>
 				</div>
 				<div class="right-column">
