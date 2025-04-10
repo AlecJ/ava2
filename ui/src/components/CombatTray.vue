@@ -22,7 +22,11 @@ export default {
 		battleList: {
 			handler(newVal) {
 				if (newVal.length > 0) {
-					this.selectedBattle = newVal[0];
+					this.selectedBattle =
+						newVal.find((battle) => battle.result === null) ||
+						newVal[0];
+
+					this.updatePlayerUnits();
 				}
 			},
 			immediate: true,
@@ -31,14 +35,7 @@ export default {
 			handler(newTerritory) {
 				if (!newTerritory || !this.selectedBattle) return;
 
-				this.playerUnits = [...this.selectedTerritory.units]
-					.filter((unit) => unit.team === this.playerTeamNum)
-					.map((unit) => ({
-						...unit,
-						roll: this.selectedBattle.attacker_rolls.find(
-							(roll) => roll.unit_id === unit.unit_id
-						),
-					}));
+				this.updatePlayerUnits();
 			},
 			immediate: true,
 			deep: true,
@@ -48,11 +45,9 @@ export default {
 		battleList() {
 			return this.worldStore?.getBattles || [];
 		},
-		selectedTerritoryIndex() {
-			if (!this.selectedBattle) return -1;
-
-			return this.battleList.findIndex(
-				(battle) => battle === this.selectedBattle
+		hasUnresolvedBattles() {
+			return this.worldStore?.getBattles.some(
+				(battle) => battle.result === null
 			);
 		},
 		selectedTerritory() {
@@ -98,19 +93,30 @@ export default {
 	},
 	methods: {
 		attack() {
-			if (!this.selectedBattle || this.selectedTerritoryIndex !== 0)
-				return;
+			if (!this.selectedBattle) return;
 
 			this.worldStore?.combatAttack(this.selectedBattle.location);
 		},
+		retreat() {},
 		selectCasualties() {
-			if (!this.selectedBattle || this.selectedTerritoryIndex !== 0)
-				return;
+			if (!this.selectedBattle) return;
 
 			this.worldStore?.combatSelectCasualties(
 				this.selectedBattle.location,
 				this.selectedUnits
 			);
+		},
+		updatePlayerUnits() {
+			if (!this.selectedTerritory || !this.selectedBattle) return;
+
+			this.playerUnits = [...this.selectedTerritory.units]
+				.filter((unit) => unit.team === this.playerTeamNum)
+				.map((unit) => ({
+					...unit,
+					roll: this.selectedBattle.attacker_rolls.find(
+						(roll) => roll.unit_id === unit.unit_id
+					),
+				}));
 		},
 	},
 	created() {
@@ -132,7 +138,11 @@ export default {
 				v-for="battle in battleList"
 				:key="battle"
 				class="battle-button"
-				:class="{ selected: battle === selectedBattle }"
+				:class="{
+					selected: battle === selectedBattle,
+					win: battle.result === 'attacker',
+					lose: battle.result === 'defender',
+				}"
 				@click="selectedBattle = battle"
 			>
 				{{ battle.location }}
@@ -152,7 +162,10 @@ export default {
 					<UnitBox :units="enemyUnits" readOnly></UnitBox>
 				</div>
 			</div>
-			<div v-if="!isSelectingCasualties" class="battle-tray-buttons">
+			<div v-if="!hasUnresolvedBattles" class="battle-tray-buttons">
+				All combats finished. You can skip this phase.
+			</div>
+			<div v-else-if="!isSelectingCasualties" class="battle-tray-buttons">
 				<button
 					class="battle-tray-button"
 					:disabled="!selectedBattle"
@@ -228,6 +241,14 @@ export default {
 			&.selected {
 				border: 1px solid gold;
 			}
+
+			&.win {
+				background-color: #41803d;
+			}
+
+			&.lose {
+				background-color: #843d3d;
+			}
 		}
 	}
 
@@ -268,6 +289,8 @@ export default {
 			gap: 3rem;
 			grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 			place-items: center;
+
+			font-size: 1.15rem;
 
 			* {
 				min-width: 6rem;

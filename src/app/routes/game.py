@@ -6,7 +6,7 @@ from app.models.unit import Unit
 from app.services.session import validate_player
 from app.services.game import (purchase_unit, mobilize_units, move_units, load_transport_with_units,
                                unload_transport, sort_battles, combat_attack, combat_select_casualties,
-                               end_turn)
+                               remove_resolved_battles, end_turn)
 
 
 game_route = Blueprint('game_route', __name__)
@@ -228,7 +228,6 @@ def handle_combat_attack(session_id):
     data = request.get_json()
     selected_territory = data.get('selectedTerritory')
 
-    # breakpoint()
     result, message = combat_attack(game_state, selected_territory)
 
     if not result:
@@ -279,44 +278,12 @@ def handle_combat_casualties(session_id):
     game_state.update()
 
     response = {
-        'status': 'Combat territories retrieved successfully.',
+        'status': 'Combat turn ended successfully.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
         'battles': game_state.battles,
     }
     return jsonify(response), 200
-
-
-@game_route.route('/<string:session_id>/undophase', methods=['POST'])
-def handle_undo_phase(session_id):
-    # Fetch the session and game state by session ID
-    session, game_state = fetch_session_and_game_state(session_id)
-    if not session or not game_state:
-        return jsonify({'status': 'Session ID not found.'}), 404
-
-    # only allowed in combat and non-combat movement phases
-    if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
-        return jsonify({'status': 'User cannot undo phase outside of combat and non-combat movement phases.'}), 400
-
-    # Must be the player's turn
-    player_id = request.args.get('pid')
-    player = session.get_player_by_id(player_id)
-
-    if not validate_player(session, player):
-        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
-
-    game_state = game_state.restore_game_state()
-
-    response = {
-        'status': 'Phase reset successfully.',
-        'session_id': game_state.session_id,
-        'game_state': game_state.to_dict(),
-    }
-    return jsonify(response), 200
-
-
-def handle_combat(session_id):
-    pass
 
 
 @game_route.route('/<string:session_id>/mobilizeunits', methods=['POST'])
@@ -355,6 +322,34 @@ def handle_mobilize_units(session_id):
     return jsonify(response), 200
 
 
+@game_route.route('/<string:session_id>/undophase', methods=['POST'])
+def handle_undo_phase(session_id):
+    # Fetch the session and game state by session ID
+    session, game_state = fetch_session_and_game_state(session_id)
+    if not session or not game_state:
+        return jsonify({'status': 'Session ID not found.'}), 404
+
+    # only allowed in combat and non-combat movement phases
+    if session.phase_num not in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
+        return jsonify({'status': 'User cannot undo phase outside of combat and non-combat movement phases.'}), 400
+
+    # Must be the player's turn
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
+
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
+
+    game_state = game_state.restore_game_state()
+
+    response = {
+        'status': 'Phase reset successfully.',
+        'session_id': game_state.session_id,
+        'game_state': game_state.to_dict(),
+    }
+    return jsonify(response), 200
+
+
 @game_route.route('/<string:session_id>/endphase', methods=['POST'])
 def handle_end_phase(session_id):
     session, game_state = fetch_session_and_game_state(session_id)
@@ -380,10 +375,15 @@ def handle_end_phase(session_id):
     # be resolved in order)
     if session.phase_num == PhaseNumber.COMBAT:
         sort_battles(game_state)
-        game_state.update()
 
     # If exiting the combat phase, remove all resolved battles
     # from the game_state
+    if session.phase_num == PhaseNumber.NON_COMBAT_MOVE:
+        result, message = remove_resolved_battles(game_state)
+        if not result:
+            return jsonify({'status': message}), 400
+
+    game_state.update()
 
     response = {
         'status': 'Phase ended successfully.',

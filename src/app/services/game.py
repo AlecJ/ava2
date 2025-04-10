@@ -104,13 +104,26 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         """Validation Passed"""
 
-        # if entering a territory with hostile units, add a battle to the game state
-        if is_hostile_territory(territory_b, player.team_num):
-            game_state.add_battle(
-                player.team_num, territory_b_name, territory_a_name)
+        # If entering an enemy territory, either capture it (no enemy units) or create a battle
+        is_enemy_territory = is_hostile_territory(territory_b, player.team_num)
+
+        has_enemy_units = has_hostile_units(territory_b, player.team_num)
+
+        if is_enemy_territory:
+
+            if not has_enemy_units:
+                territory_b.team = player.team_num
+
+            if has_enemy_units:
+                game_state.add_battle(
+                    player.team_num, territory_b_name, territory_a_name)
+
+                # Tanks lose movement only if there are hostile units in the territory
+                if unit.unit_type == "TANK":
+                    unit.movement = 1
 
             # land and sea units must stop once they enter a hostile territory
-            if not is_air_unit(unit.unit_type):
+            if not is_air_unit(unit.unit_type) and not unit.unit_type == "TANK":
                 unit.movement = 1  # will be subtracted to 0 later
 
     for unit in units_to_move:
@@ -138,12 +151,20 @@ def load_transport_with_units(game_state, player, territory_name, transport, uni
     - transports does not end with more than 2 units
     - transport can have 1 infantry and 1 other land unit
     - carriers can have 2 air units (fighters or bombers)
+
+    :param game_state: The current game state.
+    :param player: The player making the move.
+    :param territory_name: The sea territory where the transports are loading.
+    :param transport: The transport unit to load the units onto.
+    :param units_to_load: The list of units to load (as dict).
+    :return: Bool, if the units were successfully loaded.
     """
     # get sea territory
     sea_territory = game_state.territories[territory_name]
     sea_territory_generic_data = TERRITORY_DATA[territory_name]
+
     if not sea_territory_generic_data["is_ocean"]:
-        return False
+        return False, "Selected territory is not an ocean."
 
     # load transport from game_state, also ensures it exists in territory
     transport = retrieve_unit_from_territory(sea_territory, transport)
@@ -239,12 +260,23 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
         return False, "Selected territory is not a neighbor of the sea territory."
 
     """Validation Passed"""
-    # if entering a territory with hostile units, add a battle to the game state
-    if is_hostile_territory(selected_territory, player.team_num):
-        game_state.add_battle(
-            player.team_num, selected_territory_name, sea_territory_name)
 
-        # units cannot move after unloading
+    # If entering an enemy territory, either capture it (no enemy units) or create a battle
+    is_enemy_territory = is_hostile_territory(
+        selected_territory, player.team_num)
+
+    has_enemy_units = has_hostile_units(selected_territory, player.team_num)
+
+    if is_enemy_territory:
+
+        if not has_enemy_units:
+            selected_territory.team = player.team_num
+
+        if has_enemy_units:
+            game_state.add_battle(
+                player.team_num, selected_territory_name, sea_territory_name)
+
+    # units cannot move after unloading
     for unit in transport.cargo:
         unit.movement = 0
 
@@ -300,17 +332,11 @@ def combat_attack(game_state, territory_name):
     Each combat must have at least one attack and combat is resolved
     only when a side loses all of its units, or the attacker retreats.
     """
-    # TODO, some battles can be chosen out of order
-    # get the first battle, they are ordered and must be resolved in order
-    battle = game_state.battles[0]
+    battle, message = validate_combat_attack_and_retrieve_battle(
+        game_state, territory_name)
 
-    if battle.get('location') != territory_name:
-        return False, "Territory is not the current battle."
-
-    # if battle.get('is_resolving_turn'):
-    #     return False, "Cannot attack. Battle has casualties to resolve."
-
-    # TODO cannot handle two battles simultaneously, if another battle is ongoing, stop
+    if not battle:
+        return False, message
 
     # if this is the first round of combat, perform opening fire
     if battle.get('turn') == 0:
@@ -337,6 +363,41 @@ def combat_attack(game_state, territory_name):
     battle['is_resolving_turn'] = True
 
     return True, None
+
+
+def validate_combat_attack_and_retrieve_battle(game_state, territory_name):
+    """
+    Validation for combat attack:
+    - if there are any unresolved sea battles, they must be resolved first
+    - if any battles are resolving causalties, they cannot attack (mid combat turn)
+    - player cannot have two battles ongoing at the same time
+    """
+    has_unresolved_sea_combat = any(TERRITORY_DATA[battle.get('location')]['is_ocean']
+                                    and battle.get('result') is None
+                                    for battle in game_state.battles)
+
+    if has_unresolved_sea_combat and not TERRITORY_DATA[territory_name]['is_ocean']:
+        return False, "There are unresolved sea battles. Resolve them first."
+
+    # Find the battle for the given territory
+    battle = next((battle for battle in game_state.battles if battle.get(
+        'location') == territory_name), None)
+
+    if not battle:
+        return False, "No battle found for the given territory."
+
+    # if the player must select casualties, they cannot attack
+    if any(battle.get('is_resolving_turn') for battle in game_state.battles):
+        return False, "Cannot attack. Battle has casualties to resolve."
+
+    # Player cannot have two battles ongoing at the same time
+    ongoing_battles = [
+        battle for battle in game_state.battles if battle.get('turn') > 0 and battle.get('result') is None]
+
+    if ongoing_battles and battle.get('turn') == 0:
+        return False, f"Battles must be resolved one at a time. See: {ongoing_battles[0]['location']}"
+
+    return battle, None
 
 
 def combat_roll(unit, is_attacker=True):
@@ -381,9 +442,11 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
     :return: Bool, if the casualties were successfully selected.
     """
     territory = game_state.territories[territory_name]
-    battle = game_state.battles[0]
 
-    if battle.get('location') != territory_name:
+    battle = next((battle for battle in game_state.battles if battle.get(
+        'is_resolving_turn')), None)
+
+    if not battle or battle.get('location') != territory_name:
         return False, "Territory is not the current battle."
 
     attacker_team_num = battle.get('attacker')
@@ -439,9 +502,13 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
     if not attacking_units:
         battle['result'] = 'defender'
 
-    # if there are attacking units and no defending units
+    # if there are attacking units and no defending units, attacker wins (territory flips)
     elif attacking_units and not defending_units:
         battle['result'] = 'attacker'
+
+        # territories cannot be captured by air units
+        if any(not is_air_unit(unit.unit_type) for unit in attacking_units):
+            territory.team = attacker_team_num
 
     battle['attacker_rolls'] = []
     battle['defender_rolls'] = []
@@ -492,6 +559,21 @@ def combat_auto_select_defender_casualties(territory, battle, defending_team_num
         defender_casualty_count -= 1
 
     return units_to_remove
+
+
+def remove_resolved_battles(game_state):
+    """
+    Validate all battles have been resolved. If they have, remove them from the game state.
+
+    :param game_state: The current game state.
+    :return: Bool, if the battles were successfully removed.
+    """
+    if any(battle.get('result') is None for battle in game_state.battles):
+        return False, "Not all battles have been resolved."
+
+    game_state.battles = []
+
+    return True, None
 
 
 def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
@@ -747,7 +829,22 @@ def attempt_to_load_air_unit_on_carrier(territory, air_unit):
 
 def is_hostile_territory(territory, player_team_num):
     """
-    Check if a territory is controlled by a hostile player.
+    Check if a territory is controlled by a hostile player. This stops movement
+    for land and sea units except for tanks.
+
+    :territory: The territory to check.
+    :player_team_num: The team number of the player.
+    :return bool: True if the territory is hostile, False otherwise.
+    """
+    hostile_team_numbers = get_hostile_team_nums_for_player(player_team_num)
+
+    return territory.team in hostile_team_numbers
+
+
+def has_hostile_units(territory, player_team_num):
+    """
+    Check if a territory has enemy units in it. This stops movement
+    for all land and sea units.
 
     :territory: The territory to check.
     :player_team_num: The team number of the player.

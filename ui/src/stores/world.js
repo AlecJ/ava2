@@ -63,6 +63,22 @@ export const useWorldStore = defineStore("world", {
 				this.territories[territoryName].units = territory.units;
 				this.territories[territoryName].has_factory =
 					territory.has_factory;
+
+				// Get the mesh for the territory
+				const territoryMesh = this.getTerritoryMesh(territoryName);
+				if (territoryMesh) {
+					// Get the color for the controlling team
+					const teamColor = this.getCountryColor(territory.team);
+
+					// Update the mesh color
+					if (teamColor) {
+						territoryMesh.material.color.set(teamColor);
+					} else {
+						console.warn(
+							`No color found for team ${territory.team}`
+						);
+					}
+				}
 			}
 		},
 		setBattles(battles) {

@@ -206,6 +206,22 @@ export default {
 					height: auto;
 				}
 
+				.cargo-dots {
+					position: absolute;
+					bottom: 0.25rem;
+					left: 50%;
+					transform: translateX(-50%);
+					display: flex;
+					gap: 3px;
+
+					.cargo-dot {
+						width: 6px;
+						height: 6px;
+						background-color: white;
+						border-radius: 50%;
+					}
+				}
+
 				.roll-indicator {
 					position: absolute;
 					width: 1.5rem;

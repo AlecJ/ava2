@@ -114,6 +114,11 @@ export default {
 		hasMobilizeUnitsRemaining() {
 			return this.player.mobilization_units.length;
 		},
+		hasUnresolvedBattles() {
+			return this.worldStore?.getBattles.some(
+				(battle) => battle.result === null
+			);
+		},
 	},
 	methods: {
 		async fetchSession() {
@@ -256,7 +261,7 @@ export default {
 		:endPhase="endPhase"
 		:endTurn="this.worldStore.endTurn"
 		:currentPhaseNum="currentPhaseNum"
-		:disabled="hasMobilizeUnitsRemaining"
+		:disabled="hasUnresolvedBattles || hasMobilizeUnitsRemaining"
 	/>
 
 	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />
