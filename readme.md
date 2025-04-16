@@ -22,6 +22,11 @@ run with
 
 ## To Do
 
+##
+
+-   can view battles before entering combat phase
+
+-   opening combat combat_opening_fire
 -   see what units are in a transport during combat?
 
 -   double check ocean retreat (should be done)
@@ -30,6 +35,8 @@ run with
 -   if amphibious assault and ocean loses, destroy units that would retreat to boats, evaluate removing battle
 -   If a transport unit is lost during amphibious ocean battle, the units unloaded should have been removed.
 
+##
+
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
 -   fighter and bombers automatically land on aircraft carriers they are in the same territory as
@@ -37,17 +44,20 @@ run with
 
 -   submarine logic
 -   bomber logic
--   AA logic
 
 -   ampibious assault with sea battle: player unloads as if they win battle, sea battles are always handled first, if the player loses the battle, the units are removed from the land territory before that battle occurs (if still happening)
 
 -   Transports must have at least 1 movement point remaining to unload any units
 -   prevent attempt to unload to sea or when unavailable
 
--   refactor getPlayerTeamNum
--   battles sorted once at start of combat phase
-
 ##
+
+-   refactor getPlayerTeamNum
+
+-   indicate territory has factory
+-   during mobilization, highlight factory tiles
+
+-   highlight selected territory
 
 -   west russia border removed
 -   polling for team select lobby (if first and waiting)

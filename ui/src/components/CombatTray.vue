@@ -31,9 +31,18 @@ export default {
 			},
 			immediate: true,
 		},
-		selectedTerritory: {
-			handler(newTerritory) {
-				if (!newTerritory || !this.selectedBattle) return;
+		// selectedTerritory: {
+		// 	handler(newTerritory) {
+		// 		if (!newTerritory || !this.selectedBattle) return;
+
+		// 		this.updatePlayerUnits();
+		// 	},
+		// 	immediate: true,
+		// 	deep: true,
+		// },
+		selectedBattle: {
+			handler(newBattle) {
+				if (!newBattle || !this.selectedTerritory) return;
 
 				this.updatePlayerUnits();
 			},
@@ -65,7 +74,7 @@ export default {
 				.filter((unit) => unit.team !== this.playerTeamNum)
 				.map((unit) => ({
 					...unit,
-					roll: this.selectedBattle.defender_rolls.find(
+					rolls: this.selectedBattle.defender_rolls.filter(
 						(roll) => roll.unit_id === unit.unit_id
 					),
 					is_battleship_hit:
@@ -105,6 +114,35 @@ export default {
 						: Array(unit.selectedCount).fill(unit)
 				);
 		},
+		AABattles() {
+			return this.battleList.filter((battle) => battle.is_aa_attack);
+		},
+		SeaBattles() {
+			return this.battleList.filter((battle) => battle.is_ocean);
+		},
+		LandBattles() {
+			// remaining battles
+			return this.battleList.filter(
+				(battle) => !battle.is_aa_attack && !battle.is_ocean
+			);
+		},
+		currentCategory() {
+			const nextUnresolvedBattle = this.battleList.find(
+				(battle) => battle.result === null
+			);
+			if (!nextUnresolvedBattle) return null;
+
+			if (nextUnresolvedBattle.is_aa_attack) return "AABattles";
+			if (nextUnresolvedBattle.is_ocean) return "SeaBattles";
+			return "LandBattles";
+		},
+		selectedCategory() {
+			if (!this.selectedBattle) return null;
+
+			if (this.selectedBattle.is_aa_attack) return "AABattles";
+			if (this.selectedBattle.is_ocean) return "SeaBattles";
+			return "LandBattles";
+		},
 	},
 	methods: {
 		attack() {
@@ -127,6 +165,11 @@ export default {
 		},
 		updatePlayerUnits() {
 			if (!this.selectedTerritory || !this.selectedBattle) return;
+
+			if (this.selectedBattle.is_aa_attack) {
+				this.playerUnits = [...this.selectedBattle.air_units];
+				return;
+			}
 
 			this.playerUnits = [...this.selectedTerritory.units]
 				.filter((unit) => unit.team === this.playerTeamNum)
@@ -154,13 +197,48 @@ export default {
 	<div class="combat-tray">
 		<div class="battle-list">
 			<div class="battle-list-header">Current Battles</div>
+
 			<div v-if="battleList.length === 0">
 				No battles available. You can skip this phase.
 			</div>
+
+			<div v-if="AABattles.length > 0">Anti-Aircraft Attacks</div>
+
 			<button
-				v-else
-				v-for="battle in battleList"
-				:key="battle"
+				v-for="(aaBattle, battleIndex) in AABattles"
+				:key="'aabattle-' + battleIndex"
+				class="battle-button"
+				:class="{
+					selected: aaBattle === selectedBattle,
+					win: aaBattle.result === 'attacker',
+					lose: aaBattle.result === 'defender',
+				}"
+				@click="selectedBattle = aaBattle"
+			>
+				{{ aaBattle.location }}
+			</button>
+
+			<div v-if="SeaBattles.length > 0">Sea Battles</div>
+
+			<button
+				v-for="(seaBattle, battleIndex) in SeaBattles"
+				:key="'seabattle-' + battleIndex"
+				class="battle-button"
+				:class="{
+					selected: seaBattle === selectedBattle,
+					win: seaBattle.result === 'attacker',
+					lose: seaBattle.result === 'defender',
+				}"
+				@click="selectedBattle = seaBattle"
+			>
+				{{ seaBattle.location }}
+			</button>
+
+			<div v-if="LandBattles.length > 0">Land Battles</div>
+
+			<button
+				v-for="(battle, battleIndex) in LandBattles"
+				:key="'battle-' + battleIndex"
 				class="battle-button"
 				:class="{
 					selected: battle === selectedBattle,
@@ -202,7 +280,9 @@ export default {
 			<div v-else-if="!isSelectingCasualties" class="battle-tray-buttons">
 				<button
 					class="battle-tray-button"
-					:disabled="!selectedBattle"
+					:disabled="
+						!selectedBattle || selectedCategory !== currentCategory
+					"
 					@click="attack"
 				>
 					Attack

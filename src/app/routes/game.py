@@ -267,7 +267,6 @@ def handle_combat_casualties(session_id):
     selected_territory = data.get('selectedTerritory')
     selected_units = data.get('selectedUnits')
 
-    # breakpoint()
     result, message = combat_select_casualties(
         game_state, selected_territory, selected_units)
 

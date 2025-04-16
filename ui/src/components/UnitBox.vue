@@ -165,17 +165,25 @@ export default {
 						:title="unit.unit_type"
 					/>
 					<div
-						v-if="unit.roll"
-						class="roll-indicator"
-						:class="{
-							success: unit.roll.result,
-							failure: !unit.roll.result,
-						}"
-						:style="{
-							animationDelay: `${(unitTypeIndex + index) * 0.12}s`,
-						}"
+						v-if="unit.rolls && unit.rolls.length"
+						class="roll-indicator-container"
 					>
-						{{ unit.roll.roll }}
+						<div
+							v-for="(roll, rollIndex) in unit.rolls"
+							:key="rollIndex"
+							class="roll-indicator"
+							:class="{
+								success: roll.result,
+								failure: !roll.result,
+							}"
+							:style="{
+								animationDelay: `${(unitTypeIndex + index + rollIndex) * 0.12}s`,
+								top: `${rollIndex * 1.5}rem`,
+								right: '0.5rem',
+							}"
+						>
+							{{ roll.roll }}
+						</div>
 					</div>
 					<div
 						v-if="
@@ -270,6 +278,12 @@ export default {
 						background-color: red;
 						opacity: 0.8;
 					}
+				}
+
+				.roll-indicator-container {
+					position: absolute;
+					top: 0.5rem;
+					right: 0.5rem;
 				}
 
 				.roll-indicator {

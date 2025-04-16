@@ -169,7 +169,7 @@ class GameState:
 
         return result
 
-    def add_battle(self, attacking_player, territory_name, attacking_from):
+    def add_battle(self, attacking_player, territory_name, attacking_from, is_aa_attack=False, air_units=None, is_ocean=False):
         """
         Add a battle to the game state.
         This is used to track where attackers would retreat to.
@@ -190,8 +190,24 @@ class GameState:
             'defender_rolls': [],
             'is_resolving_turn': False,
             'hit_battleships': [],
+            'is_aa_attack': is_aa_attack,
+            'air_units': air_units if air_units is not None else [],
+            'is_ocean': is_ocean,
         }
 
         # Prevent duplicates for a single turn
         if not new_battle in self.battles:
             self.battles.append(new_battle)
+
+    def remove_battle(self, territory_name):
+        """
+        Attempt to remove a battle, if it exists.
+
+        :param game_state: The current game state.
+        :param territory_name: The name of the territory to remove battle from.
+        :return: None
+        """
+        self.battles = [
+            battle for battle in self.battles
+            if battle['location'] != territory_name or battle.get('is_aa_attack', False)
+        ]

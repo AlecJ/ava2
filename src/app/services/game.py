@@ -5,15 +5,28 @@ from app.models.unit_data import UNIT_DATA
 from app.models.session import Session, PhaseNumber
 from app.models.unit import Unit
 
+from app.services.game_helpers import (
+    get_hostile_team_nums_for_player,
+    is_land_unit,
+    is_sea_unit,
+    is_air_unit, retrieve_unit_from_territory,
+    check_territory_has_adjacent_industrial_complex,
+    is_hostile_territory,
+    territory_has_hostile_units,
+    number_of_controlled_territories_for_player,
+    number_of_industrial_complexes_owned_by_player,
+    player_can_purchase_industrial_complex,
+    has_unresolved_aa_fire,
+    get_unresolved_aa_fire_combats,
+    has_unresolved_sea_combat,
+    surviving_battleships_from_casualties,
+    remove_air_unit_from_all_battles,
+    find_and_remove_unit_from_game,
+)
+
 
 """
-purchase_unit
-
-move_units
-
-add_territory_power_to_player_ipcs
-
-end_turn
+The real meat-and-potatoes of the app.
 
 """
 
@@ -101,26 +114,57 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
             return False, "Anti-aircraft units can only move in non-combat phase."
         if not is_air_unit(unit.unit_type) and is_hostile_territory(territory_b, player.team_num) and session.phase_num == PhaseNumber.NON_COMBAT_MOVE:
             return False, "Land and sea units cannot move into hostile territories in the non-combat phase."
+        if unit.in_combat_this_turn and unit.unit_type == "ANTI-AIRCRAFT":
+            return False, "Anti-aircraft units cannot move after firing in combat."
 
         """Validation Passed"""
 
     # If entering an enemy territory, either capture it (no enemy units) or create a battle
     is_enemy_territory = is_hostile_territory(territory_b, player.team_num)
 
-    has_enemy_units = has_hostile_units(territory_b, player.team_num)
+    has_enemy_units = territory_has_hostile_units(territory_b, player.team_num)
 
     moving_force_has_land_unit = any(is_land_unit(unit.unit_type)
                                      for unit in units_to_move)
 
-    # Either capture empty enemy territories or create a battle
+    moving_force_air_units = [
+        unit.to_dict() for unit in units_to_move if is_air_unit(unit.unit_type)]
+
+    defending_force_has_aa_unit = any(unit.unit_type == "ANTI-AIRCRAFT"
+                                      for unit in territory_b.units)
+
     if is_enemy_territory:
+
+        # Not allowed for any units during non-combat phase
+        if session.phase_num != PhaseNumber.COMBAT_MOVE:
+            return False, "Units cannot move into hostile territories in non-combat phase."
 
         if not has_enemy_units and moving_force_has_land_unit:
             territory_b.team = player.team_num
 
         if has_enemy_units:
+
             game_state.add_battle(
-                player.team_num, territory_b_name, territory_a_name)
+                player.team_num, territory_b_name, territory_a_name, is_ocean=territory_b_is_ocean)
+
+            # If moving force has air units and defending force has
+            # anti-aircraft, there is a special attack that will occur
+            # before all other combat, giving the AA a chance to hit
+            # air units without retaliation.
+            if moving_force_air_units and defending_force_has_aa_unit:
+                game_state.add_battle(
+                    player.team_num, territory_b_name, territory_a_name, is_aa_attack=True, air_units=moving_force_air_units)
+
+    # Air units and submarines can uniquely move out of a combat zone
+    # if the last territory had a battle but there are no longer fighting units,
+    # remove the battle
+    prev_territory_has_friendly_units = any(
+        unit for unit in territory_a.units if unit.team == player.team_num and unit not in units_to_move)
+    prev_territory_has_enemy_units = territory_has_hostile_units(
+        territory_a, player.team_num)
+
+    if not prev_territory_has_friendly_units and prev_territory_has_enemy_units:
+        game_state.remove_battle(territory_a_name)
 
     # Adjust movement of all moving units
     for unit in units_to_move:
@@ -136,7 +180,7 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
                 or (unit.unit_type == "TANK" and has_enemy_units)
             )
         ):
-            unit.movement = 0  # will be subtracted to 0 later
+            unit.movement = 0
 
     # remove units from territory A
     territory_a.units = [
@@ -299,7 +343,7 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
 
 def sort_battles(game_state):
     """
-    Sort battles by sea first, and then land.
+    Sort battles by AA fire first, then sea, and then land.
     Order is important because they are resolved in order.
 
     :param game_state: The current game state.
@@ -307,7 +351,8 @@ def sort_battles(game_state):
     """
     game_state.battles = sorted(
         game_state.battles,
-        key=lambda x: not TERRITORY_DATA[x['location']]['is_ocean']
+        key=lambda x: (not x.get('is_aa_attack', False),
+                       not TERRITORY_DATA[x['location']]['is_ocean'])
     )
 
     return True
@@ -318,9 +363,6 @@ def combat_opening_fire(game_state, territory_name):
     In the first round of combat, some special units can fire before
     the main combat begins.
 
-    Anti-aircraft guns can fire at air units as if the air units
-    are passing over the territory.
-
     Battleships can attack land units during an amphibious assault
     if there was no sea battle in the sea territory.
 
@@ -329,7 +371,6 @@ def combat_opening_fire(game_state, territory_name):
 
     Any units destroyed in opening fire do not get to fire back.
     """
-    # Anti aircraft guns
     # Battleship bombardment
     # Submarine attack
     pass
@@ -362,7 +403,25 @@ def combat_attack(game_state, territory_name):
     attacking_units = [
         unit for unit in territory.units if unit.team == attacker_team_num]
     defending_units = [
-        unit for unit in territory.units if unit.team in defending_team_numbers]
+        unit for unit in territory.units if unit.team in defending_team_numbers and unit.unit_type != "ANTI-AIRCRAFT"]
+
+    # if this is an AA fire combat, only defending anti-aircraft units roll
+    if battle.get('is_aa_attack'):
+
+        # set attacking units to the air_units field on the battle
+        air_units = [Unit.from_dict(unit)
+                     for unit in battle['air_units']]
+
+        # each AA gun fires once per air unit
+        defending_units = [unit for unit in territory.units if unit.team in defending_team_numbers
+                           and unit.unit_type == "ANTI-AIRCRAFT"] * len(air_units)
+
+        # set movement for AA guns
+        for unit in defending_units:
+            unit.in_combat_this_turn = True
+
+        # Air units do not attack back
+        attacking_units = []
 
     # roll for attack and defense
     battle['attacker_rolls'] = [combat_roll(unit, is_attacker=True)
@@ -378,23 +437,32 @@ def combat_attack(game_state, territory_name):
 def validate_combat_attack_and_retrieve_battle(game_state, territory_name):
     """
     Validation for combat attack:
+    - if there are any unresolved AA fire, they must be resolved first
     - if there are any unresolved sea battles, they must be resolved first
     - if any battles are resolving causalties, they cannot attack (mid combat turn)
     - player cannot have two battles ongoing at the same time
     """
-    has_unresolved_sea_combat = any(TERRITORY_DATA[battle.get('location')]['is_ocean']
-                                    and battle.get('result') is None
-                                    for battle in game_state.battles)
+    unresolved_sea_combat_exists = has_unresolved_sea_combat(game_state)
 
-    if has_unresolved_sea_combat and not TERRITORY_DATA[territory_name]['is_ocean']:
+    if unresolved_sea_combat_exists:
         return False, "There are unresolved sea battles. Resolve them first."
 
     # Find the battle for the given territory
-    battle = next((battle for battle in game_state.battles if battle.get(
-        'location') == territory_name), None)
+    unresolved_aa_fire_exists = has_unresolved_aa_fire(game_state)
 
-    if not battle:
-        return False, "No battle found for the given territory."
+    if unresolved_aa_fire_exists:
+        battle = next((battle for battle in game_state.battles if battle.get(
+            'location') == territory_name and battle.get('is_aa_attack') and battle.get('result') is None), None)
+
+        if not battle:
+            return False, "No battle found for the given territory."
+
+    else:
+        battle = next((battle for battle in game_state.battles if battle.get(
+            'location') == territory_name and battle.get('result') is None), None)
+
+        if not battle:
+            return False, "No battle found for the given territory."
 
     # if the player must select casualties, they cannot attack
     if any(battle.get('is_resolving_turn') for battle in game_state.battles):
@@ -458,47 +526,50 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
         attacker_team_num)
 
     # Convert request units to game_state units
-    attacker_casualties = [retrieve_unit_from_territory(
-        territory, unit) for unit in casualty_units]
+    if battle.get('is_aa_attack'):
+        attacker_casualties = [
+            unit for unit in casualty_units
+            if any(unit['unit_id'] == air_unit['unit_id'] for air_unit in battle['air_units'])
+        ]
+    else:
+        attacker_casualties = [retrieve_unit_from_territory(
+            territory, unit) for unit in casualty_units]
 
-    if not all(attacker_casualties):
-        return False, "Some units are not in the territory."
+        if not all(attacker_casualties):
+            return False, "Some units are not in the territory."
 
-    # Special rule, Battleships take two hits to destroy
-    first_hit_battleships = []
+        # Special rule, Battleships take two hits to destroy
+        surviving_battleships = surviving_battleships_from_casualties(
+            battle, attacker_casualties)
 
-    for unit in attacker_casualties:
-        if unit.unit_type == "BATTLESHIP":
+        attacker_casualties = [
+            unit for unit in attacker_casualties if unit.unit_id not in surviving_battleships]
 
-            # A battleship is sent twice by the frontend to represent two hits,
-            # or once to represent one hit.
-            if unit.unit_id not in battle['hit_battleships']:
-                first_hit_battleships.append(unit.unit_id)
-                battle['hit_battleships'].append(unit.unit_id)
+        # Auto select defender casualties
+        defender_casualty_count = sum(roll['result']
+                                      for roll in battle['attacker_rolls'])
 
-            # if the battleship has been hit, remove it from the list of living battleships
-            elif unit.unit_id in first_hit_battleships:
-                first_hit_battleships.remove(unit.unit_id)
+        defender_casualties = combat_auto_select_defender_casualties(
+            territory, battle, defending_team_numbers, defender_casualty_count)
 
-    attacker_casualties = [
-        unit for unit in attacker_casualties if unit.unit_id not in first_hit_battleships]
+        # Remove casualties from game
+        territory.units = [
+            unit for unit in territory.units if unit not in attacker_casualties + defender_casualties]
 
-    # Auto select defender casualties
-    defender_casualty_count = sum(roll['result']
-                                  for roll in battle['attacker_rolls'])
+        attacking_units = [
+            unit for unit in territory.units if unit.team == attacker_team_num]
 
-    defender_casualties = combat_auto_select_defender_casualties(
-        territory, battle, defending_team_numbers, defender_casualty_count)
+        defending_units = [
+            unit for unit in territory.units if unit.team in defending_team_numbers and unit.unit_type != "ANTI-AIRCRAFT"]
 
-    # Remove casualties from game
-    territory.units = [
-        unit for unit in territory.units if unit not in attacker_casualties + defender_casualties]
+    if battle.get('is_aa_attack'):
+        # remove air units from all possible battles
+        [remove_air_unit_from_all_battles(game_state, destroyed_unit)
+         for destroyed_unit in attacker_casualties]
 
-    attacking_units = [
-        unit for unit in territory.units if unit.team == attacker_team_num]
-
-    defending_units = [
-        unit for unit in territory.units if unit.team in defending_team_numbers]
+        # find and remove actual unit from game
+        [find_and_remove_unit_from_game(
+            game_state, destroyed_unit) for destroyed_unit in attacker_casualties]
 
     # Make sure the user selected a unit for each casualty, or all remaining units
     # Either the casualties equals the number of defender hits or there
@@ -508,13 +579,17 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
                                   for roll in battle['defender_rolls'])
 
     # Verify the attacker has selected the correct number of casualties
-    if attacking_units and len(attacker_casualties) + len(first_hit_battleships) != attacker_casualty_count:
+    if not battle.get('is_aa_attack') and attacking_units and len(attacker_casualties) + len(surviving_battleships) != attacker_casualty_count:
         return False, "Number of selected units does not match the number of casualties."
 
     # If either side has lost all units, resolve combat
 
+    # Or if this is an AA fire, resolve immediately
+    if battle.get('is_aa_attack'):
+        battle['result'] = 'defender'
+
     # if there are no attacking units, the defender wins (includes draws)
-    if not attacking_units:
+    elif not attacking_units:
         battle['result'] = 'defender'
 
     # if there are attacking units and no defending units, attacker wins (territory flips)
@@ -524,6 +599,11 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
         # territories cannot be captured by air units
         if any(not is_air_unit(unit.unit_type) for unit in attacking_units):
             territory.team = attacker_team_num
+
+            # also transfer any anti-aircraft units to the attacker
+            for unit in territory.units:
+                if unit.unit_type == "ANTI-AIRCRAFT":
+                    unit.team = attacker_team_num
 
     battle['attacker_rolls'] = []
     battle['defender_rolls'] = []
@@ -547,7 +627,7 @@ def combat_auto_select_defender_casualties(territory, battle, defending_team_num
     units_to_remove = []
 
     defending_units = [
-        unit for unit in territory.units if unit.team in defending_team_numbers]
+        unit for unit in territory.units if unit.team in defending_team_numbers and unit.unit_type != "ANTI-AIRCRAFT"]
 
     # sort units by value
     unit_priority = {"SUBMARINE": 1, "TRANSPORT": 2}
@@ -590,8 +670,6 @@ def combat_retreat(game_state, territory_name):
     :param territory_name: The name of the territory.
     :return: Bool, if the retreat was successful.
     """
-    # breakpoint()
-
     battle_territory = game_state.territories[territory_name]
     battle_territory_generic_data = TERRITORY_DATA[territory_name]
 
@@ -849,73 +927,6 @@ def end_turn(session, game_state):
     return
 
 
-def is_land_unit(unit_type):
-    """
-    Check if given unit type is in the list of land units.
-
-    :return bool:
-    """
-    return unit_type in ['INFANTRY', 'ARTILLERY', 'TANK', 'ANTI-AIRCRAFT']
-
-
-def is_sea_unit(unit_type):
-    """
-    Check if given unit type is in the list of sea units.
-
-    :return bool:
-    """
-    return unit_type in ['AIRCRAFT-CARRIER', 'TRANSPORT', 'BATTLESHIP', 'DESTROYER', 'SUBMARINE']
-
-
-def is_air_unit(unit_type):
-    """
-    Check if given unit type is in the list of sea units.
-
-    :return bool:
-    """
-    return unit_type in ['FIGHTER', 'BOMBER']
-
-
-def check_territory_has_adjacent_industrial_complex(game_state, player, selected_territory):
-    """
-    Check neighboring territories of a territory to see if there is an industrial complex
-    controlled by the player.
-
-    :return bool:
-    """
-    selected_territory_generic_data = TERRITORY_DATA[selected_territory]
-    neighbors = selected_territory_generic_data['neighbors']
-
-    for neighbor in neighbors:
-        neighbor_data = game_state.territories[neighbor]
-
-        if player.team_num == neighbor_data.team and neighbor_data.has_factory:
-            return True
-
-    return False
-
-
-def retrieve_unit_from_territory(territory, unit_to_find):
-    """
-    This is used to find the db unit in a territory when we are given the unit
-    from the frontend. This is used for moving and loading units, and removing
-    casualties during combat.
-
-    :territory: The territory (class) to check.
-    :unit: The unit (class) to find.
-    :return unit: The same unit in the given territory.
-    """
-    # convert dict to unit if needed
-    if isinstance(unit_to_find, dict):
-        unit_to_find = Unit.from_dict(unit_to_find)
-
-    for unit in territory.units:
-        if unit == unit_to_find:
-            return unit
-
-    return False
-
-
 def can_mobilize_air_unit_in_sea(territory, units_to_mobilize):
     """
     Air units can be mobilized in a sea territory if there is an aircraft carrier with room.
@@ -962,102 +973,3 @@ def attempt_to_load_air_unit_on_carrier(territory, air_unit):
 
     print(f"No available carrier for {air_unit.unit_type} in {territory}")
     return False
-
-
-def is_hostile_territory(territory, player_team_num):
-    """
-    Check if a territory is controlled by a hostile player. This stops movement
-    for land and sea units except for tanks.
-
-    :territory: The territory to check.
-    :player_team_num: The team number of the player.
-    :return bool: True if the territory is hostile, False otherwise.
-    """
-    hostile_team_numbers = get_hostile_team_nums_for_player(player_team_num)
-
-    return territory.team in hostile_team_numbers
-
-
-def has_hostile_units(territory, player_team_num):
-    """
-    Check if a territory has enemy units in it. This stops movement
-    for all land and sea units.
-
-    :territory: The territory to check.
-    :player_team_num: The team number of the player.
-    :return bool: True if the territory is hostile, False otherwise.
-    """
-    hostile_team_numbers = get_hostile_team_nums_for_player(player_team_num)
-
-    # check if territory has units controlled by the hostile team
-    for unit in territory.units:
-        if unit.team in hostile_team_numbers:
-            return True
-
-    return False
-
-
-def number_of_controlled_territories_for_player(game_state, player):
-    """
-    Get the number of controlled territories a player has.
-
-    :game_state: The current game state.
-    :player: The player to check.
-    :return int: The number of controlled territories.
-    """
-    count = 0
-
-    for territory in game_state.territories.values():
-        if territory.team == player.team_num:
-            count += 1
-
-    return count
-
-
-def number_of_industrial_complexes_owned_by_player(game_state, player):
-    """
-    Get the number of industrial complexes owned by a player.
-
-    :game_state: The current game state.
-    :player: The player to check.
-    :return int: The number of industrial complexes.
-    """
-    count = 0
-
-    for territory in game_state.territories.values():
-        if territory.team == player.team_num and territory.has_factory:
-            count += 1
-
-    return count
-
-
-def player_can_purchase_industrial_complex(game_state, player):
-    """
-    Players can only purchase an industrial complex if they have more controlled territories
-    than industrial complexes. This includes currently owned and purchased ones.
-
-    :game_state: The current game state.
-    :player: The player to check.
-    :return bool: True if the player can purchase an industrial complex, False otherwise.
-    """
-    number_of_controlled_territories = number_of_controlled_territories_for_player(
-        game_state, player)
-
-    number_of_industrial_complexes_owned = number_of_industrial_complexes_owned_by_player(
-        game_state, player)
-
-    number_of_purchased_industrial_complexes = len(
-        [unit for unit in player.mobilization_units if unit == "INDUSTRIAL-COMPLEX"])
-
-    return number_of_controlled_territories > (number_of_industrial_complexes_owned
-                                               + number_of_purchased_industrial_complexes)
-
-
-def get_hostile_team_nums_for_player(player_team_num):
-    """
-    Get the team numbers of the hostile players for a given player.
-
-    :player_team_num: The team number of the player.
-    :return list: A list of team numbers for the hostile players.
-    """
-    return [0, 2, 4] if player_team_num in [1, 3] else [1, 3]

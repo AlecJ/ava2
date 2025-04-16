@@ -23,6 +23,7 @@ class Unit:
         # 0 movement is valid
         self.movement = movement if movement is not None else UNIT_DATA[unit_type]['movement']
         self.cargo = cargo if cargo is not None else []
+        self.in_combat_this_turn = False
 
         # todo -- does this do anything
         if team is None or unit_type is None:
