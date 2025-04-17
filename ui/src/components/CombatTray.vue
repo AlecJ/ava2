@@ -184,7 +184,7 @@ export default {
 				.filter((unit) => unit.team === this.playerTeamNum)
 				.map((unit) => ({
 					...unit,
-					roll: this.selectedBattle.attacker_rolls.find(
+					rolls: this.selectedBattle.attacker_rolls.filter(
 						(roll) => roll.unit_id === unit.unit_id
 					),
 					is_battleship_hit:

@@ -13,15 +13,14 @@ from app.services.game_helpers import (
     check_territory_has_adjacent_industrial_complex,
     is_hostile_territory,
     territory_has_hostile_units,
-    number_of_controlled_territories_for_player,
-    number_of_industrial_complexes_owned_by_player,
     player_can_purchase_industrial_complex,
     has_unresolved_aa_fire,
-    get_unresolved_aa_fire_combats,
     has_unresolved_sea_combat,
     surviving_battleships_from_casualties,
     remove_air_unit_from_all_battles,
     find_and_remove_unit_from_game,
+    find_amphibious_assault_land_battle,
+    reload_units_onto_transport_from_anywhere,
 )
 
 
@@ -318,17 +317,23 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     is_enemy_territory = is_hostile_territory(
         selected_territory, player.team_num)
 
-    has_enemy_units = has_hostile_units(selected_territory, player.team_num)
+    has_enemy_units = territory_has_hostile_units(
+        selected_territory, player.team_num)
 
     if is_enemy_territory:
 
         if not has_enemy_units:
             selected_territory.team = player.team_num
 
-        # TODO do not duplicate for each unload, add to existing
         if has_enemy_units:
-            game_state.add_battle(
+            battle = game_state.add_or_find_battle(
                 player.team_num, selected_territory_name, sea_territory_name)
+
+            # Track which transport unloaded which units in case they are destroyed
+            transport_details = {
+                transport.unit_id: [unit.unit_id for unit in transport.cargo]}
+
+            battle['unloaded_transports'].append(transport_details)
 
     # units cannot move after unloading
     for unit in transport.cargo:
@@ -354,9 +359,117 @@ def combat_opening_fire(game_state, territory_name):
 
     Any units destroyed in opening fire do not get to fire back.
     """
-    # Battleship bombardment
-    # Submarine attack
-    pass
+    battle, message = validate_combat_attack_and_retrieve_battle(
+        game_state, territory_name)
+
+    if not battle:
+        return False, message
+
+    # player team num
+    attacker_team_num = battle.get('attacker')
+
+    defending_team_numbers = get_hostile_team_nums_for_player(
+        attacker_team_num)
+
+    """
+    Battleship bombardment
+    
+    Battleships can attack land units during an amphibious assault but only if they did not
+    already take part in a sea battle.
+    """
+
+    # if this is land and the attack from is sea
+    current_territory_is_land = not TERRITORY_DATA[territory_name]['is_ocean']
+
+    attack_from_territory_name = battle.get('attack_from')
+
+    attack_from_territory_is_ocean = TERRITORY_DATA[attack_from_territory_name]['is_ocean']
+
+    # and there was no sea battle there
+    sea_battle_occurred = game_state.get_battle(
+        attack_from_territory_name, is_ocean=True).get('result') is not None
+
+    # if the current battle is land, the attack is from ocean, and there was no sea battle there...
+    if current_territory_is_land and attack_from_territory_is_ocean and not sea_battle_occurred:
+
+        # get the battleships in the territory
+        attack_from_territory = game_state.territories[attack_from_territory_name]
+
+        battleships = [unit for unit in attack_from_territory.units if unit.unit_type ==
+                       "BATTLESHIP" and unit.team == attacker_team_num]
+
+        # each battleships gets an attack roll for free
+        attack_rolls = [combat_roll(unit, is_attacker=True)
+                        for unit in battleships]
+
+        defender_casualty_count = sum(roll['result'] for roll in attack_rolls)
+
+        current_territory = game_state.territories[territory_name]
+
+        defender_casualties = combat_auto_select_defender_casualties(
+            current_territory, battle, defending_team_numbers, defender_casualty_count)
+
+        # Remove casualties from game
+        current_territory.units = [
+            unit for unit in current_territory.units if unit not in defender_casualties]
+
+    """
+    Submarine attack
+    
+    Submarines get a free attack to start, but only if the other side doesn't have destroyers.
+    """
+    current_territory_is_ocean = TERRITORY_DATA[territory_name]['is_ocean']
+
+    if current_territory_is_ocean:
+
+        current_territory = game_state.territories[territory_name]
+
+        # get all sea units for both sides
+        attacker_sea_units = [unit for unit in current_territory.units if unit.team ==
+                              attacker_team_num and is_sea_unit(unit.unit_type)]
+        defender_sea_units = [
+            unit for unit in current_territory.units if unit.team in defending_team_numbers and is_sea_unit(unit.unit_type)]
+
+        # get all attacker and defender subs
+        attacker_subs = [unit for unit in current_territory.units if unit.unit_type ==
+                         "SUBMARINE" and unit.team == attacker_team_num]
+        defender_subs = [unit for unit in current_territory.units if unit.unit_type ==
+                         "SUBMARINE" and unit.team in defending_team_numbers]
+
+        # if a destroyer exists for either side, skip the opening submarine attack for the other player
+        attacker_has_destroyer = any(
+            unit for unit in attacker_sea_units if unit.unit_type == "DESTROYER")
+        defender_has_destroyer = any(
+            unit for unit in defender_sea_units if unit.unit_type == "DESTROYER")
+
+        # subs get a free attack on sea units only
+        attacker_sub_rolls = []
+        defender_sub_rolls = []
+
+        if not defender_has_destroyer:
+            attacker_sub_rolls = [combat_roll(
+                unit, is_attacker=True) for unit in attacker_subs]
+
+        if not attacker_has_destroyer:
+            defender_sub_rolls = [combat_roll(
+                unit, is_attacker=True) for unit in defender_subs]
+
+        # Auto select casualties
+        attacker_casualty_count = sum(roll['result']
+                                      for roll in defender_sub_rolls)
+
+        attacker_casualties = combat_auto_select_defender_casualties(
+            current_territory, battle, [attacker_team_num], attacker_casualty_count)
+
+        defender_casualty_count = sum(roll['result']
+                                      for roll in attacker_sub_rolls)
+
+        defender_casualties = combat_auto_select_defender_casualties(
+            current_territory, battle, defending_team_numbers, defender_casualty_count)
+
+        # Remove casualties from game
+        current_territory.units = [
+            unit for unit in current_territory.units if unit not in attacker_casualties + defender_casualties]
 
 
 def combat_attack(game_state, territory_name):
@@ -425,17 +538,20 @@ def validate_combat_attack_and_retrieve_battle(game_state, territory_name):
     - if any battles are resolving causalties, they cannot attack (mid combat turn)
     - player cannot have two battles ongoing at the same time
     """
+    unresolved_aa_fire_exists = has_unresolved_aa_fire(game_state)
     unresolved_sea_combat_exists = has_unresolved_sea_combat(game_state)
 
-    if unresolved_sea_combat_exists:
-        return False, "There are unresolved sea battles. Resolve them first."
-
     # Find the battle for the given territory
-    unresolved_aa_fire_exists = has_unresolved_aa_fire(game_state)
-
     if unresolved_aa_fire_exists:
         battle = next((battle for battle in game_state.battles if battle.get(
             'location') == territory_name and battle.get('is_aa_attack') and battle.get('result') is None), None)
+
+        if not battle:
+            return False, "No battle found for the given territory."
+
+    elif unresolved_sea_combat_exists:
+        battle = next((battle for battle in game_state.battles if battle.get(
+            'location') == territory_name and battle.get('is_ocean') and battle.get('result') is None), None)
 
         if not battle:
             return False, "No battle found for the given territory."
@@ -553,6 +669,23 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
         # find and remove actual unit from game
         [find_and_remove_unit_from_game(
             game_state, destroyed_unit) for destroyed_unit in attacker_casualties]
+
+    elif battle.get('is_ocean'):
+
+        # Check if there is an amphibious assault originating from this territory
+        land_battle = next((battle for battle in game_state.battles if battle.get(
+            'attack_from') == territory_name and not battle.get('is_aa_attack') and not battle.get('is_ocean') and not battle.get('result')), None)
+
+        # Make sure any destroyed transports also remove their recently unloaded units
+        casualty_unit_ids = [unit.unit_id for unit in attacker_casualties]
+
+        for transport in land_battle.get('unloaded_transports', []):
+            for transport_id, unit_ids in transport.items():
+
+                # remove each cargo unit from the game
+                if transport_id in casualty_unit_ids:
+                    [find_and_remove_unit_from_game(
+                        game_state, {'unit_id': cargo_unit}) for cargo_unit in unit_ids]
 
     # Make sure the user selected a unit for each casualty, or all remaining units
     # Either the casualties equals the number of defender hits or there
@@ -672,7 +805,25 @@ def combat_retreat(game_state, territory_name):
     retreating_units = [
         unit for unit in battle_territory.units if unit.team == attacker_team_num]
 
-    # if we are retreating from land to ocean
+    # if a transport is retreating from an amphibious assault, landed units need to be reloaded
+    if battle_territory_generic_data['is_ocean']:
+
+        # Check if there is an amphibious assault originating from this territory
+        ampibious_assault_land_battle = find_amphibious_assault_land_battle(
+            game_state, territory_name)
+
+        # Make sure any destroyed transports also remove their recently unloaded units
+        retreating_sea_unit_ids = [unit.unit_id for unit in retreating_units]
+
+        for transport in ampibious_assault_land_battle.get('unloaded_transports', []):
+            for transport_id, unit_ids in transport.items():
+
+                # move units from territory to transport
+                if transport_id in retreating_sea_unit_ids:
+                    reload_units_onto_transport_from_anywhere(
+                        game_state, transport_id, unit_ids)
+
+    # if land units are retreating during an amphibious assault, they need to be reloaded onto transports
     if not battle_territory_generic_data['is_ocean'] and retreat_territory_generic_data['is_ocean']:
 
         # This means the attacker is retreating during an amphibious assault

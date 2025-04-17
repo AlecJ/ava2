@@ -187,25 +187,6 @@ def handle_unload_transport(session_id):
     return jsonify(response), 200
 
 
-@game_route.route('/<string:session_id>/battles', methods=['GET'])
-def handle_get_battles(session_id):
-    # Fetch the session and game state by session ID
-    session, game_state = fetch_session_and_game_state(session_id)
-    if not session or not game_state:
-        return jsonify({'status': 'Session ID not found.'}), 404
-
-    # Must be in combat phase
-    if session.phase_num != PhaseNumber.COMBAT:
-        return jsonify({'status': 'User cannot get combat territories outside of combat phase.'}), 400
-
-    response = {
-        'status': 'Combat territories retrieved successfully.',
-        'session_id': game_state.session_id,
-        'battles': game_state.battles,
-    }
-    return jsonify(response), 200
-
-
 @game_route.route('/<string:session_id>/attack', methods=['POST'])
 def handle_combat_attack(session_id):
     # Fetch the session and game state by session ID
@@ -239,7 +220,7 @@ def handle_combat_attack(session_id):
     response = {
         'status': 'Combat attack successful.',
         'session_id': game_state.session_id,
-        'battles': game_state.battles,
+        'game_state': game_state.to_dict(),
     }
     return jsonify(response), 200
 
@@ -280,7 +261,6 @@ def handle_combat_casualties(session_id):
         'status': 'Combat turn ended successfully.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
-        'battles': game_state.battles,
     }
     return jsonify(response), 200
 
@@ -319,7 +299,6 @@ def handle_combat_retreat(session_id):
         'status': 'Combat retreat successful.',
         'session_id': game_state.session_id,
         'game_state': game_state.to_dict(),
-        'battles': game_state.battles,
     }
     return jsonify(response), 200
 

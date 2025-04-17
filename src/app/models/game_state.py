@@ -193,12 +193,55 @@ class GameState:
             'is_aa_attack': is_aa_attack,
             'air_units': air_units if air_units is not None else [],
             'is_ocean': is_ocean,
+            'unloaded_transports': [],
         }
 
         # Prevent duplicates for a single turn
         if not new_battle in self.battles:
             self.battles.append(new_battle)
             self.sort_battles()
+
+        return new_battle
+
+    def add_or_find_battle(self, attacking_player, territory_name, attacking_from, is_aa_attack=False, air_units=None, is_ocean=False):
+        """
+        Add a battle to the game state.
+        This is used to track where attackers would retreat to.
+
+        :param game_state: The current game state.
+        :param attacking_player: The team number of the player initiating the attack.
+        :param territory_name: The name of the territory being attacked.
+        :param attacking_from: The name of the territory the attack is coming from.
+        :return: The battle as a dict.
+        """
+        # Check if the battle already exists
+        battle = self.get_battle(territory_name, is_ocean, is_aa_attack)
+
+        if battle:
+            return battle
+
+        new_battle = {
+            'location': territory_name,
+            'attack_from': attacking_from,
+            'attacker': attacking_player,
+            'turn': 0,
+            'result': None,
+            'attacker_rolls': [],
+            'defender_rolls': [],
+            'is_resolving_turn': False,
+            'hit_battleships': [],
+            'is_aa_attack': is_aa_attack,
+            'air_units': air_units if air_units is not None else [],
+            'is_ocean': is_ocean,
+            'unloaded_transports': [],
+        }
+
+        # Prevent duplicate battles
+        if not new_battle in self.battles:
+            self.battles.append(new_battle)
+            self.sort_battles()
+
+        return new_battle
 
     def remove_battle(self, territory_name):
         """
@@ -212,6 +255,25 @@ class GameState:
             battle for battle in self.battles
             if battle['location'] != territory_name or battle.get('is_aa_attack', False)
         ]
+
+    def get_battle(self, territory_name, is_ocean=False, is_aa_attack=False):
+        """
+        Get a battle by territory name.
+
+        :param game_state: The current game state.
+        :param territory_name: The name of the territory to get the battle from.
+        :param is_ocean: Bool, if the battle is in an ocean.
+        :param is_aa_attack: Bool, if the battle is an AA attack.
+        :return: The battle, or None if it doesn't exist.
+        """
+        for battle in self.battles:
+            if (battle['location'] == territory_name and
+                    battle.get('is_ocean', False) == is_ocean and
+                    battle.get('is_aa_attack', False) == is_aa_attack):
+
+                return battle
+
+        return {}
 
     def sort_battles(self):
         """

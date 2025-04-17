@@ -51,8 +51,56 @@ def is_air_unit(unit_type):
     """
     return unit_type in ['FIGHTER', 'BOMBER']
 
-# endregion units
 
+def retrieve_unit_from_game_state_by_id(game_state, unit_id):
+    """
+    Retrieve a unit from the game state by its ID.
+
+    This will NOT retrieve units on transports.
+
+    :game_state: The current game state.
+    :unit_id: The ID of the unit to retrieve.
+    :return: The unit if found, otherwise None.
+    """
+    for territory in game_state.territories.values():
+        for unit in territory.units:
+            if unit.unit_id == unit_id:
+                return unit
+
+    return None
+
+
+def reload_units_onto_transport_from_anywhere(game_state, transport_id, units_to_load_ids):
+    """
+    Reload units onto a transport from any territory.
+
+    :game_state: The current game state.
+    :transport_id: The ID of the transport unit.
+    :units_to_load_ids: The IDs of the units to load.
+    :return None:
+    """
+    transport = retrieve_unit_from_game_state_by_id(game_state, transport_id)
+
+    if not transport:
+        return None
+
+    found_units_to_load = []
+
+    for territory in game_state.territories.values():
+        for unit in territory.units:
+            if unit.unit_id in units_to_load_ids:
+                found_units_to_load.append(unit)
+
+        # remove the units from the territory
+        territory.units = [
+            unit for unit in territory.units if unit.unit_id not in units_to_load_ids
+        ]
+
+    # Add units to the transport
+    [transport.cargo.append(unit) for unit in found_units_to_load]
+
+
+# endregion units
 
 """
 Territories
@@ -285,5 +333,17 @@ def find_and_remove_unit_from_game(game_state, unit):
         territory.units = [
             territory_unit for territory_unit in territory.units if territory_unit.unit_id != unit_id
         ]
+
+
+def find_amphibious_assault_land_battle(game_state, territory_name):
+    """
+    Find the amphibious assault land battle for a given ocean territory, if one exists.
+
+    :game_state: The current game state.
+    :territory_name: The name of the sea territory the amphibious assault is in.
+    :return: The battle if found, otherwise None.
+    """
+    return next((battle for battle in game_state.battles if battle.get(
+        'attack_from') == territory_name and not battle.get('is_aa_attack') and not battle.get('is_ocean') and not battle.get('result')), None)
 
     # endregion battles

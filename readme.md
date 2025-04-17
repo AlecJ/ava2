@@ -3,6 +3,9 @@ Hi,
 Thanks for taking the time to check my github. I'm very proud of this project and hope it
 accurately demonstrates my skills as a developer.
 
+This game is played with up to 5 players, although a player can control multiple teams
+by joining with multiple web tabs.
+
 Best,
 Alec
 
@@ -24,16 +27,6 @@ run with
 
 ##
 
--   opening combat combat_opening_fire
-
--   double check ocean retreat (should be done)
--   air retreat?
-
--   if amphibious assault and ocean loses, destroy units that would retreat to boats, evaluate removing battle
--   If a transport unit is lost during amphibious ocean battle, the units unloaded should have been removed.
-
-##
-
 -   fighters and bombers can "launch" instead of unload
 -   if they don't launch, they lose movement equal to the ship's movement
 -   fighter and bombers automatically land on aircraft carriers they are in the same territory as
@@ -42,20 +35,17 @@ run with
 -   submarine logic
 -   bomber logic
 
--   ampibious assault with sea battle: player unloads as if they win battle, sea battles are always handled first, if the player loses the battle, the units are removed from the land territory before that battle occurs (if still happening)
-
 -   Transports must have at least 1 movement point remaining to unload any units
 -   prevent attempt to unload to sea or when unavailable
 
 ##
-
--   refactor getPlayerTeamNum
 
 -   indicate territory has factory
 -   during mobilization, highlight factory tiles
 
 -   highlight selected territory
 
+-   cannot select hawaii
 -   west russia border removed
 -   polling for team select lobby (if first and waiting)
 
@@ -63,8 +53,6 @@ run with
 -   add logging
 -   toast popup with api error status
 -   :param game_state:
-
-##
 
 -   player key request validation (end phase/turn)
 
@@ -85,6 +73,8 @@ run with
 ##
 
 Future Work:
+
+-   refactor getPlayerTeamNum
 
 -   see what units are in a transport during combat?
 -   opening mobilization units, close territory data
