@@ -243,7 +243,10 @@ export default {
 
 		<CombatButton
 			v-if="!showLandingPopUp && !showTeamSelectPopUp"
-			:active="currentPhaseNum === 2 && isThisPlayersTurn"
+			:active="
+				(currentPhaseNum === 1 || currentPhaseNum === 2) &&
+				isThisPlayersTurn
+			"
 			:setShowBattles="setShowBattles"
 			:showBattles="showBattles"
 		/>

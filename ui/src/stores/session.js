@@ -56,14 +56,6 @@ export const useSessionStore = defineStore("session", {
 				if (response.data.session.status === "ACTIVE") {
 					const worldStore = useWorldStore();
 					await worldStore.getWorldData();
-
-					// if in combat phase, get combat territories
-					if (response.data.session.phase_num === 2) {
-						console.log(
-							"Combat phase detected, fetching combat territories"
-						);
-						await worldStore.fetchBattles();
-					}
 				}
 			} catch (error) {
 				console.error("API Error:", error.response?.data?.status);

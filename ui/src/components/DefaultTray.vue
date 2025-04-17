@@ -143,7 +143,10 @@ export default {
 			:purchaseUnit="purchaseUnit"
 		/>
 
-		<CombatTray v-if="showBattles && !forceClose" />
+		<CombatTray
+			v-if="showBattles && !forceClose"
+			:currentPhaseNum="currentPhaseNum"
+		/>
 
 		<PlaceMobilizationUnitsTray
 			v-if="isPlacingMobilizationUnits && !forceClose"

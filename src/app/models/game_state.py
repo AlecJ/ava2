@@ -198,6 +198,7 @@ class GameState:
         # Prevent duplicates for a single turn
         if not new_battle in self.battles:
             self.battles.append(new_battle)
+            self.sort_battles()
 
     def remove_battle(self, territory_name):
         """
@@ -211,3 +212,17 @@ class GameState:
             battle for battle in self.battles
             if battle['location'] != territory_name or battle.get('is_aa_attack', False)
         ]
+
+    def sort_battles(self):
+        """
+        Sort battles by AA fire first, then sea, and then land.
+        Order is important because they are resolved in order.
+
+        :param game_state: The current game state.
+        :return: Bool, if the sorting was successful.
+        """
+        self.battles = sorted(
+            self.battles,
+            key=lambda x: (not x.get('is_aa_attack', False),
+                           not TERRITORY_DATA[x['location']]['is_ocean'])
+        )

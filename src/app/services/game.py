@@ -341,23 +341,6 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     return True, None
 
 
-def sort_battles(game_state):
-    """
-    Sort battles by AA fire first, then sea, and then land.
-    Order is important because they are resolved in order.
-
-    :param game_state: The current game state.
-    :return: Bool, if the sorting was successful.
-    """
-    game_state.battles = sorted(
-        game_state.battles,
-        key=lambda x: (not x.get('is_aa_attack', False),
-                       not TERRITORY_DATA[x['location']]['is_ocean'])
-    )
-
-    return True
-
-
 def combat_opening_fire(game_state, territory_name):
     """
     In the first round of combat, some special units can fire before

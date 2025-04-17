@@ -24,10 +24,7 @@ run with
 
 ##
 
--   can view battles before entering combat phase
-
 -   opening combat combat_opening_fire
--   see what units are in a transport during combat?
 
 -   double check ocean retreat (should be done)
 -   air retreat?
@@ -89,6 +86,7 @@ run with
 
 Future Work:
 
+-   see what units are in a transport during combat?
 -   opening mobilization units, close territory data
 
 -   scheduled tasks

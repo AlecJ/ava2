@@ -80,9 +80,8 @@ export const useWorldStore = defineStore("world", {
 					}
 				}
 			}
-		},
-		setBattles(battles) {
-			this.battles = battles;
+
+			this.battles = gameState.battles;
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -230,24 +229,6 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setIsLoading(false);
 			}
 		},
-		async fetchBattles() {
-			// also send player ID
-			const sessionStore = useSessionStore();
-			sessionStore.setIsLoading(true);
-
-			try {
-				const response = await API.get(
-					`/game/${this.getSessionId}/battles`
-				);
-
-				console.log("API Response:", response.data); // Debugging log
-				this.setBattles(response.data.battles);
-			} catch (error) {
-				console.error("API Error:", error.response.data.status);
-			} finally {
-				sessionStore.setIsLoading(false);
-			}
-		},
 		async combatAttack(selectedTerritory) {
 			const sessionStore = useSessionStore();
 			sessionStore.setIsLoading(true);
@@ -264,7 +245,7 @@ export const useWorldStore = defineStore("world", {
 				);
 
 				console.log("API Response:", response.data); // Debugging log
-				this.setBattles(response.data.battles);
+				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
 			} finally {
@@ -288,7 +269,6 @@ export const useWorldStore = defineStore("world", {
 
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
-				this.setBattles(response.data.battles); // TODO don't need
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
 			} finally {
@@ -313,7 +293,6 @@ export const useWorldStore = defineStore("world", {
 
 				console.log("API Response:", response.data); // Debugging log
 				this.updateGameWorld(response.data.game_state);
-				this.setBattles(response.data.battles); // TODO don't need
 			} catch (error) {
 				console.error("API Error:", error);
 				console.error("API Error:", error.response.data.status);
@@ -354,11 +333,6 @@ export const useWorldStore = defineStore("world", {
 
 				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
-
-				// if in combat phase, get combat territories
-				if (response.data.session.phase_num === 2) {
-					await this.fetchBattles();
-				}
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
 			} finally {

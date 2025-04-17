@@ -5,7 +5,7 @@ from app.models.game_state import GameState
 from app.models.unit import Unit
 from app.services.session import validate_player
 from app.services.game import (purchase_unit, mobilize_units, move_units, load_transport_with_units,
-                               unload_transport, sort_battles, combat_attack, combat_select_casualties,
+                               unload_transport, combat_attack, combat_select_casualties,
                                combat_retreat, remove_resolved_battles, end_turn)
 
 
@@ -408,11 +408,6 @@ def handle_end_phase(session_id):
     # Backup game state for undoing movement
     if session.phase_num in [PhaseNumber.COMBAT_MOVE, PhaseNumber.NON_COMBAT_MOVE]:
         game_state.backup_game_state()
-
-    # If entering the combat phase, sort battles (they must
-    # be resolved in order)
-    if session.phase_num == PhaseNumber.COMBAT:
-        sort_battles(game_state)
 
     # If exiting the combat phase, remove all resolved battles
     # from the game_state

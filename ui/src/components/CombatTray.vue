@@ -9,7 +9,13 @@ export default {
 		LoadingSpinner,
 		UnitBox,
 	},
-	props: {},
+	props: {
+		currentPhaseNum: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
+	},
 	data() {
 		return {
 			sessionStore: null,
@@ -51,6 +57,9 @@ export default {
 		},
 	},
 	computed: {
+		isCombatPhase() {
+			return this.currentPhaseNum === 2;
+		},
 		battleList() {
 			return this.worldStore?.getBattles || [];
 		},
@@ -199,7 +208,10 @@ export default {
 			<div class="battle-list-header">Current Battles</div>
 
 			<div v-if="battleList.length === 0">
-				No battles available. You can skip this phase.
+				<p v-if="isCombatPhase">
+					No battles available. You can skip this phase.
+				</p>
+				<p v-else>You have no battles.</p>
 			</div>
 
 			<div v-if="AABattles.length > 0">Anti-Aircraft Attacks</div>
@@ -281,7 +293,9 @@ export default {
 				<button
 					class="battle-tray-button"
 					:disabled="
-						!selectedBattle || selectedCategory !== currentCategory
+						!selectedBattle ||
+						selectedCategory !== currentCategory ||
+						!isCombatPhase
 					"
 					@click="attack"
 				>
