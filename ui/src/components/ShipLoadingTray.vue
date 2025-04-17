@@ -92,6 +92,13 @@ export default {
 			// need to select a territory to unload to
 			this.setTransportToUnload(transport);
 		},
+		launchAirUnits(transport) {
+			this.worldStore.unloadTransport(
+				this.territoryName,
+				this.territoryName,
+				transport
+			);
+		},
 	},
 	created() {
 		this.worldStore = useWorldStore();
@@ -169,7 +176,7 @@ export default {
 				</div>
 			</div>
 			<button
-				v-if="!transportToUnload"
+				v-if="!transportToUnload && transport.unit_type === 'TRANSPORT'"
 				class="ship-load-button"
 				:disabled="
 					transport.cargo?.length === 2 ||
@@ -181,12 +188,23 @@ export default {
 				Load
 			</button>
 			<button
-				v-if="!transportToUnload"
+				v-if="!transportToUnload && transport.unit_type === 'TRANSPORT'"
 				class="ship-unload-button"
 				:disabled="!transport.cargo?.length"
 				@click="unloadUnits(transport)"
 			>
 				Unload
+			</button>
+			<button
+				v-if="
+					!transportToUnload &&
+					transport.unit_type === 'AIRCRAFT-CARRIER'
+				"
+				class="ship-unload-button"
+				:disabled="!transport.cargo?.length"
+				@click="launchAirUnits(transport)"
+			>
+				Launch
 			</button>
 		</div>
 	</div>

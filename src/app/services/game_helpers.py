@@ -97,7 +97,7 @@ def reload_units_onto_transport_from_anywhere(game_state, transport_id, units_to
         ]
 
     # Add units to the transport
-    [transport.cargo.append(unit) for unit in found_units_to_load]
+    transport.cargo.extend(found_units_to_load)
 
 
 # endregion units

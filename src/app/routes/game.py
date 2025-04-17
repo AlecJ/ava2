@@ -324,8 +324,12 @@ def handle_mobilize_units(session_id):
     units_to_mobilize = data.get('units')
     selected_territory = data.get('selectedTerritory')
 
-    if not mobilize_units(game_state, player, units_to_mobilize, selected_territory):
-        return jsonify({'status': 'Mobilization failed. Invalid units or territory selected.'}), 400
+    result, message = mobilize_units(
+        game_state, player, units_to_mobilize, selected_territory)
+
+    if not result:
+        message = message or 'Mobilization failed. Invalid units or territory selected.'
+        return jsonify({'status': message}), 400
 
     session.update()
     game_state.update()

@@ -27,11 +27,6 @@ run with
 
 ##
 
--   fighters and bombers can "launch" instead of unload
--   if they don't launch, they lose movement equal to the ship's movement
--   fighter and bombers automatically land on aircraft carriers they are in the same territory as
--   mobilization: can place fighters and bombers in the same territories as ships as long as there is room in cargo
-
 -   submarine logic
 -   bomber logic
 
@@ -75,9 +70,10 @@ run with
 Future Work:
 
 -   refactor getPlayerTeamNum
-
 -   see what units are in a transport during combat?
 -   opening mobilization units, close territory data
+
+-   mobile design
 
 -   scheduled tasks
 -   skip players turn after certain time

@@ -46,6 +46,14 @@ export default {
 			immediate: true,
 			deep: true,
 		},
+		mobilizationUnits: {
+			handler(newMobilizationUnits) {
+				if (!newMobilizationUnits.length) {
+					this.setIsSelectingTerritory(false);
+				}
+			},
+			immediate: true,
+		},
 	},
 	computed: {
 		selectedUnits() {
@@ -73,7 +81,7 @@ export default {
 		this.worldStore = useWorldStore();
 	},
 	mounted() {
-		this.setIsSelectingTerritory(true);
+		if (this.mobilizationUnits.length) this.setIsSelectingTerritory(true);
 	},
 	unmounted() {
 		this.setIsSelectingTerritory(false);

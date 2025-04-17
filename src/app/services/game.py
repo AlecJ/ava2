@@ -181,6 +181,11 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
         ):
             unit.movement = 0
 
+        # Air units in cargo lose movement for aircraft carrier movement
+        if unit.unit_type == "AIRCRAFT-CARRIER":
+            for cargo_unit in unit.cargo:
+                cargo_unit.movement -= 1
+
     # remove units from territory A
     territory_a.units = [
         unit for unit in territory_a.units if unit not in units_to_move]
@@ -289,6 +294,7 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     # get sea territory
     sea_territory = game_state.territories[sea_territory_name]
     sea_territory_generic_data = TERRITORY_DATA[sea_territory_name]
+
     if not sea_territory_generic_data["is_ocean"]:
         return False, "Sea territory is not an ocean?"
 
@@ -301,46 +307,55 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     if transport.team != player.team_num:
         return False, "Transport is not owned by player."
 
-    # selected territory is land
-    selected_territory = game_state.territories[selected_territory_name]
-    selected_territory_generic_data = TERRITORY_DATA[selected_territory_name]
-    if selected_territory_generic_data["is_ocean"]:
-        return False, "Selected territory is not land."
+    # Aircraft Carriers launch units into the same territory
+    if transport.unit_type == "AIRCRAFT-CARRIER":
+        sea_territory.units.extend(transport.cargo)
 
-    # selected territory neighbors the sea territory
-    if selected_territory_name not in sea_territory_generic_data['neighbors']:
-        return False, "Selected territory is not a neighbor of the sea territory."
+    # Transports unload to adjacent land territories
+    if transport.unit_type == "TRANSPORT":
 
-    """Validation Passed"""
+        # selected territory is land
+        selected_territory = game_state.territories[selected_territory_name]
+        selected_territory_generic_data = TERRITORY_DATA[selected_territory_name]
 
-    # If entering an enemy territory, either capture it (no enemy units) or create a battle
-    is_enemy_territory = is_hostile_territory(
-        selected_territory, player.team_num)
+        if selected_territory_generic_data["is_ocean"]:
+            return False, "Selected territory is not land."
 
-    has_enemy_units = territory_has_hostile_units(
-        selected_territory, player.team_num)
+        # selected territory neighbors the sea territory
+        if selected_territory_name not in sea_territory_generic_data['neighbors']:
+            return False, "Selected territory is not a neighbor of the sea territory."
 
-    if is_enemy_territory:
+        """Validation Passed"""
 
-        if not has_enemy_units:
-            selected_territory.team = player.team_num
+        # If entering an enemy territory, either capture it (no enemy units) or create a battle
+        is_enemy_territory = is_hostile_territory(
+            selected_territory, player.team_num)
 
-        if has_enemy_units:
-            battle = game_state.add_or_find_battle(
-                player.team_num, selected_territory_name, sea_territory_name)
+        has_enemy_units = territory_has_hostile_units(
+            selected_territory, player.team_num)
 
-            # Track which transport unloaded which units in case they are destroyed
-            transport_details = {
-                transport.unit_id: [unit.unit_id for unit in transport.cargo]}
+        if is_enemy_territory:
 
-            battle['unloaded_transports'].append(transport_details)
+            if not has_enemy_units:
+                selected_territory.team = player.team_num
 
-    # units cannot move after unloading
-    for unit in transport.cargo:
-        unit.movement = 0
+            if has_enemy_units:
+                battle = game_state.add_or_find_battle(
+                    player.team_num, selected_territory_name, sea_territory_name)
 
-    # move units to land territory
-    selected_territory.units.extend(transport.cargo)
+                # Track which transport unloaded which units in case they are destroyed
+                transport_details = {
+                    transport.unit_id: [unit.unit_id for unit in transport.cargo]}
+
+                battle['unloaded_transports'].append(transport_details)
+
+        # units cannot move after unloading
+        for unit in transport.cargo:
+            unit.movement = 0
+
+        # move units to land territory
+        selected_territory.units.extend(transport.cargo)
+
     transport.cargo = []
 
     return True, None
@@ -948,40 +963,48 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
     has_adjacent_industrial_complex = check_territory_has_adjacent_industrial_complex(
         game_state, player, selected_territory)
 
+    # Player cannot place more aircraft in a sea space than there is room for
+    aircraft_carrier_cargo_space = sum(
+        2 - len(unit.cargo) for unit in selected_territory_data.units if unit.unit_type == "AIRCRAFT-CARRIER")
+    air_unit_count = 0
+
     # for each unit, remove from player and create one in the territory
     for unit in units_to_mobilize:
         unit_type = unit['unit_type']
 
         # user cannot place more units than they have available
         if unit_type not in player.mobilization_units:
-            return False
+            return False, "Player does not have that unit available."
 
         # if land unit, the selected territory must be land and have an industrial complex
         if is_land_unit(unit_type):
             can_place_in_land = not is_ocean and is_controlled_by_player and has_factory
 
             if not can_place_in_land:
-                return False
+                return False, "Land unit must be placed in a controlled territory with an industrial complex."
 
         # if sea unit, it must be be sea and have an adjacent controlled industrial complex
         if is_sea_unit(unit_type):
+            aircraft_carrier_cargo_space += 2 if unit_type == "AIRCRAFT-CARRIER" else 0
+
             can_place_in_sea = is_ocean and has_adjacent_industrial_complex
 
             if not can_place_in_sea:
-                return False
+                return False, "Sea unit cannot be placed in sea territories adjacent to an industrial complex."
 
         # if air unit, it can be placed in a sea territory with a carrier or a land territory
         if is_air_unit(unit_type):
-            can_place_in_sea = is_ocean and has_adjacent_industrial_complex and can_mobilize_air_unit_in_sea(
-                selected_territory_data, units_to_mobilize)
+            air_unit_count += 1
+
+            can_place_in_sea = is_ocean and has_adjacent_industrial_complex
             can_place_in_land = not is_ocean and is_controlled_by_player and has_factory
 
             if not (can_place_in_sea or can_place_in_land):
-                return False
+                return False, "Air unit must be placed on land or in an adjacent space with an aircraft carrier."
 
         # if industrial complex, it must be a controlled land without an existing one
         if unit_type == "INDUSTRIAL-COMPLEX" and (is_ocean or has_factory or not is_controlled_by_player):
-            return False
+            return False, "Industrial complex can only be placed in a controlled land territory without an existing one."
 
         # remove unit from players mobilization units
         player.mobilization_units.remove(unit_type)
@@ -998,7 +1021,12 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
             )
             selected_territory_data.units.append(new_unit)
 
-    return True
+    # Finally ensure there are not too many air units in a sea territory
+    # for the available aircraft carrier cargo space
+    if is_ocean and air_unit_count > aircraft_carrier_cargo_space:
+        return False, "Too many air units in sea territory for available cargo space."
+
+    return True, None
 
 
 def add_territory_power_to_player_ipcs(session, territory_name, territory):
@@ -1044,6 +1072,7 @@ def end_turn(session, game_state):
 
             # if a fighter or bomber is on the ocean with no carrier, destroy it
             if is_air_unit(unit.unit_type) and territory_is_ocean:
+
                 attempt_to_load_air_unit_on_carrier(territory, unit)
                 # unit is removed from territory regardless
                 units_to_remove.append(unit)
@@ -1059,30 +1088,6 @@ def end_turn(session, game_state):
     session.phase_num = PhaseNumber.PURCHASE_UNITS
 
     return
-
-
-def can_mobilize_air_unit_in_sea(territory, units_to_mobilize):
-    """
-    Air units can be mobilized in a sea territory if there is an aircraft carrier with room.
-    This also includes carriers in the mobilization forces.
-
-    Count the total cargo available in the territory and the mobilization forces and
-    check if there is room for all air units.
-
-    :territory: The territory (class) to check.
-    :units_to_mobilize: The list of units to mobilize.
-    :return bool: True if there is room for air units.
-    """
-    current_cargo_space_available_in_territory = sum(
-        [2 - len(unit.cargo) for unit in territory.units if unit.unit_type == "AIRCRAFT-CARRIER"])
-
-    count_of_carriers_in_mobilization_forces = 2 * len(
-        [unit for unit in units_to_mobilize if unit['unit_type'] == "AIRCRAFT-CARRIER"])
-
-    count_of_air_units_in_mobilization_forces = len(
-        [unit for unit in units_to_mobilize if is_air_unit(unit['unit_type'])])
-
-    return count_of_air_units_in_mobilization_forces <= current_cargo_space_available_in_territory + count_of_carriers_in_mobilization_forces
 
 
 def attempt_to_load_air_unit_on_carrier(territory, air_unit):
