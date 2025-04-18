@@ -3,8 +3,8 @@ version: "3.8"
 services:
     web:
         build:
-            context: ./src
-            dockerfile: Dockerfile.dev
+            context: .
+            dockerfile: deploy/Dockerfile.dev
         container_name: ava_app
         ports:
             - "5050:5000"
@@ -22,7 +22,7 @@ services:
             - "27017:27017"
         volumes:
             - mongo-data:/data/db
-        restart: "unless-stopped"
+        restart: unless-stopped
 
 volumes:
     mongo-data:

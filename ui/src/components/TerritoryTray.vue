@@ -26,9 +26,9 @@ export default {
 			required: false,
 		},
 		neighboringTerritoriesData: {
-			type: Object,
+			type: Array,
 			required: false,
-			default: [],
+			default: () => [],
 		},
 		currentTurnNum: {
 			type: Number,
@@ -101,6 +101,12 @@ export default {
 			const country = countries.find((c) => c.name === this.teamName);
 
 			return country ? country.flagIcon : "";
+		},
+		factoryIconSrc() {
+			return new URL(
+				"@/assets/units/industrial-complex.png",
+				import.meta.url
+			).href;
 		},
 		playerTeamNum() {
 			return countries.findIndex(
@@ -271,18 +277,20 @@ export default {
 
 		<div class="territory-info-row">
 			<div class="controlling-country">
-				<div class="left">Occupied by:</div>
-				<div class="right">
-					<img
-						:src="countryFlagSrc"
-						:alt="teamName"
-						class="flag-icon"
-					/>
-				</div>
+				<img :src="countryFlagSrc" :alt="teamName" class="flag-icon" />
 			</div>
 			<div class="territory-power">
-				<div class="left">Production Score:</div>
-				<div class="right">{{ power }}</div>
+				<div>Production</div>
+				<div class="power">{{ power }}</div>
+				<div>Score</div>
+			</div>
+			<div class="territory-factory">
+				<img
+					v-if="territoryData?.has_factory"
+					:src="factoryIconSrc"
+					:alt="teamName"
+					class="factory-icon"
+				/>
 			</div>
 		</div>
 
@@ -352,6 +360,7 @@ export default {
 				v-if="isLoadingTransports"
 				:territoryName="territoryName"
 				:nearbyUnits="neighboringLandAndAirUnits"
+				:neighboringTerritoriesData="neighboringTerritoriesData"
 				:transports="transportsInTerritory"
 				:carriers="carriersInTerritory"
 				:transportToUnload="transportToUnload"
@@ -434,32 +443,30 @@ export default {
 	}
 
 	.territory-info-row {
+		height: 100%;
 		width: 100%;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr;
 
 		.controlling-country,
-		.territory-power {
-			width: 100%;
-			padding: 1rem;
+		.territory-factory {
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			place-items: center;
 
-			align-content: center;
-			justify-items: center;
-
-			.left,
-			.right {
-				text-align: right;
-				align-self: center;
+			.flag-icon,
+			.factory-icon {
+				width: 4.5rem;
+				height: auto;
 			}
 		}
 
-		.controlling-country {
-			border-right: 1px solid white;
+		.territory-power {
+			padding: 0 0.5rem;
+			text-align: center;
 
-			.flag-icon {
-				width: 3rem;
+			.power {
+				background: white;
+				color: black;
 			}
 		}
 	}

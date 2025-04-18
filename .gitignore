@@ -35,3 +35,5 @@ coverage
 *.tsbuildinfo
 
 .pytest_cache/
+
+.env

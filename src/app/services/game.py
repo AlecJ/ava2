@@ -2,7 +2,7 @@ from random import randint
 
 from app.models.territory_data import TERRITORY_DATA
 from app.models.unit_data import UNIT_DATA
-from app.models.session import Session, PhaseNumber
+from app.models.session import Session, PhaseNumber, SessionStatus
 from app.models.unit import Unit
 
 from app.services.game_helpers import (
@@ -21,6 +21,7 @@ from app.services.game_helpers import (
     find_and_remove_unit_from_game,
     find_amphibious_assault_land_battle,
     reload_units_onto_transport_from_anywhere,
+    does_player_control_capital,
 )
 
 
@@ -132,6 +133,9 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     defending_force_has_aa_unit = any(unit.unit_type == "ANTI-AIRCRAFT"
                                       for unit in territory_b.units)
 
+    defending_force_has_destroyer = any(unit.unit_type == "DESTROYER"
+                                        for unit in territory_b.units)
+
     if is_enemy_territory:
 
         # Not allowed for any units during non-combat phase
@@ -139,7 +143,8 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
             return False, "Units cannot move into hostile territories in non-combat phase."
 
         if not has_enemy_units and moving_force_has_land_unit:
-            territory_b.team = player.team_num
+            capture_territory(game_state, territory_b_name, player)
+            # territory_b.team = player.team_num
 
         if has_enemy_units:
 
@@ -171,12 +176,17 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         # Land and sea units must stop once they enter a hostile territory
         # Tanks lose movement only if there are hostile units in the territory
+        # Submarines lose movement only if there is a destroyer in the territory
         if (
             is_enemy_territory
             and not is_air_unit(unit.unit_type)
             and (
                 not unit.unit_type == "TANK"
                 or (unit.unit_type == "TANK" and has_enemy_units)
+            )
+            and (
+                not unit.unit_type == "SUBMARINE"
+                or (unit.unit_type == "SUBMARINE" and defending_force_has_destroyer)
             )
         ):
             unit.movement = 0
@@ -314,6 +324,9 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     # Transports unload to adjacent land territories
     if transport.unit_type == "TRANSPORT":
 
+        if transport.movement == 0:
+            return False, "Transport has no movement left."
+
         # selected territory is land
         selected_territory = game_state.territories[selected_territory_name]
         selected_territory_generic_data = TERRITORY_DATA[selected_territory_name]
@@ -385,6 +398,34 @@ def combat_opening_fire(game_state, territory_name):
 
     defending_team_numbers = get_hostile_team_nums_for_player(
         attacker_team_num)
+
+    """
+    Strategic Bombing Raids
+
+    Bombers that have survived anti-aircraft fire (if this is a land battle, they must have survived)
+    can attack the industrial complex in the territory.
+
+    Each bomber rolls a die up to the territory's income value and the defender loses that many IPCs.
+    """
+    current_territory_is_land = not TERRITORY_DATA[territory_name]['is_ocean']
+    current_territory = game_state.territories[territory_name]
+
+    # the territory must have an industrial complex
+    if current_territory.has_factory:
+
+        # get all attacking bombers in territory
+        attacking_bombers = [unit for unit in current_territory.units if unit.unit_type ==
+                             "BOMBER" and unit.team == attacker_team_num]
+
+        # get the territory's income value
+        territory_power = TERRITORY_DATA[territory_name]['power']
+
+        income_loss = sum([randint(1, territory_power)
+                          for _ in attacking_bombers])
+
+        # remove income from defending player
+        player = game_state.get_player_by_team_num(current_territory.team)
+        player.ipcs -= income_loss
 
     """
     Battleship bombardment
@@ -535,8 +576,20 @@ def combat_attack(game_state, territory_name):
         attacking_units = []
 
     # roll for attack and defense
-    battle['attacker_rolls'] = [combat_roll(unit, is_attacker=True)
-                                for unit in attacking_units]
+    artillery_count = len(
+        [unit for unit in attacking_units if unit.unit_type == "ARTILLERY"])
+
+    attacker_rolls = []
+
+    for unit in attacking_units:
+        attacker_rolls.append(combat_roll(
+            unit, is_attacker=True, artillery_count=artillery_count))
+
+        # Infantry get a +1 buff to attack if they are paired with an artillery
+        if unit.unit_type == "INFANTRY" and artillery_count > 0:
+            artillery_count -= 1
+
+    battle['attacker_rolls'] = attacker_rolls
     battle['defender_rolls'] = [combat_roll(unit, is_attacker=False)
                                 for unit in defending_units]
 
@@ -592,7 +645,7 @@ def validate_combat_attack_and_retrieve_battle(game_state, territory_name):
     return battle, None
 
 
-def combat_roll(unit, is_attacker=True):
+def combat_roll(unit, is_attacker=True, artillery_count=0):
     """
     Roll for a unit's attack or defense.
 
@@ -605,6 +658,9 @@ def combat_roll(unit, is_attacker=True):
     unit_type_data = UNIT_DATA[unit.unit_type]
 
     roll_to_hit = unit_type_data['attack'] if is_attacker else unit_type_data['defense']
+
+    if unit.unit_type == "INFANTRY" and artillery_count > 0:
+        roll_to_hit += 1
 
     roll = randint(1, 6)
 
@@ -689,7 +745,7 @@ def combat_select_casualties(game_state, territory_name, casualty_units):
 
         # Check if there is an amphibious assault originating from this territory
         land_battle = next((battle for battle in game_state.battles if battle.get(
-            'attack_from') == territory_name and not battle.get('is_aa_attack') and not battle.get('is_ocean') and not battle.get('result')), None)
+            'attack_from') == territory_name and not battle.get('is_aa_attack') and not battle.get('is_ocean') and not battle.get('result')), {})
 
         # Make sure any destroyed transports also remove their recently unloaded units
         casualty_unit_ids = [unit.unit_id for unit in attacker_casualties]
@@ -1053,6 +1109,8 @@ def end_turn(session, game_state):
 
     Increment the turn timer by 1.
 
+    If the next player is defeated, increase the turn timer again until a player is found.
+
     Validation:
     - air units over water with no aircraft carrier are destroyed, otherwise load them automatically
     """
@@ -1085,9 +1143,15 @@ def end_turn(session, game_state):
             [territory.units.remove(unit) for unit in units_to_remove]
 
     session.turn_num += 1
-    session.phase_num = PhaseNumber.PURCHASE_UNITS
 
-    return
+    if is_game_complete(game_state):
+        session.status = SessionStatus.COMPLETE
+        return
+
+    while is_next_player_defeated(session, game_state):
+        session.turn_num += 1
+
+    session.phase_num = PhaseNumber.PURCHASE_UNITS
 
 
 def attempt_to_load_air_unit_on_carrier(territory, air_unit):
@@ -1100,15 +1164,68 @@ def attempt_to_load_air_unit_on_carrier(territory, air_unit):
     """
     for unit in territory.units:
         if unit.unit_type == "AIRCRAFT-CARRIER":
-            print(f"cargo: {unit.cargo}")
             if len(unit.cargo) >= 2:
-                print(f"Carrier is full, cannot load {air_unit.unit_type}")
-                return False
+                continue
 
-            print(
-                f"Loading {air_unit.unit_type} onto {unit.unit_type}")
             unit.cargo.append(air_unit)
             return True
 
-    print(f"No available carrier for {air_unit.unit_type} in {territory}")
     return False
+
+
+def is_game_complete(game_state):
+    """
+    Check if the game is complete.
+
+    :param session: The current game session.
+    :param game_state: The current game state.
+    :return: Bool, if the game is complete.
+    """
+    allies_team_nums = [0, 2, 4]
+    axis_team_nums = [1, 3]
+
+    allies_win = all(not does_player_control_capital(
+        game_state, team_num) for team_num in axis_team_nums)
+    axis_win = all(not does_player_control_capital(game_state, team_num)
+                   for team_num in allies_team_nums)
+
+    return allies_win or axis_win
+
+
+def is_next_player_defeated(session, game_state):
+    """
+    Check if the next player is defeated.
+
+    :param session: The current game session.
+    :param game_state: The current game state.
+    :return: Bool, if the next player is defeated.
+    """
+    # get current player turn
+    current_team = session.turn_num % 5
+
+    # get the next player
+    return not does_player_control_capital(game_state, current_team)
+
+
+def capture_territory(game_state, territory_name, player):
+    """
+    Capture a territory and transfer control to the player.
+
+    :param game_state: The current game state.
+    :param territory_name: The name of the territory.
+    :param player: The player to transfer control to.
+    :return: Bool, if the territory was successfully captured.
+    """
+    territory = game_state.territories[territory_name]
+
+    # if this is a capital and the player is on a team with the capital
+    # transfer control to the original player
+    is_capital_city = TERRITORY_DATA[territory_name]['is_capital']
+    original_team_num = TERRITORY_DATA[territory_name]['team']
+
+    if is_capital_city and original_team_num not in get_hostile_team_nums_for_player(player.team_num):
+        territory.team = original_team_num
+
+    else:
+        # transfer control of the territory
+        territory.team = player.team_num

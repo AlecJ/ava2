@@ -22,14 +22,14 @@ export default {
 			required: true,
 		},
 		neighboringTerritoriesData: {
-			type: Object,
+			type: Array,
 			required: false,
-			default: [],
+			default: () => [],
 		},
 		transportToUnload: {
 			type: Object,
 			required: false,
-			default: {},
+			default: () => {},
 		},
 		setTransportToUnload: {
 			type: Function,
@@ -42,6 +42,11 @@ export default {
 	computed: {
 		selectedUnits() {
 			return this.nearbyUnits.filter((unit) => unit.selected);
+		},
+		hasAdjacentLandTerritory() {
+			return this.neighboringTerritoriesData.some(
+				(territory) => !territory.is_ocean
+			);
 		},
 	},
 	methods: {
@@ -190,7 +195,11 @@ export default {
 			<button
 				v-if="!transportToUnload && transport.unit_type === 'TRANSPORT'"
 				class="ship-unload-button"
-				:disabled="!transport.cargo?.length"
+				:disabled="
+					!transport.cargo?.length ||
+					transport.movement < 1 ||
+					!hasAdjacentLandTerritory
+				"
 				@click="unloadUnits(transport)"
 			>
 				Unload

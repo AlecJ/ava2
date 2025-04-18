@@ -17,7 +17,23 @@ def get_hostile_team_nums_for_player(player_team_num):
     return [0, 2, 4] if player_team_num in [1, 3] else [1, 3]
 
 
+def does_player_control_capital(game_state, team_num):
+    """
+    Check if a player controls their capital.
+
+    :game_state: The current game state.
+    :team_num: The team number of the player.
+    :return bool: True if the player controls their capital, False otherwise.
+    """
+    capitals = {0: "Russia", 1: "Germany", 2: "United Kingdom",
+                3: "Japan", 4: "Eastern United States"}
+
+    capital_territory = game_state.territories[capitals[team_num]]
+
+    return capital_territory.team == team_num
+
 # endregion players
+
 
 """
 Units

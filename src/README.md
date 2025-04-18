@@ -1,4 +1,0 @@
-# Flask Backend
-
-Flask
-Mongo
