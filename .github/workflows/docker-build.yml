@@ -26,3 +26,9 @@ jobs:
                   file: deploy/Dockerfile.PROD
                   push: true
                   tags: ${{ secrets.DOCKER_USERNAME }}/ava:latest
+
+            - name: Deploy to Render
+              if: success()
+              run: |
+                  curl -X POST \
+                  ${{ secrets.RENDER_DEPLOY_HOOK }}
