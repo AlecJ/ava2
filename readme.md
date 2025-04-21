@@ -6,7 +6,7 @@ accurately demonstrates my skills as a developer.
 Best,
 Alec
 
-# Axis vs Allies
+# Allies vs Axis
 
 This game is played with up to 5 players, although a player can control multiple teams
 by joining with multiple web tabs.
@@ -37,6 +37,9 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 -   fix main menu
 -   (me) for who is the player's country
+
+-   can easily share game code verbally
+-   sesion id is 6 characters?
 
 -   selectTerritory validation rules
 -   during mobilization, highlight factory tiles

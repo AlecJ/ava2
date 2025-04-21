@@ -51,19 +51,17 @@ export default {
 	z-index: 1;
 	position: absolute;
 	left: 50%;
-	transform: translateX(-50%) translateY(-200%);
-	margin-top: 10px;
-	font-size: 16px;
+	transform: translateX(-50%);
+	// margin-top: 10px;
+	font-size: 1rem;
+	font-weight: 500; /* Changed to make the text bolder */
 	color: black;
-	animation: slideOutFade 2s;
+	text-shadow: 1px 1px 0.5rem rgba(255, 255, 255, 0.9); /* Subtle shadow */
+	animation: slideOutFade 2s forwards;
 	opacity: 0;
 
-	/* Outline effect */
-	text-shadow:
-		1px 1px 2px white,
-		-1px -1px 2px white,
-		1px -1px 2px white,
-		-1px 1px 2px white;
+	/* Outline effect using stroke */
+	// -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
 }
 
 /* Keyframes for sliding out and fading */
@@ -73,15 +71,15 @@ export default {
 		transform: translateX(-50%) translateY(-200%);
 	}
 	30% {
-		transform: translateX(-50%) translateY(-300%);
+		transform: translateX(-50%) translateY(-350%);
 	}
 	80% {
 		opacity: 1;
-		transform: translateX(-50%) translateY(-300%); /* Slide up slightly */
+		transform: translateX(-50%) translateY(-350%); /* Slide up slightly */
 	}
 	100% {
 		opacity: 0;
-		transform: translateX(-50%) translateY(-300%); /* Slide further up */
+		transform: translateX(-50%) translateY(-350%); /* Slide further up */
 	}
 }
 </style>

@@ -15,8 +15,8 @@ export default {
 </script>
 
 <template>
-	<PopUp id="popup">
-		<h1>Axis Vs Allies</h1>
+	<PopUp id="popup" width="60rem">
+		<h1>Allies vs Axis</h1>
 		<p>
 			War! Pushed to the brink, the world is engulfed in chaos. Lead your
 			nation to victory and restore peace across the globe!

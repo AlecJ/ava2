@@ -1,12 +1,14 @@
 <script>
 import CountrySelect from "@/components/CountrySelect.vue";
-import InviteLinkButton from "./InviteLinkButton.vue";
+import InviteLinkButton from "@/components/InviteLinkButton.vue";
+import PopUp from "@/components/PopUp.vue";
 import { countries } from "@/data/countries";
 
 export default {
 	components: {
 		CountrySelect,
 		InviteLinkButton,
+		PopUp,
 	},
 	props: {
 		selectPlayer: {
@@ -40,8 +42,8 @@ export default {
 </script>
 
 <template>
-	<div id="popup">
-		<h1>Axis vs Allies</h1>
+	<PopUp id="popup">
+		<h1>Allies vs Axis</h1>
 		<InviteLinkButton />
 		<h2 v-if="!playerCountry">Choose a Country to Play</h2>
 		<h2 v-else>Waiting for Players to Join</h2>
@@ -59,21 +61,11 @@ export default {
 				"
 			/>
 		</div>
-	</div>
+	</PopUp>
 </template>
 
 <style scoped lang="scss">
 #popup {
-	position: fixed;
-	top: 12.5%;
-	left: 12.5%;
-	overflow: hidden;
-	z-index: 1;
-
-	width: 75%;
-	min-width: 770px;
-	height: 75%;
-
 	display: grid;
 	place-items: center;
 	grid-template-rows: 1.5fr 0.25fr 1.5fr 3fr;
@@ -86,7 +78,7 @@ export default {
 
 	#countryCards {
 		display: grid;
-		width: 100%;
+		min-width: 42rem;
 		grid-template-columns: repeat(5, minmax(100px, 1fr));
 		justify-content: space-between;
 		justify-items: center;
