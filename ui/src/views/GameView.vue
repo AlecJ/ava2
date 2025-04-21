@@ -40,6 +40,7 @@ export default {
 			selectedTerritoryForMovement: null,
 			selectedTerritory: null,
 			showBattles: false,
+			pollingInterval: null,
 		};
 	},
 	computed: {
@@ -84,6 +85,11 @@ export default {
 
 			return this.currentTurnNum % 5 === this.playerTeamNum;
 		},
+		isThisPlayersTurnNext() {
+			if (!this.player) return false;
+
+			return (this.currentTurnNum + 1) % 5 === this.playerTeamNum;
+		},
 		isTestMode() {
 			return this.sessionStore?.isTesting;
 		},
@@ -112,7 +118,7 @@ export default {
 			);
 		},
 		hasMobilizeUnitsRemaining() {
-			return this.player.mobilization_units.length;
+			return (this.player.mobilization_units?.length ?? 0) > 0;
 		},
 		hasUnresolvedBattles() {
 			return this.worldStore?.getBattles.some(
@@ -197,6 +203,18 @@ export default {
 	},
 	mounted() {
 		this.fetchSession();
+
+		// poll normally every 30 seconds
+		this.pollingInterval = setInterval(() => {
+			if (!this.isThisPlayersTurn && !this.isThisPlayersTurnNext)
+				this.fetchSession();
+		}, 30000);
+
+		// if it is almost this players turn, poll every 7 seconds
+		this.pollingInterval = setInterval(() => {
+			if (!this.isThisPlayersTurn && this.isThisPlayersTurnNext)
+				this.fetchSession();
+		}, 7000);
 	},
 };
 </script>
@@ -270,7 +288,9 @@ export default {
 		:endPhase="endPhase"
 		:endTurn="endTurn"
 		:currentPhaseNum="currentPhaseNum"
-		:disabled="hasUnresolvedBattles || hasMobilizeUnitsRemaining"
+		:hasUnresolvedBattles="hasUnresolvedBattles"
+		:hasMobilizeUnitsRemaining="hasMobilizeUnitsRemaining"
+		:isThisPlayersTurn="isThisPlayersTurn"
 	/>
 
 	<LandingPopUp v-if="showLandingPopUp" :createSession="createSession" />

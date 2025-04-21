@@ -3,71 +3,63 @@ Hi,
 Thanks for taking the time to check my github. I'm very proud of this project and hope it
 accurately demonstrates my skills as a developer.
 
-This game is played with up to 5 players, although a player can control multiple teams
-by joining with multiple web tabs.
-
 Best,
 Alec
 
 # Axis vs Allies
 
-## Installation
+This game is played with up to 5 players, although a player can control multiple teams
+by joining with multiple web tabs.
 
-install Node 23
-install Docker
+## Local Development
+
+Requirements:
+
+-   Node 23
+-   Docker
 
 ## Run
 
-run with
+Frontend:
 `cd ui`
 `npm install`
 `npm run dev`
 
+Backend:
+`docker-compose up`
+
+Connect to the mongo service and create a db named `ava` (or anything and update the mongo URI.)
+
 ## To Do
 
-##
+-   russia cannot perform battles? need to check out chris's game
+-   two battles created?
 
--   submarine logic
--   bomber logic
+-   fix main menu
+-   (me) for who is the player's country
 
--   Transports must have at least 1 movement point remaining to unload any units
--   prevent attempt to unload to sea or when unavailable
-
-##
-
--   indicate territory has factory
+-   selectTerritory validation rules
 -   during mobilization, highlight factory tiles
-
 -   highlight selected territory
 
 -   cannot select hawaii
 -   west russia border removed
--   polling for team select lobby (if first and waiting)
 
 -   remove console logs
 -   add logging
+
 -   toast popup with api error status
--   :param game_state:
-
--   player key request validation (end phase/turn)
-
--   backend tests
--   check TODOs
--   type checking functions
-
 -   toast message for purchasing unit
 -   toast message for each phase
 
 -   fix loading spinners
 
-##
+## Future Work
 
--   compiling vue app
--   hosting site
-
-##
-
-Future Work:
+-   :param game_state:
+-   backend tests
+-   check TODOs
+-   type checking functions
 
 -   refactor getPlayerTeamNum
 -   see what units are in a transport during combat?
@@ -97,6 +89,7 @@ Future Work:
     AA gun
     industrial complex
 
+-   Submarines can submerge
 -   Develop weapons stage and Research Dice
 -   National Advantages Table
 

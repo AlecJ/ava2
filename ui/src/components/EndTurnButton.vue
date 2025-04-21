@@ -14,32 +14,88 @@ export default {
 			required: false,
 			default: 0,
 		},
-		disabled: {
-			type: Number,
+		hasUnresolvedBattles: {
+			type: Boolean,
 			required: false,
 			default: false,
+		},
+		hasMobilizeUnitsRemaining: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		isThisPlayersTurn: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+	},
+	computed: {
+		canEndPurchaseUnitPhase() {
+			return (
+				this.isThisPlayersTurn &&
+				this.currentPhaseNum === 0 &&
+				!this.hasUnresolvedBattles &&
+				!this.hasMobilizeUnitsRemaining
+			);
+		},
+		canEndCombatMovementPhase() {
+			return this.isThisPlayersTurn && this.currentPhaseNum === 1;
+		},
+		canEndCombatPhase() {
+			return (
+				this.isThisPlayersTurn &&
+				this.currentPhaseNum === 2 &&
+				!this.hasUnresolvedBattles
+			);
+		},
+		canEndNonCombatMovementPhase() {
+			return this.isThisPlayersTurn && this.currentPhaseNum === 3;
+		},
+		canEndTurn() {
+			return (
+				this.isThisPlayersTurn &&
+				this.currentPhaseNum === 4 &&
+				!this.hasMobilizeUnitsRemaining
+			);
 		},
 	},
 };
 </script>
 
 <template>
-	<button v-if="currentPhaseNum === 0" @click="endPhase">
+	<button
+		v-if="currentPhaseNum === 0"
+		@click="endPhase"
+		:disabled="!canEndPurchaseUnitPhase"
+	>
 		End Purchase Unit Phase
 	</button>
-	<button v-else-if="currentPhaseNum === 1" @click="endPhase">
+	<button
+		v-else-if="currentPhaseNum === 1"
+		@click="endPhase"
+		:disabled="!canEndCombatMovementPhase"
+	>
 		End Combat Move Phase
 	</button>
-	<button v-else-if="currentPhaseNum === 2" @click="endPhase">
+	<button
+		v-else-if="currentPhaseNum === 2"
+		@click="endPhase"
+		:disabled="!canEndCombatPhase"
+	>
 		End Combat Phase
 	</button>
-	<button v-else-if="currentPhaseNum === 3" @click="endPhase">
+	<button
+		v-else-if="currentPhaseNum === 3"
+		@click="endPhase"
+		:disabled="!canEndNonCombatMovementPhase"
+	>
 		End Noncombat Move Phase
 	</button>
 	<button
 		v-else-if="currentPhaseNum === 4"
 		@click="endTurn"
-		:disabled="disabled"
+		:disabled="!canEndTurn"
 	>
 		End Turn
 	</button>

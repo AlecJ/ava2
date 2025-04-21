@@ -264,7 +264,7 @@ export default {
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
 			if (!this.controlsEnabled) {
-				this.globeAndCountries.rotation.y -= 0.003;
+				this.globeAndCountries.rotation.y -= 0.002;
 			} else {
 				this.checkForPointerTarget();
 			}

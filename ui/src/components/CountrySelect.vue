@@ -48,11 +48,11 @@ export default {
 
 <style scoped lang="scss">
 #countryCard {
-	width: 150px;
-	padding: 1rem;
+	width: 5rem;
+	// padding: 1rem;
 
-	background-color: rgba(88, 88, 88, 0.663);
-	border: 0.15rem solid gray;
+	// background-color: rgba(88, 88, 88, 0.663);
+	// border: 0.15rem solid gray;
 	border-radius: 0.5rem;
 	color: white;
 	font-size: 1.25rem;
@@ -72,6 +72,7 @@ export default {
 
 	#countryName {
 		margin: 1rem 0;
+		text-align: center;
 	}
 
 	button {

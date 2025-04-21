@@ -377,12 +377,12 @@ def handle_end_phase(session_id):
     if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
-    # TODO Must be the player's turn
-    # player_id = request.args.get('pid')
-    # player = session.get_player_by_id(player_id)
+    # Must be the player's turn
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
 
-    # if not validate_player(session, player):
-    #     return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
 
     session.increment_phase()
 
@@ -415,12 +415,12 @@ def handle_end_turn(session_id):
     if not session or not game_state:
         return jsonify({'status': 'Session ID not found.'}), 404
 
-    # TODO Must be the player's turn
-    # player_id = request.args.get('pid')
-    # player = session.get_player_by_id(player_id)
+    # Must be the player's turn
+    player_id = request.args.get('pid')
+    player = session.get_player_by_id(player_id)
 
-    # if not validate_player(session, player):
-    #     return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
+    if not validate_player(session, player):
+        return jsonify({'status': 'Cannot perform actions outside of your turn.'}), 400
 
     # TODO validate player has no forces waiting to mobilize
 
