@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-	<PopUp id="popup">
+	<PopUp id="popup" width="60rem">
 		<h1>Allies vs Axis</h1>
 		<InviteLinkButton />
 		<h2 v-if="!playerCountry">Choose a Country to Play</h2>
