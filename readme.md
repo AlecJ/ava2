@@ -32,6 +32,7 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 ## To Do
 
+-   more details in tab name
 -   anti-aircraft cannot be placed
 -   increase polling only during mobilization phase
 -   tab name has player's country
