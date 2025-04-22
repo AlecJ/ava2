@@ -21,7 +21,7 @@ export default {
 
 <template>
 	<button
-		:disabled="!active"
+		:disabled="false && !active"
 		@mousedown.prevent.stop
 		@click="
 			() => {
