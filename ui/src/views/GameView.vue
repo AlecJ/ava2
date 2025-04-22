@@ -208,7 +208,7 @@ export default {
 		this.pollingInterval = setInterval(() => {
 			if (!this.isThisPlayersTurn && !this.isThisPlayersTurnNext)
 				this.fetchSession();
-		}, 30000);
+		}, 15000);
 
 		// if it is almost this players turn, poll every 7 seconds
 		this.pollingInterval = setInterval(() => {
@@ -223,6 +223,7 @@ export default {
 	<!-- needs refactor, merge isMoving into isSelecting -->
 	<ThreeGlobe
 		:sessionId="sessionId"
+		:player="player"
 		:status="status"
 		:focusCountry="focusCountry"
 		:isSelectingTerritory="isSelectingTerritory"
@@ -247,6 +248,7 @@ export default {
 
 	<PlayerBoard
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
+		:player="player"
 		:players="players"
 		:currentTurnNum="currentTurnNum"
 	/>

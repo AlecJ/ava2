@@ -197,9 +197,16 @@ class GameState:
         }
 
         # Prevent duplicates for a single turn
-        if not new_battle in self.battles:
-            self.battles.append(new_battle)
-            self.sort_battles()
+        for existing_battle in self.battles:
+            if existing_battle['location'] == new_battle['location']:
+                # TODO if attacking from two separate spaces, need to be able to have them
+                # retreat to their separate attacking territories.
+                # Currently, this will PROBABLY force them all to one of them.
+                return existing_battle
+
+        # existing battle not found, adding...
+        self.battles.append(new_battle)
+        self.sort_battles()
 
         return new_battle
 

@@ -209,7 +209,7 @@ def handle_combat_attack(session_id):
     data = request.get_json()
     selected_territory = data.get('selectedTerritory')
 
-    result, message = combat_attack(game_state, selected_territory)
+    result, message = combat_attack(session, game_state, selected_territory)
 
     if not result:
         message = message or 'Invalid combat attack.'

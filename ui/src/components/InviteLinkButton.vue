@@ -52,16 +52,12 @@ export default {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	// margin-top: 10px;
 	font-size: 1rem;
-	font-weight: 500; /* Changed to make the text bolder */
+	font-weight: 800;
 	color: black;
-	text-shadow: 1px 1px 0.5rem rgba(255, 255, 255, 0.9); /* Subtle shadow */
+	text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
 	animation: slideOutFade 2s forwards;
 	opacity: 0;
-
-	/* Outline effect using stroke */
-	// -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
 }
 
 /* Keyframes for sliding out and fading */

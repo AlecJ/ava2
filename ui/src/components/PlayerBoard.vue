@@ -4,6 +4,10 @@ import { useSessionStore } from "@/stores/session";
 
 export default {
 	props: {
+		player: {
+			type: Object,
+			required: true,
+		},
 		players: {
 			type: Array,
 			required: true,
@@ -15,6 +19,9 @@ export default {
 		},
 	},
 	computed: {
+		playerCountry() {
+			return this.player?.country;
+		},
 		rotatedPlayers() {
 			const players = [...this.players];
 
@@ -48,7 +55,10 @@ export default {
 			:key="player.country"
 			:style="{ backgroundColor: getCountryColor(player) }"
 		>
-			<div class="name">{{ player.country }}</div>
+			<div v-if="player.country === playerCountry" class="name">
+				{{ player.country }} (you)
+			</div>
+			<div v-else class="name">{{ player.country }}</div>
 			<div class="power">{{ player.ipcs }}</div>
 		</div>
 	</div>
@@ -93,7 +103,7 @@ export default {
 		transition: margin-left 0.5s ease-in-out;
 
 		&:first-child {
-			margin-left: 0.75rem;
+			margin-left: 1.25rem;
 		}
 	}
 	button {

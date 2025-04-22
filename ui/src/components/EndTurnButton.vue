@@ -35,8 +35,7 @@ export default {
 			return (
 				this.isThisPlayersTurn &&
 				this.currentPhaseNum === 0 &&
-				!this.hasUnresolvedBattles &&
-				!this.hasMobilizeUnitsRemaining
+				!this.hasUnresolvedBattles
 			);
 		},
 		canEndCombatMovementPhase() {

@@ -28,22 +28,15 @@ Frontend:
 Backend:
 `docker-compose up`
 
-Connect to the mongo service and create a db named `ava` (or anything and update the mongo URI.)
+Connect to the mongo service and create a db named `ava` (or anything and update the mongo URI in the docker-compose.)
 
 ## To Do
 
--   russia cannot perform battles? need to check out chris's game
--   two battles created?
+-   during mobilization, highlight factory tiles
 
--   fix main menu
--   (me) for who is the player's country
-
--   can easily share game code verbally
--   sesion id is 6 characters?
+-   highlight selected territory
 
 -   selectTerritory validation rules
--   during mobilization, highlight factory tiles
--   highlight selected territory
 
 -   cannot select hawaii
 -   west russia border removed
@@ -55,9 +48,9 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 -   toast message for purchasing unit
 -   toast message for each phase
 
--   fix loading spinners
-
 ## Future Work
+
+-   fix loading spinners
 
 -   :param game_state:
 -   backend tests
@@ -98,6 +91,9 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 -   Victory City
 -   Liberating Territories
+
+-   can easily share game code verbally
+-   sesion id is 6 characters?
 
 ## Special Rules
 

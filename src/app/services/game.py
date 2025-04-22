@@ -374,7 +374,7 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     return True, None
 
 
-def combat_opening_fire(game_state, territory_name):
+def combat_opening_fire(session, game_state, territory_name):
     """
     In the first round of combat, some special units can fire before
     the main combat begins.
@@ -424,7 +424,7 @@ def combat_opening_fire(game_state, territory_name):
                           for _ in attacking_bombers])
 
         # remove income from defending player
-        player = game_state.get_player_by_team_num(current_territory.team)
+        player = session.get_player_by_team_num(current_territory.team)
         player.ipcs -= income_loss
 
     """
@@ -528,7 +528,7 @@ def combat_opening_fire(game_state, territory_name):
             unit for unit in current_territory.units if unit not in attacker_casualties + defender_casualties]
 
 
-def combat_attack(game_state, territory_name):
+def combat_attack(session, game_state, territory_name):
     """
     Main combat attack intiated by the attacker.
 
@@ -543,7 +543,7 @@ def combat_attack(game_state, territory_name):
 
     # if this is the first round of combat, perform opening fire
     if battle.get('turn') == 0:
-        combat_opening_fire(game_state, territory_name)
+        combat_opening_fire(session, game_state, territory_name)
 
     # get the attacking and defending units
     territory = game_state.territories[territory_name]

@@ -30,25 +30,30 @@ export default {
 	<div id="countryCard">
 		<img :src="country.flagIcon" :alt="country.name" class="flag-icon" />
 
-		<div id="countryName">{{ country.name }}</div>
+		<div class="countryName">{{ country.name }}</div>
 
 		<button
 			@click="selectPlayer"
+			class="playerSlot"
 			v-if="!isCountryTaken && !this.playerCountry"
 		>
 			Select
 		</button>
-		<div v-else-if="isCountryTaken && !isPlayer">Waiting</div>
-		<div v-else-if="!isCountryTaken && this.playerCountry && !isPlayer">
+		<div class="playerSlot" v-else-if="isCountryTaken && !isPlayer">
+			Waiting
+		</div>
+		<div
+			class="playerSlot"
+			v-else-if="!isCountryTaken && this.playerCountry && !isPlayer"
+		>
 			Open
 		</div>
-		<div v-else-if="isPlayer">You</div>
+		<div class="playerSlot" v-else-if="isPlayer">You</div>
 	</div>
 </template>
 
 <style scoped lang="scss">
 #countryCard {
-	// width: 5rem;
 	border-radius: 0.5rem;
 	color: white;
 	font-size: 1.25rem;
@@ -59,21 +64,29 @@ export default {
 
 	.flag-icon {
 		width: 100%;
-		max-width: 100px;
+		max-width: 6rem;
 		height: auto;
 		border-radius: 50%;
 		object-fit: cover;
 		display: block;
 	}
 
-	#countryName {
-		margin: 1rem 0;
+	.countryName {
+		margin: 1.5rem 0 0.5rem 0;
 		text-align: center;
 	}
 
 	button {
 		width: 80%;
 		max-width: 100px;
+		margin-top: 0.75rem;
+	}
+
+	.playerSlot {
+		height: 3rem;
+		padding: 0.75rem;
+		margin-top: 0.75rem;
+		margin-bottom: 1.5rem;
 	}
 }
 </style>
