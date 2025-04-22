@@ -32,6 +32,7 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 ## To Do
 
+-   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
 -   more details in tab name
 -   anti-aircraft cannot be placed
 -   increase polling only during mobilization phase

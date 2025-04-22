@@ -149,8 +149,8 @@ export default {
 					:key="`${index}-${unit.unit_type}`"
 					class="unit-button"
 					:disabled="
-						(sortByMovement && groupIndex <= 0) ||
-						unit.unit_type === 'ANTI-AIRCRAFT' // &&
+						sortByMovement && groupIndex <= 0 // ||
+						//unit.unit_type === 'ANTI-AIRCRAFT' &&
 						//currentPhaseNum !== 3)
 					"
 					:style="{
