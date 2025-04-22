@@ -151,7 +151,8 @@ export default {
 					:disabled="
 						(sortByMovement && groupIndex <= 0) ||
 						(unit.unit_type === 'ANTI-AIRCRAFT' &&
-							currentPhaseNum !== 3)
+							currentPhaseNum !== 3) ||
+						currentPhaseNum !== 4
 					"
 					:style="{
 						background: getColorForUnit(unit),

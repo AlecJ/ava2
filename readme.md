@@ -32,7 +32,17 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 ## To Do
 
+-   anti-aircraft cannot be placed
+-   increase polling only during mobilization phase
+-   tab name has player's country
+
+-   russia doesnt auto start game
 -   during mobilization, highlight factory tiles
+
+-   show current production per player
+-   way to see unit details (anytime)
+
+-   dragging units into "territory" boxes
 
 -   highlight selected territory
 
