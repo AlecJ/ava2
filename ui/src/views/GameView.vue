@@ -212,7 +212,6 @@ export default {
 
 		// if it is almost this players turn, poll every 7 seconds
 		this.pollingInterval = setInterval(() => {
-			if (!this.isThisPlayersTurn && this.isThisPlayersTurnNext)
 			if (
 				(!this.isThisPlayersTurn && this.isThisPlayersTurnNext) ||
 				this.showTeamSelectPopUp
