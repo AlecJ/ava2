@@ -32,21 +32,24 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 
 ## To Do
 
+-   highlight selectable territories
+-   highlight selected territory
+
+-   way to see unit details (anytime)
+
+-   indicate if country has units for each player
+
 -   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
--   more details in tab name
+
+-   clear "place units" after placing units
 -   anti-aircraft cannot be placed
 -   increase polling only during mobilization phase
--   tab name has player's country
-
--   russia doesnt auto start game
+-   allow undo during mobilization/purchase phases?
 -   during mobilization, highlight factory tiles
 
 -   show current production per player
--   way to see unit details (anytime)
 
 -   dragging units into "territory" boxes
-
--   highlight selected territory
 
 -   selectTerritory validation rules
 

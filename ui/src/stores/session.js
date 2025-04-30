@@ -31,6 +31,30 @@ export const useSessionStore = defineStore("session", {
 			// for setting the user's data
 			this.playerId = player.player_id;
 			this.playerCountry = player.country;
+			this.updateFavicon(player.country);
+		},
+		updateFavicon(countryName) {
+			const favicon = document.querySelector("link[rel='icon']");
+			if (!favicon) return;
+
+			// Default favicon if no country is selected
+			const defaultFavicon = "/src/assets/flags/tidal-wave.png";
+
+			const countryNameMap = {
+				"Soviet Union": "soviet-union.png",
+				"United Kingdom": "united-kingdom.png",
+				Germany: "germany.png",
+				Japan: "japan.png",
+				"United States": "united-states-of-america.png",
+			};
+
+			const flagFavicon = `/src/assets/flags/${countryNameMap[countryName] || defaultFavicon}`;
+
+			favicon.href = countryName ? flagFavicon : defaultFavicon;
+
+			// Update document title with game details
+			const gameDetails = `AvA - ${countryName}`;
+			document.title = gameDetails;
 		},
 		async getSession(sessionId, playerId) {
 			// also send player ID
