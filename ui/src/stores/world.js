@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
-import { API } from "@/services/api";
+import * as THREE from "three";
 
+import { API } from "@/services/api";
 import { useSessionStore } from "@/stores/session";
 
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
+
+import japanFlag from "@/assets/flags/japan.png";
 
 export const useWorldStore = defineStore("world", {
 	state: () => ({
@@ -12,6 +15,7 @@ export const useWorldStore = defineStore("world", {
 		territories: {},
 		threeGlobeAndCountries: null,
 		battles: [],
+		sprites: {},
 	}),
 	actions: {
 		initTerritories() {
@@ -48,9 +52,85 @@ export const useWorldStore = defineStore("world", {
 				(territoryMesh) => territoryMesh.userData.name === territoryName
 			);
 		},
+		updateTerritorySprites(territory, newSprites) {
+			const territoryName = territory.userData.name;
+
+			if (!this.sprites[territoryName]) {
+				this.sprites[territoryName] = [];
+			}
+
+			// Remove sprites that are no longer needed
+			// spritesToRemove.forEach((sprite) => {
+			// 	const rawSprite = sprite.__v_raw || sprite;
+			// 	this.threeGlobeAndCountries.remove(rawSprite);
+			// 	this.sprites[territoryName] = this.sprites[
+			// 		territoryName
+			// 	].filter((s) => s !== sprite);
+			// });
+
+			const vertices = territory.geometry.attributes.position.array;
+			const center = new THREE.Vector3();
+			let count = 0;
+
+			// Calculate the center point of the territory
+			for (let i = 0; i < vertices.length; i += 3) {
+				center.x += vertices[i];
+				center.y += vertices[i + 1];
+				center.z += vertices[i + 2];
+				count++;
+			}
+			center.divideScalar(count); // Average the vertices
+			center.normalize().multiplyScalar(103); // Normalize and scale the center point
+
+			// Create new sprites from spritesToAdd
+			newSprites.forEach((image) => {
+				// skip the image if it is already in the scene
+				if (
+					!this.sprites[territoryName].some(
+						(sprite) => sprite.userData.name === image
+					)
+				) {
+					const texture = new THREE.TextureLoader().load(image);
+					const material = new THREE.SpriteMaterial({
+						map: texture,
+					});
+					const sprite = new THREE.Sprite(material);
+
+					// add userdata type
+					sprite.userData = {
+						name: image,
+					};
+
+					this.sprites[territoryName].push(sprite);
+					this.threeGlobeAndCountries.add(sprite);
+				}
+			});
+
+			const spritesToDraw = this.sprites[territoryName];
+
+			// Loop through and position the active sprites
+			spritesToDraw.forEach((sprite, index) => {
+				// Calculate the offset angle for each sprite
+				const angle =
+					((index - (spritesToDraw.length - 1) / 2) * Math.PI) / 36; // Adjust spacing with angle
+
+				// Create a rotation matrix to rotate around the sphere's vertical axis
+				const rotationMatrix = new THREE.Matrix4().makeRotationY(angle);
+
+				// Apply the rotation to the center point to calculate the sprite position
+				const offset = center.clone().applyMatrix4(rotationMatrix);
+
+				// Set the sprite position
+				sprite.position.copy(offset);
+				sprite.scale.set(5, 5, 1);
+			});
+		},
 		updateGameWorld(gameState) {
+			const newTerritories = gameState?.territories || this.territories;
+
+			console.log("Game State:", gameState); // Debugging log
 			for (let [territoryName, territory] of Object.entries(
-				gameState.territories
+				newTerritories
 			)) {
 				if (!this.territories[territoryName]) {
 					console.warn(
@@ -58,17 +138,47 @@ export const useWorldStore = defineStore("world", {
 					);
 					continue;
 				}
-				// console.log(territoryName, territory);
 				this.territories[territoryName].team = territory.team;
 				this.territories[territoryName].units = territory.units;
 				this.territories[territoryName].has_factory =
 					territory.has_factory;
 
+				const isOwnedByThisPlayer =
+					territory.team == this.getPlayerTeamNum;
+				const isMobilizationPhase = this.getCurrentPhase === 4;
+				const shouldDrawFactory =
+					territory.has_factory &&
+					isOwnedByThisPlayer &&
+					isMobilizationPhase;
+
+				const shouldDrawUnits = true;
+
+				// get current sprites for the territory
+				const currentSprites = this.sprites[territoryName] || [];
+
+				// track sprites to add
+				const newSprites = [];
+
 				// Get the mesh for the territory
 				const territoryMesh = this.getTerritoryMesh(territoryName);
 				if (territoryMesh) {
-					// Get the color for the controlling team
 					const teamColor = this.getCountryColor(territory.team);
+
+					// Add sprites to industrial complexes
+					if (shouldDrawFactory) {
+						// TODO need factory sprite
+						newSprites.push(japanFlag);
+					}
+
+					// Add sprites for units
+					if (shouldDrawUnits) {
+						if (territory.units.length) {
+							newSprites.push(japanFlag);
+						}
+					}
+
+					// Add and reposition sprites
+					this.updateTerritorySprites(territoryMesh, newSprites);
 
 					// Update the mesh color
 					if (teamColor) {
@@ -81,7 +191,9 @@ export const useWorldStore = defineStore("world", {
 				}
 			}
 
-			this.battles = gameState.battles;
+			if (gameState?.battles) {
+				this.battles = gameState.battles;
+			}
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -333,8 +445,10 @@ export const useWorldStore = defineStore("world", {
 
 				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
+				this.updateGameWorld();
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				console.error("API Error:", error);
+				// console.error("API Error:", error.response.data.status);
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -352,8 +466,8 @@ export const useWorldStore = defineStore("world", {
 				);
 
 				console.log("API Response:", response.data); // Debugging log
-				this.updateGameWorld(response.data.game_state);
 				sessionStore.setSession(response.data.session);
+				this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {
@@ -372,6 +486,15 @@ export const useWorldStore = defineStore("world", {
 			const sessionStore = useSessionStore();
 			return sessionStore.playerId;
 		},
+		getPlayerTeamNum() {
+			const sessionStore = useSessionStore();
+			return sessionStore.getPlayerTeamNum;
+		},
+		getCurrentPhase() {
+			const sessionStore = useSessionStore();
+			return sessionStore.getPhaseNum;
+		},
 		getBattles: (state) => state.battles,
+		getSprites: (state) => state.sprites,
 	},
 });

@@ -12,7 +12,6 @@ import {
 } from "@/composables/eventListeners.js";
 import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
-import { countries } from "@/data/countries";
 
 export default {
 	props: {
@@ -236,34 +235,6 @@ export default {
 			return (
 				this.prevZoom && this.currentClickedCountry === territoryName
 			);
-		},
-		toggleHighlightOnIndustrialFactories(bool) {
-			const listOfCountries =
-				this.globeAndCountries.children[1].children[0].children;
-
-			listOfCountries.forEach((country) => {
-				const countryName = country.userData.name;
-				const outline = country.userData.outline;
-
-				const territoryData = this.worldStore.territories[countryName];
-
-				const { has_factory, team } = territoryData;
-
-				const isOwnedByThisPlayer = team == this.playerTeam;
-
-				// if the country has factories, highlight it
-				if (has_factory && isOwnedByThisPlayer && bool) {
-					outline.material.color.set(0xff0000);
-					outline.material.depthTest = false;
-					outline.renderOrder = 1;
-					this.highlightingFactories = true;
-				} else {
-					// const countryColor = countries[team].color;
-					outline.material.color.set(0xffffff);
-					outline.material.depthTest = true;
-					outline.renderOrder = 0;
-				}
-			});
 		},
 		resetHoveredCountry() {
 			if (this.currentHoveredCountry) {
