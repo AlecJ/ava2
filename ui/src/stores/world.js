@@ -6,6 +6,7 @@ import { useSessionStore } from "@/stores/session";
 
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
+import territoryCenters from "@/data/territoryCenters.json";
 
 import japanFlag from "@/assets/flags/japan.png";
 
@@ -16,6 +17,7 @@ export const useWorldStore = defineStore("world", {
 		threeGlobeAndCountries: null,
 		battles: [],
 		sprites: {},
+		textureCache: new Map(),
 	}),
 	actions: {
 		initTerritories() {
@@ -24,6 +26,13 @@ export const useWorldStore = defineStore("world", {
 					([key, value]) => value.team !== -1
 				)
 			);
+		},
+		getCachedTexture(image) {
+			if (!this.textureCache.has(image)) {
+				const texture = new THREE.TextureLoader().load(image);
+				this.textureCache.set(image, texture);
+			}
+			return this.textureCache.get(image);
 		},
 		// TODO use this everywhere
 		getCountryColor(team) {
@@ -38,6 +47,17 @@ export const useWorldStore = defineStore("world", {
 			return neighborNames.map((tName) => {
 				return { ...this.territories[tName], name: tName };
 			});
+		},
+		getTerritoryCenter(territoryName) {
+			const center = territoryCenters[territoryName];
+
+			if (!center) {
+				console.error(
+					`Center not found for territory: ${territoryName}`
+				);
+				return null;
+			}
+			return new THREE.Vector3(center.x, center.y, center.z);
 		},
 		setThreeGlobeAndCountries(threeGlobeAndCountries) {
 			this.threeGlobeAndCountries = threeGlobeAndCountries;
@@ -68,19 +88,8 @@ export const useWorldStore = defineStore("world", {
 			// 	].filter((s) => s !== sprite);
 			// });
 
-			const vertices = territory.geometry.attributes.position.array;
-			const center = new THREE.Vector3();
-			let count = 0;
-
-			// Calculate the center point of the territory
-			for (let i = 0; i < vertices.length; i += 3) {
-				center.x += vertices[i];
-				center.y += vertices[i + 1];
-				center.z += vertices[i + 2];
-				count++;
-			}
-			center.divideScalar(count); // Average the vertices
-			center.normalize().multiplyScalar(103); // Normalize and scale the center point
+			const center = this.getTerritoryCenter(territoryName);
+			center.multiplyScalar(103); // Normalize and scale the center point
 
 			// Create new sprites from spritesToAdd
 			newSprites.forEach((image) => {
@@ -90,7 +99,7 @@ export const useWorldStore = defineStore("world", {
 						(sprite) => sprite.userData.name === image
 					)
 				) {
-					const texture = new THREE.TextureLoader().load(image);
+					const texture = this.getCachedTexture(image);
 					const material = new THREE.SpriteMaterial({
 						map: texture,
 					});
@@ -128,7 +137,6 @@ export const useWorldStore = defineStore("world", {
 		updateGameWorld(gameState) {
 			const newTerritories = gameState?.territories || this.territories;
 
-			console.log("Game State:", gameState); // Debugging log
 			for (let [territoryName, territory] of Object.entries(
 				newTerritories
 			)) {
@@ -152,9 +160,6 @@ export const useWorldStore = defineStore("world", {
 					isMobilizationPhase;
 
 				const shouldDrawUnits = true;
-
-				// get current sprites for the territory
-				const currentSprites = this.sprites[territoryName] || [];
 
 				// track sprites to add
 				const newSprites = [];
