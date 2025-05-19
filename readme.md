@@ -30,6 +30,10 @@ Backend:
 
 Connect to the mongo service and create a db named `ava` (or anything and update the mongo URI in the docker-compose.)
 
+Run tests with:
+`cd src`
+`pytest`
+
 ## To Do
 
 -   highlight selectable territories

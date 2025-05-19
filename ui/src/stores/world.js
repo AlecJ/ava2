@@ -10,6 +10,9 @@ import territoryCenters from "@/data/territoryCenters.json";
 
 import japanFlag from "@/assets/flags/japan.png";
 
+let spriteCreationTime = 0;
+let spriteAddToWorldTime = 0;
+
 export const useWorldStore = defineStore("world", {
 	state: () => ({
 		countries: countries,
@@ -92,6 +95,7 @@ export const useWorldStore = defineStore("world", {
 			center.multiplyScalar(103); // Normalize and scale the center point
 
 			// Create new sprites from spritesToAdd
+
 			newSprites.forEach((image) => {
 				// skip the image if it is already in the scene
 				if (
@@ -99,10 +103,13 @@ export const useWorldStore = defineStore("world", {
 						(sprite) => sprite.userData.name === image
 					)
 				) {
+					const spriteCreationStart = performance.now();
+
 					const texture = this.getCachedTexture(image);
 					const material = new THREE.SpriteMaterial({
 						map: texture,
 					});
+
 					const sprite = new THREE.Sprite(material);
 
 					// add userdata type
@@ -111,6 +118,11 @@ export const useWorldStore = defineStore("world", {
 					};
 
 					this.sprites[territoryName].push(sprite);
+
+					const spriteCreationEnd = performance.now();
+					spriteCreationTime +=
+						spriteCreationEnd - spriteCreationStart;
+
 					this.threeGlobeAndCountries.add(sprite);
 				}
 			});
@@ -136,6 +148,8 @@ export const useWorldStore = defineStore("world", {
 		},
 		updateGameWorld(gameState) {
 			const newTerritories = gameState?.territories || this.territories;
+
+			const spriteAddStartTime = performance.now();
 
 			for (let [territoryName, territory] of Object.entries(
 				newTerritories
@@ -196,9 +210,20 @@ export const useWorldStore = defineStore("world", {
 				}
 			}
 
+			const spriteAddEndTime = performance.now();
+			spriteAddToWorldTime += spriteAddEndTime - spriteAddStartTime;
+
 			if (gameState?.battles) {
 				this.battles = gameState.battles;
 			}
+
+			console.log(
+				`Total time for sprite creation: ${spriteCreationTime.toFixed(2)}ms`
+			);
+
+			console.log(
+				`Total time to add sprite to world: ${spriteAddToWorldTime.toFixed(2)}ms`
+			);
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
