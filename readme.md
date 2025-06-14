@@ -112,7 +112,7 @@ Run tests with:
 -   Liberating Territories
 
 -   can easily share game code verbally
--   sesion id is 6 characters?
+-   sesion id is 6 characters? 4?
 
 ## Special Rules
 
