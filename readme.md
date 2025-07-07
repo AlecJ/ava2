@@ -6,7 +6,7 @@ accurately demonstrates my skills as a developer.
 Best,
 Alec
 
-Try it now: [AlliesVsAxis.com](AlliesVsAxis.com)
+Try it now: [AlliesVsAxis.com](https://AlliesVsAxis.com)
 
 # Allies vs Axis
 
