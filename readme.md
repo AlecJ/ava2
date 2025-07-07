@@ -6,6 +6,8 @@ accurately demonstrates my skills as a developer.
 Best,
 Alec
 
+Try it now: [AlliesVsAxis.com](AlliesVsAxis.com)
+
 # Allies vs Axis
 
 This game is played with up to 5 players, although a player can control multiple teams
