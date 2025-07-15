@@ -13,6 +13,7 @@ import CombatButton from "@/components/CombatButton.vue";
 import PlaceMobilizationUnitsButton from "@/components/PlaceMobilizationUnitsButton.vue";
 import UndoTurnButton from "@/components/UndoTurnButton.vue";
 import EndTurnButton from "@/components/EndTurnButton.vue";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 export default {
 	name: "GameView",
@@ -28,6 +29,7 @@ export default {
 		PlaceMobilizationUnitsButton,
 		UndoTurnButton,
 		EndTurnButton,
+		LoadingSpinner,
 	},
 	data() {
 		return {
@@ -101,6 +103,9 @@ export default {
 		},
 		isLoading() {
 			return this.sessionStore?.getIsLoading;
+		},
+		isGeneratingSprites() {
+			return this.worldStore?.getIsGeneratingSprites;
 		},
 		focusedTerritoryData() {
 			const territoryData =
@@ -233,6 +238,12 @@ export default {
 		:selectTerritory="selectTerritory"
 	/>
 
+	<!-- Sprite generation loading overlay -->
+	<div v-if="isGeneratingSprites" class="sprite-loading-overlay">
+		<LoadingSpinner />
+		<p>Loading resources...</p>
+	</div>
+
 	<DefaultTray
 		v-if="!showLandingPopUp && !showTeamSelectPopUp"
 		:isLoading="isLoading"
@@ -316,6 +327,23 @@ export default {
 	top: 40%;
 	left: -2rem;
 	display: grid;
+	gap: 1rem;
+}
+
+.sprite-loading-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	color: white;
+	font-size: 1.2rem;
 	gap: 1rem;
 }
 </style>

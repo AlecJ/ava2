@@ -141,9 +141,11 @@ export default {
 
 			this.raycaster.setFromCamera(this.pointer, this.camera);
 
-			const intersects = this.raycaster.intersectObjects(
-				this.scene.children
-			);
+			// Only raycast against territory meshes, not sprites
+			const countries = this.globeAndCountries?.children[1]; // countries group
+			const territoryMeshes = countries?.children[0]?.children || [];
+
+			const intersects = this.raycaster.intersectObjects(territoryMeshes);
 
 			if (intersects.length > 0) {
 				const territory = intersects[0].object;
@@ -251,9 +253,11 @@ export default {
 		},
 		// highlights the country the user is hovering over
 		checkForPointerTarget() {
-			const intersects = this.raycaster.intersectObjects(
-				this.scene.children
-			);
+			// Only raycast against territory meshes, not sprites
+			const countries = this.globeAndCountries?.children[1]; // countries group
+			const territoryMeshes = countries?.children[0]?.children || [];
+
+			const intersects = this.raycaster.intersectObjects(territoryMeshes);
 
 			this.resetHoveredCountry();
 
