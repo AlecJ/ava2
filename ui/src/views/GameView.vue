@@ -188,6 +188,9 @@ export default {
 		},
 		setPlacingMobilizationUnits(bool) {
 			this.isPlacingMobilizationUnits = bool;
+
+			// Toggle factory sprites when entering/exiting mobilization placement mode
+			this.worldStore.setShowFactorySprites(bool);
 		},
 		endPhase() {
 			this.setIsSelectingTerritory(false);
@@ -198,6 +201,7 @@ export default {
 		endTurn() {
 			this.setIsSelectingTerritory(false);
 			this.setPlacingMobilizationUnits(false);
+			this.worldStore.setShowFactorySprites(false);
 			this.worldStore.endTurn();
 		},
 	},

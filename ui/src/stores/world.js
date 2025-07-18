@@ -27,6 +27,7 @@ export const useWorldStore = defineStore("world", {
 		textureCache: new Map(),
 		materialCache: new Map(),
 		isGeneratingSprites: false,
+		showFactorySprites: false,
 	}),
 	actions: {
 		initTerritories() {
@@ -34,6 +35,44 @@ export const useWorldStore = defineStore("world", {
 				Object.entries(tileData).filter(
 					([key, value]) => value.team !== -1
 				)
+			);
+		},
+		async initializeAllSprites() {
+			if (!this.threeGlobeAndCountries) {
+				console.warn("Three globe not ready for sprite initialization");
+				return;
+			}
+
+			console.log("Initializing all sprites...");
+			const startTime = performance.now();
+
+			// Create sprites for all territories
+			const territoryEntries = Object.entries(this.territories);
+			const batchSize = 20; // Process territories in batches
+
+			this.isGeneratingSprites = true;
+
+			for (let i = 0; i < territoryEntries.length; i += batchSize) {
+				const batch = territoryEntries.slice(i, i + batchSize);
+				const territoryNames = batch.map(([name]) => name);
+				const territoryData = Object.fromEntries(batch);
+
+				await this.processTerritoryBatch(territoryNames, territoryData);
+
+				// Yield control every batch to prevent blocking
+				if (i + batchSize < territoryEntries.length) {
+					await new Promise((resolve) => setTimeout(resolve, 0));
+				}
+			}
+
+			this.isGeneratingSprites = false;
+
+			// Apply initial visibility settings
+			this.toggleSpriteVisibility();
+
+			const endTime = performance.now();
+			console.log(
+				`All sprites initialized in ${(endTime - startTime).toFixed(2)}ms`
 			);
 		},
 		getCachedTexture(image) {
@@ -89,6 +128,34 @@ export const useWorldStore = defineStore("world", {
 		setThreeGlobeAndCountries(threeGlobeAndCountries) {
 			this.threeGlobeAndCountries = threeGlobeAndCountries;
 		},
+		setShowFactorySprites(show) {
+			this.showFactorySprites = show;
+			this.toggleSpriteVisibility();
+		},
+		toggleSpriteVisibility() {
+			// Iterate through all territories and toggle sprite visibility
+			Object.keys(this.sprites).forEach((territoryName) => {
+				const territory = this.territories[territoryName];
+				if (!territory) return;
+
+				const isOwnedByThisPlayer =
+					territory.team == this.getPlayerTeamNum;
+				const isMobilizationPhase = this.getCurrentPhase === 4;
+
+				this.sprites[territoryName].forEach((sprite) => {
+					const isFactorySprite = sprite.userData.type === "factory";
+					const isUnitSprite = sprite.userData.type === "unit";
+
+					if (this.showFactorySprites) {
+						// Show factory sprites, hide unit sprites
+						sprite.visible = isFactorySprite && isOwnedByThisPlayer;
+					} else {
+						// Show unit sprites, hide factory sprites
+						sprite.visible = isUnitSprite;
+					}
+				});
+			});
+		},
 		getTerritory(territoryName) {
 			return this.territories[territoryName];
 		},
@@ -106,60 +173,87 @@ export const useWorldStore = defineStore("world", {
 				this.sprites[territoryName] = [];
 			}
 
-			const spritesToRemove = this.sprites[territoryName].filter(
-				(sprite) => !newSprites.includes(sprite.userData.name)
+			// Create a Set for faster lookups
+			const newSpriteKeys = new Set(
+				newSprites.map((sprite) => `${sprite.image}_${sprite.type}`)
+			);
+
+			// Create a Set of existing sprite keys for faster comparison
+			const existingKeys = new Set(
+				this.sprites[territoryName].map(
+					(sprite) =>
+						`${sprite.userData.name}_${sprite.userData.type}`
+				)
 			);
 
 			// Remove sprites that are no longer needed
+			const spritesToRemove = this.sprites[territoryName].filter(
+				(sprite) => {
+					const key = `${sprite.userData.name}_${sprite.userData.type}`;
+					return !newSpriteKeys.has(key);
+				}
+			);
+
 			spritesToRemove.forEach((sprite) => {
 				const rawSprite = sprite.__v_raw || sprite;
 				this.threeGlobeAndCountries.remove(rawSprite);
-				this.sprites[territoryName] = this.sprites[
-					territoryName
-				].filter((s) => s !== sprite);
 			});
 
+			// Update sprites array by removing old sprites
+			this.sprites[territoryName] = this.sprites[territoryName].filter(
+				(sprite) => {
+					const key = `${sprite.userData.name}_${sprite.userData.type}`;
+					return newSpriteKeys.has(key);
+				}
+			);
+
+			// Get territory center once
 			const center = this.getTerritoryCenter(territoryName);
+			if (!center) return; // Early exit if no center found
 			center.multiplyScalar(103); // Normalize and scale the center point
 
-			// Create new sprites from spritesToAdd
+			// Create new sprites only for missing ones
+			newSprites.forEach((spriteData) => {
+				const spriteKey = `${spriteData.image}_${spriteData.type}`;
 
-			newSprites.forEach((image) => {
-				// skip the image if it is already in the scene
-				if (
-					!this.sprites[territoryName].some(
-						(sprite) => sprite.userData.name === image
-					)
-				) {
-					const spriteCreationStart = performance.now();
+				// Skip if sprite already exists
+				if (existingKeys.has(spriteKey)) return;
 
-					const material = this.getCachedMaterial(image);
+				const material = this.getCachedMaterial(spriteData.image);
+				const sprite = new THREE.Sprite(material);
 
-					const sprite = new THREE.Sprite(material);
+				// Set sprite properties
+				sprite.userData = {
+					name: spriteData.image,
+					type: spriteData.type,
+				};
+				sprite.raycast = () => {}; // Disable raycasting for sprites
 
-					// add userdata type and disable raycasting
-					sprite.userData = {
-						name: image,
-					};
-					sprite.raycast = () => {}; // Disable raycasting for sprites
+				// Set initial visibility based on current mode
+				sprite.visible = this.showFactorySprites
+					? spriteData.type === "factory"
+					: spriteData.type === "unit";
 
-					this.sprites[territoryName].push(sprite);
-
-					this.threeGlobeAndCountries.add(sprite);
-
-					const spriteCreationEnd = performance.now();
-					spriteCreationTime +=
-						spriteCreationEnd - spriteCreationStart;
-				}
+				this.sprites[territoryName].push(sprite);
+				this.threeGlobeAndCountries.add(sprite);
 			});
 
+			// Position all sprites for this territory
+			this.positionTerritorySprites(territoryName, center);
+		},
+		positionTerritorySprites(territoryName, center) {
 			const spritesToDraw = this.sprites[territoryName];
+			if (!spritesToDraw || spritesToDraw.length === 0) return;
 
-			// Loop through and position the active sprites
+			// Pre-calculate some values for performance
+			const spriteCount = spritesToDraw.length;
+			const halfCount = (spriteCount - 1) / 2;
+			const angleStep = Math.PI / 30;
+
+			// Loop through and position the sprites
 			spritesToDraw.forEach((sprite, index) => {
 				// Calculate the offset angle for each sprite
-				const angle =
-					((index - (spritesToDraw.length - 1) / 2) * Math.PI) / 36; // Adjust spacing with angle
+				const angle = (index - halfCount) * angleStep;
 
 				// Create a rotation matrix to rotate around the sphere's vertical axis
 				const rotationMatrix = new THREE.Matrix4().makeRotationY(angle);
@@ -167,23 +261,90 @@ export const useWorldStore = defineStore("world", {
 				// Apply the rotation to the center point to calculate the sprite position
 				const offset = center.clone().applyMatrix4(rotationMatrix);
 
-				// Set the sprite position
+				// Set the sprite position and scale
 				sprite.position.copy(offset);
 				sprite.scale.set(5, 5, 1);
 			});
 		},
+		territoryHasChanges(currentTerritory, newTerritory) {
+			if (!currentTerritory || !newTerritory) return true;
+
+			// Check team change
+			if (currentTerritory.team !== newTerritory.team) return true;
+
+			// Check factory status change
+			if (currentTerritory.has_factory !== newTerritory.has_factory)
+				return true;
+
+			// Check units changes
+			if (!currentTerritory.units || !newTerritory.units) return true;
+			if (currentTerritory.units.length !== newTerritory.units.length)
+				return true;
+
+			// Quick check for unit team composition changes
+			const currentTeams = currentTerritory.units
+				.map((unit) => unit.team)
+				.sort();
+			const newTeams = newTerritory.units.map((unit) => unit.team).sort();
+
+			// Compare arrays efficiently
+			for (let i = 0; i < currentTeams.length; i++) {
+				if (currentTeams[i] !== newTeams[i]) return true;
+			}
+
+			return false;
+		},
+		async processTerritoryBatch(territoryNames, newTerritories) {
+			for (const territoryName of territoryNames) {
+				const territory = newTerritories[territoryName];
+				if (!territory) continue;
+
+				const newSprites = [];
+
+				// Always create factory sprites if territory has a factory
+				if (territory.has_factory) {
+					newSprites.push({
+						image: this.getCountryFlag(territory.team),
+						type: "factory",
+					});
+				}
+
+				// Always create unit sprites if territory has units
+				if (territory.units && territory.units.length > 0) {
+					const teams = [
+						...new Set(territory.units.map((unit) => unit.team)),
+					];
+					teams.forEach((team) => {
+						newSprites.push({
+							image: this.getCountryFlag(team),
+							type: "unit",
+						});
+					});
+				}
+
+				// Update territory mesh and sprites
+				const territoryMesh = this.getTerritoryMesh(territoryName);
+				if (territoryMesh) {
+					// Update sprites
+					this.updateTerritorySprites(territoryMesh, newSprites);
+
+					// Update mesh color
+					const teamColor = this.getCountryColor(territory.team);
+					if (teamColor) {
+						territoryMesh.material.color.set(teamColor);
+					}
+				}
+			}
+		},
 		async updateGameWorld(gameState) {
 			const newTerritories = gameState?.territories || this.territories;
+			const performanceStart = performance.now();
 
-			// Set loading state for sprite generation
-			this.isGeneratingSprites = true;
+			// First pass: identify changed territories without expensive operations
+			const changedTerritories = [];
+			let changeCount = 0;
 
-			const spriteAddStartTime = performance.now();
-
-			// Use setTimeout to allow UI to update
-			await new Promise((resolve) => setTimeout(resolve, 10));
-
-			for (let [territoryName, territory] of Object.entries(
+			for (const [territoryName, newTerritory] of Object.entries(
 				newTerritories
 			)) {
 				if (!this.territories[territoryName]) {
@@ -192,80 +353,81 @@ export const useWorldStore = defineStore("world", {
 					);
 					continue;
 				}
-				this.territories[territoryName].team = territory.team;
-				this.territories[territoryName].units = territory.units;
-				this.territories[territoryName].has_factory =
-					territory.has_factory;
 
-				const isOwnedByThisPlayer =
-					territory.team == this.getPlayerTeamNum;
-				const isMobilizationPhase = this.getCurrentPhase === 4;
-
-				const shouldDrawFactory =
-					territory.has_factory &&
-					isOwnedByThisPlayer &&
-					isMobilizationPhase;
-
-				const shouldDrawUnits = true;
-
-				// track sprites to add
-				const newSprites = [];
-
-				// Get the mesh for the territory
-				const territoryMesh = this.getTerritoryMesh(territoryName);
-				if (territoryMesh) {
-					const teamColor = this.getCountryColor(territory.team);
-
-					// Add sprites to industrial complexes
-					if (shouldDrawFactory) {
-						// TODO need factory sprite
-						newSprites.push(this.getCountryFlag(territory.team));
-					}
-
-					// Add sprites for units
-					if (shouldDrawUnits) {
-						if (territory.units.length) {
-							newSprites.push(
-								this.getCountryFlag(territory.team)
-							);
-						}
-					}
-
-					// Add and reposition sprites
-					this.updateTerritorySprites(territoryMesh, newSprites);
-
-					// Update the mesh color
-					if (teamColor) {
-						territoryMesh.material.color.set(teamColor);
-					} else {
-						console.warn(
-							`No color found for team ${territory.team}`
-						);
-					}
+				if (
+					this.territoryHasChanges(
+						this.territories[territoryName],
+						newTerritory
+					)
+				) {
+					changedTerritories.push(territoryName);
+					changeCount++;
 				}
 			}
 
-			const spriteAddEndTime = performance.now();
-			spriteAddToWorldTime += spriteAddEndTime - spriteAddStartTime;
+			// Early exit if no changes detected
+			if (changedTerritories.length === 0) {
+				console.log(
+					"No territory changes detected, skipping sprite updates"
+				);
+				if (gameState?.battles) {
+					this.battles = gameState.battles;
+				}
+				return;
+			}
 
+			console.log(
+				`Processing ${changeCount} changed territories out of ${Object.keys(newTerritories).length} total`
+			);
+
+			// Update all territory data first (fast operation)
+			for (const [territoryName, newTerritory] of Object.entries(
+				newTerritories
+			)) {
+				if (this.territories[territoryName]) {
+					this.territories[territoryName].team = newTerritory.team;
+					this.territories[territoryName].units = newTerritory.units;
+					this.territories[territoryName].has_factory =
+						newTerritory.has_factory;
+				}
+			}
+
+			// Only process sprites for changed territories with batching
+			if (changedTerritories.length > 0) {
+				this.isGeneratingSprites = true;
+
+				// Process territories in batches to avoid blocking the main thread
+				const batchSize = Math.min(10, changedTerritories.length);
+				const batches = [];
+				for (let i = 0; i < changedTerritories.length; i += batchSize) {
+					batches.push(changedTerritories.slice(i, i + batchSize));
+				}
+
+				for (const batch of batches) {
+					// Process batch
+					await this.processTerritoryBatch(batch, newTerritories);
+
+					// Yield control to prevent blocking UI (only if there are more batches)
+					if (batches.length > 1) {
+						await new Promise((resolve) => setTimeout(resolve, 0));
+					}
+				}
+
+				this.isGeneratingSprites = false;
+			}
+
+			// Update battles if provided
 			if (gameState?.battles) {
 				this.battles = gameState.battles;
 			}
 
-			console.log(
-				`Total time for sprite creation: ${spriteCreationTime.toFixed(2)}ms`
-			);
+			// Apply visibility settings once at the end
+			this.toggleSpriteVisibility();
 
+			const performanceEnd = performance.now();
 			console.log(
-				`Total time for updateTerritorySprites: ${spriteCreationTime.toFixed(2)}ms`
+				`updateGameWorld completed in ${(performanceEnd - performanceStart).toFixed(2)}ms for ${changeCount} territories`
 			);
-
-			console.log(
-				`Total time for updateGameWorld: ${spriteAddToWorldTime.toFixed(2)}ms`
-			);
-
-			// Clear loading state after sprite generation is complete
-			this.isGeneratingSprites = false;
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -275,10 +437,14 @@ export const useWorldStore = defineStore("world", {
 
 			try {
 				const response = await API.get(`/game/${this.getSessionId}`);
-
 				console.log("API Response:", response.data); // Debugging log
 
 				await this.updateGameWorld(response.data.game_state);
+
+				// Initialize all sprites if this is the first load
+				if (Object.keys(this.sprites).length === 0) {
+					await this.initializeAllSprites();
+				}
 			} catch (error) {
 				console.error("API Error:", error);
 			} finally {
@@ -569,5 +735,6 @@ export const useWorldStore = defineStore("world", {
 		getBattles: (state) => state.battles,
 		getSprites: (state) => state.sprites,
 		getIsGeneratingSprites: (state) => state.isGeneratingSprites,
+		getShowFactorySprites: (state) => state.showFactorySprites,
 	},
 });
