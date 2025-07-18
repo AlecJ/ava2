@@ -104,7 +104,8 @@ export default {
 
 			display: grid;
 			place-items: center;
-			grid-template-rows: 1fr 4fr 3fr 2fr;
+			grid-template-rows: 20% 35% 15% 30%;
+			// grid-template-rows: 1fr 4fr 3fr 2fr;
 
 			.unit-name-and-cost {
 				display: grid;

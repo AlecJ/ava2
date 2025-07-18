@@ -136,6 +136,10 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     defending_force_has_destroyer = any(unit.unit_type == "DESTROYER"
                                         for unit in territory_b.units)
 
+    # Assign empty ocean territories to entering player (needed for unit flags)
+    if territory_b_is_ocean and not territory_b.units:
+        capture_territory(game_state, territory_b_name, player)
+
     if is_enemy_territory:
 
         # Not allowed for any units during non-combat phase
@@ -144,7 +148,6 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
 
         if not has_enemy_units and moving_force_has_land_unit:
             capture_territory(game_state, territory_b_name, player)
-            # territory_b.team = player.team_num
 
         if has_enemy_units:
 
