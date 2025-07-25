@@ -9,6 +9,11 @@ const router = createRouter({
 			name: "home",
 			component: GameView,
 		},
+		{
+			path: "/territory-editor",
+			name: "territory-editor",
+			component: () => import("@/components/TerritoryCenterEditor.vue"),
+		},
 	],
 });
 

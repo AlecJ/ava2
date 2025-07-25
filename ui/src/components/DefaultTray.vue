@@ -153,6 +153,7 @@ export default {
 			:player="player"
 			:setIsSelectingTerritory="setIsSelectingTerritory"
 			:selectedTerritory="selectedTerritory"
+			:isLoading="isLoading"
 		/>
 	</div>
 </template>

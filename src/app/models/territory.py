@@ -36,7 +36,7 @@ class Territory:
         return {
             'team': self.team,
             'units': [unit.to_dict() for unit in self.units],
-            'has_factory': self.has_factory
+            'has_factory': self.has_factory,
         }
 
     @classmethod

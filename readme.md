@@ -32,47 +32,46 @@ Backend:
 
 Connect to the mongo service and create a db named `ava` (or anything and update the mongo URI in the docker-compose.)
 
+Run tests with:
+`cd src`
+`pytest`
+
 ## To Do
-
--   highlight selectable territories
--   highlight selected territory
-
--   way to see unit details (anytime)
-
--   indicate if country has units for each player
-
--   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
-
--   clear "place units" after placing units
--   anti-aircraft cannot be placed
--   increase polling only during mobilization phase
--   allow undo during mobilization/purchase phases?
--   during mobilization, highlight factory tiles
-
--   show current production per player
-
--   dragging units into "territory" boxes
-
--   selectTerritory validation rules
-
--   cannot select hawaii
--   west russia border removed
-
--   remove console logs
--   add logging
 
 -   toast popup with api error status
 -   toast message for purchasing unit
 -   toast message for each phase
 
-## Future Work
+-   ui to show production of a factory and how many are remaining
+-   can you amphibious assault via land bridge?
+-   way to see unit details (anytime)
+-   change "Purchase Units" to "View Unit Details" when not in purchase phase
 
--   fix loading spinners
+-   west russia border removed
 
--   :param game_state:
+-   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
+
+-   clear "place units" after placing units
+-   anti-aircraft cannot be placed
+
+-   remove console logs
+-   add logging
+
 -   backend tests
 -   check TODOs
 -   type checking functions
+
+## Future Work
+
+-   increase polling only during mobilization phase
+-   allow undo during mobilization/purchase phases?
+
+-   show current production per player
+-   selectTerritory validation rules
+
+-   dragging units into "territory" boxes
+
+-   :param game_state:
 
 -   refactor getPlayerTeamNum
 -   see what units are in a transport during combat?
@@ -97,11 +96,6 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 -   hint for saving bookmark to return to game
 -   home base 3d object on home countries (capitals?)
 
--   three js objects
-    capital city
-    AA gun
-    industrial complex
-
 -   Submarines can submerge
 -   Develop weapons stage and Research Dice
 -   National Advantages Table
@@ -110,7 +104,7 @@ Connect to the mongo service and create a db named `ava` (or anything and update
 -   Liberating Territories
 
 -   can easily share game code verbally
--   sesion id is 6 characters?
+-   sesion id is 6 characters? 4?
 
 ## Special Rules
 
