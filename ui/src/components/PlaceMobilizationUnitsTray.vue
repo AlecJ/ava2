@@ -11,6 +11,10 @@ export default {
 		UnitBox,
 	},
 	props: {
+		isLoading: {
+			type: Boolean,
+			required: false,
+		},
 		player: {
 			type: Object,
 			required: true,
@@ -92,32 +96,35 @@ export default {
 <template>
 	<div class="mobilization-tray">
 		<div class="mobilization-tray-title">Mobilize Units</div>
-		<div class="mobilization-tray-desc" v-if="mobilizationUnits.length">
-			Place your purchased units on territories you control with an
-			industrial complex. Sea units are placed in a sea zone adjacent to
-			an industrial complex.
+		<LoadingSpinner v-if="isLoading" />
+		<div v-else>
+			<div class="mobilization-tray-desc" v-if="mobilizationUnits.length">
+				Place your purchased units on territories you control with an
+				industrial complex. Sea units are placed in a sea zone adjacent
+				to an industrial complex.
+			</div>
+			<div class="mobilization-tray-desc" v-else>
+				You have no mobilization forces to place.<br />You can end your
+				turn.
+			</div>
+			<UnitBox
+				class="mobilization-tray-units"
+				v-if="mobilizationUnits.length"
+				:units="playerUnits"
+			>
+			</UnitBox>
+			<div v-if="mobilizationUnits.length">
+				Selected territory:
+				{{ selectedTerritory || "None" }}
+			</div>
+			<button
+				v-if="mobilizationUnits.length"
+				:disabled="!selectedTerritory"
+				@click="placeUnits"
+			>
+				Place Units
+			</button>
 		</div>
-		<div class="mobilization-tray-desc" v-else>
-			You have no mobilization forces to place.<br />You can end your
-			turn.
-		</div>
-		<UnitBox
-			class="mobilization-tray-units"
-			v-if="mobilizationUnits.length"
-			:units="playerUnits"
-		>
-		</UnitBox>
-		<div v-if="mobilizationUnits.length">
-			Selected territory:
-			{{ selectedTerritory || "None" }}
-		</div>
-		<button
-			v-if="mobilizationUnits.length"
-			:disabled="!selectedTerritory"
-			@click="placeUnits"
-		>
-			Place Units
-		</button>
 	</div>
 </template>
 

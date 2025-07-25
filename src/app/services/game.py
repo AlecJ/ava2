@@ -103,6 +103,9 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
     if not all(units_to_move):
         return False, "All/some units are not in the territory."
 
+    is_enemy_territory = is_hostile_territory(
+        territory_b, player.team_num, is_ocean=territory_b_is_ocean)
+
     for unit in units_to_move:
         if unit.movement < 1:
             return False, "Unit does not have enough movement."
@@ -112,7 +115,7 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
             return False, "Sea units cannot enter land territories."
         if unit.unit_type == "ANTI-AIRCRAFT" and session.phase_num != PhaseNumber.NON_COMBAT_MOVE:
             return False, "Anti-aircraft units can only move in non-combat phase."
-        if not is_air_unit(unit.unit_type) and is_hostile_territory(territory_b, player.team_num) and session.phase_num == PhaseNumber.NON_COMBAT_MOVE:
+        if not is_air_unit(unit.unit_type) and is_enemy_territory and session.phase_num == PhaseNumber.NON_COMBAT_MOVE:
             return False, "Land and sea units cannot move into hostile territories in the non-combat phase."
         if unit.in_combat_this_turn and unit.unit_type == "ANTI-AIRCRAFT":
             return False, "Anti-aircraft units cannot move after firing in combat."
@@ -120,8 +123,6 @@ def move_units(session, game_state, player, territory_a_name, territory_b_name, 
         """Validation Passed"""
 
     # If entering an enemy territory, either capture it (no enemy units) or create a battle
-    is_enemy_territory = is_hostile_territory(territory_b, player.team_num)
-
     has_enemy_units = territory_has_hostile_units(territory_b, player.team_num)
 
     moving_force_has_land_unit = any(is_land_unit(unit.unit_type)
@@ -662,7 +663,7 @@ def combat_roll(unit, is_attacker=True, artillery_count=0):
 
     roll_to_hit = unit_type_data['attack'] if is_attacker else unit_type_data['defense']
 
-    if unit.unit_type == "INFANTRY" and artillery_count > 0:
+    if unit.unit_type == "INFANTRY" and is_attacker and artillery_count > 0:
         roll_to_hit += 1
 
     roll = randint(1, 6)
@@ -1012,9 +1013,20 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
 
     :return bool: if the units were successfully placed.
     """
-    # check if territory is valid
     selected_territory_generic_data = TERRITORY_DATA[selected_territory]
     selected_territory_data = game_state.territories[selected_territory]
+
+    # Player cannot place more units than the territory's production value
+    territory_production = selected_territory_generic_data['power']
+    units_placed_this_turn = game_state.factory_production_counts.get(
+        selected_territory, 0)
+
+    if units_placed_this_turn + len(units_to_mobilize) > territory_production:
+        return False, "Cannot place more units than the territory's production value."
+
+    # Update the count for remaining production in the territory
+    game_state.factory_production_counts[selected_territory] = units_placed_this_turn + len(
+        units_to_mobilize)
 
     is_controlled_by_player = player.team_num == selected_territory_data.team
     is_ocean = selected_territory_generic_data['is_ocean']
@@ -1110,6 +1122,10 @@ def end_turn(session, game_state):
 
     Increment each player's IPCS by the IPC value of their territories.
 
+    Reset all unit movements to their maximum movement value.
+
+    Reset production counts for all territories.
+
     Increment the turn timer by 1.
 
     If the next player is defeated, increase the turn timer again until a player is found.
@@ -1145,6 +1161,10 @@ def end_turn(session, game_state):
         if units_to_remove:
             [territory.units.remove(unit) for unit in units_to_remove]
 
+    # Reset production counts for all territories
+    game_state.factory_production_counts = {}
+
+    # Increment turn and check for game completion
     session.turn_num += 1
 
     if is_game_complete(game_state):

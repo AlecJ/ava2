@@ -164,10 +164,13 @@ def check_territory_has_adjacent_industrial_complex(game_state, player, selected
     return False
 
 
-def is_hostile_territory(territory, player_team_num):
+def is_hostile_territory(territory, player_team_num, is_ocean=False):
     """
     Check if a territory is controlled by a hostile player. This stops movement
     for land and sea units except for tanks.
+
+    Ocean territories may technically be controlled by a player, but ignore this
+    if there are no units in the territory.
 
     :territory: The territory to check.
     :player_team_num: The team number of the player.
@@ -175,7 +178,9 @@ def is_hostile_territory(territory, player_team_num):
     """
     hostile_team_numbers = get_hostile_team_nums_for_player(player_team_num)
 
-    return territory.team in hostile_team_numbers
+    is_empty_ocean_zone = is_ocean and len(territory.units) == 0
+
+    return territory.team in hostile_team_numbers and not is_empty_ocean_zone
 
 
 def territory_has_hostile_units(territory, player_team_num):

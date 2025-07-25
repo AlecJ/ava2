@@ -36,14 +36,16 @@ Run tests with:
 
 ## To Do
 
--   fix loading
+-   toast popup with api error status
+-   toast message for purchasing unit
+-   toast message for each phase
 
+-   ui to show production of a factory and how many are remaining
+-   can you amphibious assault via land bridge?
 -   way to see unit details (anytime)
 -   change "Purchase Units" to "View Unit Details" when not in purchase phase
 
 -   west russia border removed
-
-## More Todo
 
 -   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
 
@@ -52,10 +54,6 @@ Run tests with:
 
 -   remove console logs
 -   add logging
-
--   toast popup with api error status
--   toast message for purchasing unit
--   toast message for each phase
 
 -   backend tests
 -   check TODOs

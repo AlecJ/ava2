@@ -105,7 +105,6 @@ export default {
 			display: grid;
 			place-items: center;
 			grid-template-rows: 20% 35% 15% 30%;
-			// grid-template-rows: 1fr 4fr 3fr 2fr;
 
 			.unit-name-and-cost {
 				display: grid;
@@ -123,10 +122,8 @@ export default {
 			}
 
 			.unit-icon {
-				// width: 100%;
 				max-width: 100%;
 				max-height: 100%;
-				// height: 100%;
 			}
 
 			.unit-details {

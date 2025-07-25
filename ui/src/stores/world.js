@@ -7,15 +7,13 @@ import { useSessionStore } from "@/stores/session";
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
 import territoryCenters from "@/data/territoryCenters.json";
+import { PHASES } from "@/constants/phases";
 
 import japanFlag from "@/assets/flags/japan.png";
 import germanyFlag from "@/assets/flags/germany.png";
 import sovietFlag from "@/assets/flags/soviet-union.png";
 import ukFlag from "@/assets/flags/united-kingdom.png";
 import usFlag from "@/assets/flags/united-states-of-america.png";
-
-let spriteCreationTime = 0;
-let spriteAddToWorldTime = 0;
 
 export const useWorldStore = defineStore("world", {
 	state: () => ({
@@ -139,8 +137,9 @@ export const useWorldStore = defineStore("world", {
 				if (!territory) return;
 
 				const isOwnedByThisPlayer =
-					territory.team == this.getPlayerTeamNum;
-				const isMobilizationPhase = this.getCurrentPhase === 4;
+					territory.team === this.getPlayerTeamNum;
+				const isMobilizationPhase =
+					this.getCurrentPhase === PHASES.MOBILIZATION;
 
 				this.sprites[territoryName].forEach((sprite) => {
 					const isFactorySprite = sprite.userData.type === "factory";
