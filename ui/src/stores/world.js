@@ -41,9 +41,6 @@ export const useWorldStore = defineStore("world", {
 				return;
 			}
 
-			console.log("Initializing all sprites...");
-			const startTime = performance.now();
-
 			// Create sprites for all territories
 			const territoryEntries = Object.entries(this.territories);
 			const batchSize = 20; // Process territories in batches
@@ -67,11 +64,6 @@ export const useWorldStore = defineStore("world", {
 
 			// Apply initial visibility settings
 			this.toggleSpriteVisibility();
-
-			const endTime = performance.now();
-			console.log(
-				`All sprites initialized in ${(endTime - startTime).toFixed(2)}ms`
-			);
 		},
 		getCachedTexture(image) {
 			if (!this.textureCache.has(image)) {
@@ -281,14 +273,16 @@ export const useWorldStore = defineStore("world", {
 				return true;
 
 			// Quick check for unit team composition changes
-			const currentTeams = currentTerritory.units
-				.map((unit) => unit.team)
-				.sort();
-			const newTeams = newTerritory.units.map((unit) => unit.team).sort();
+			const currentTeams = new Set(
+				currentTerritory.units.map((unit) => unit.team)
+			);
+			const newTeams = new Set(
+				newTerritory.units.map((unit) => unit.team)
+			);
 
-			// Compare arrays efficiently
-			for (let i = 0; i < currentTeams.length; i++) {
-				if (currentTeams[i] !== newTeams[i]) return true;
+			if (currentTeams.size !== newTeams.size) return true;
+			for (const team of currentTeams) {
+				if (!newTeams.has(team)) return true;
 			}
 
 			return false;
@@ -337,7 +331,6 @@ export const useWorldStore = defineStore("world", {
 		},
 		async updateGameWorld(gameState) {
 			const newTerritories = gameState?.territories || this.territories;
-			const performanceStart = performance.now();
 
 			// First pass: identify changed territories without expensive operations
 			const changedTerritories = [];
@@ -366,18 +359,11 @@ export const useWorldStore = defineStore("world", {
 
 			// Early exit if no changes detected
 			if (changedTerritories.length === 0) {
-				console.log(
-					"No territory changes detected, skipping sprite updates"
-				);
 				if (gameState?.battles) {
 					this.battles = gameState.battles;
 				}
 				return;
 			}
-
-			console.log(
-				`Processing ${changeCount} changed territories out of ${Object.keys(newTerritories).length} total`
-			);
 
 			// Update all territory data first (fast operation)
 			for (const [territoryName, newTerritory] of Object.entries(
@@ -422,11 +408,6 @@ export const useWorldStore = defineStore("world", {
 
 			// Apply visibility settings once at the end
 			this.toggleSpriteVisibility();
-
-			const performanceEnd = performance.now();
-			console.log(
-				`updateGameWorld completed in ${(performanceEnd - performanceStart).toFixed(2)}ms for ${changeCount} territories`
-			);
 		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
@@ -436,7 +417,6 @@ export const useWorldStore = defineStore("world", {
 
 			try {
 				const response = await API.get(`/game/${this.getSessionId}`);
-				console.log("API Response:", response.data); // Debugging log
 
 				await this.updateGameWorld(response.data.game_state);
 
@@ -466,7 +446,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -491,7 +470,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
@@ -518,7 +496,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -544,7 +521,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -570,7 +546,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -593,7 +568,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -616,7 +590,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -640,7 +613,6 @@ export const useWorldStore = defineStore("world", {
 					data
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error);
@@ -660,7 +632,6 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/undophase?pid=${playerId}`
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
 				console.error("API Error:", error.response.data.status);
@@ -680,7 +651,6 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/endphase?pid=${playerId}`
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld();
 			} catch (error) {
@@ -702,7 +672,6 @@ export const useWorldStore = defineStore("world", {
 					`/game/${this.getSessionId}/endturn?pid=${playerId}`
 				);
 
-				console.log("API Response:", response.data); // Debugging log
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {

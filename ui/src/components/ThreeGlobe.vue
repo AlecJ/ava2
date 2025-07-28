@@ -151,8 +151,6 @@ export default {
 				const territory = intersects[0].object;
 				const territoryName = territory.userData?.name;
 
-				console.log("Clicked territory:", territoryName);
-
 				// if a country is selected
 				if (!territoryName || !this.isValidTerritory(territoryName)) {
 					return;

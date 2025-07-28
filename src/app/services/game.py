@@ -1022,7 +1022,12 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
         selected_territory, 0)
 
     if units_placed_this_turn + len(units_to_mobilize) > territory_production:
-        return False, "Cannot place more units than the territory's production value."
+        remaining_capacity = territory_production - units_placed_this_turn
+        return False, (
+            f"Cannot place more units than the territory's production value. "
+            f"Production limit: {territory_production}, units placed: {units_placed_this_turn}, "
+            f"remaining capacity: {remaining_capacity}."
+        )
 
     # Update the count for remaining production in the territory
     game_state.factory_production_counts[selected_territory] = units_placed_this_turn + len(

@@ -80,7 +80,6 @@ export default {
 		},
 		loadUnits(transport) {
 			// move unit from territory to transport cargo
-			console.log(this.selectedUnits);
 			if (this.selectedUnits.length > 2) {
 				// todo alert user or prevent?
 				console.log("cannot load more than 3 units onto a transport");

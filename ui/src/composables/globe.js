@@ -28,9 +28,7 @@ export function useGlobe() {
 			const dataForTile = tileData[countryName];
 
 			if (!dataForTile) {
-				console.log(countryName, "not found in tileData");
-
-				return; // TODO stopgap while territories.json is missing data (i.e., mexcio, central america)
+				return;
 			}
 
 			const { team } = dataForTile;

@@ -204,8 +204,6 @@ export default {
 						)
 						.map((child) => child.userData.name)
 						.sort();
-
-					console.log("Loaded territories:", this.territories.length);
 				} catch (error) {
 					console.error("Error loading territories:", error);
 					// Fallback: use territory names from the imported data
@@ -297,11 +295,6 @@ export default {
 
 				// Show preview sprite at the new position
 				this.updatePreviewSprite(normalizedPoint);
-
-				console.log(
-					`Updated ${this.selectedTerritory}:`,
-					this.territoryCenters[this.selectedTerritory]
-				);
 			}
 		},
 		animate() {
@@ -319,7 +312,7 @@ export default {
 </script>
 
 <style scoped>
-.territory-center-editor {
+.territory-editor {
 	width: 100%;
 	height: 100vh;
 	position: relative;

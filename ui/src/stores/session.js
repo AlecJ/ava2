@@ -61,18 +61,11 @@ export const useSessionStore = defineStore("session", {
 			this.isLoading = true;
 
 			try {
-				console.log(
-					"Fetching session from API:",
-					`/session/${sessionId}`
-				);
-
-				// todo
 				const url = playerId
 					? `/session/${sessionId}?pid=${playerId}`
 					: `/session/${sessionId}`;
 
 				const response = await API.get(url);
-				console.log("API Response:", response.data); // Debugging log
 				this.setSession(response.data.session);
 				if (response.data.player) this.setPlayer(response.data.player);
 
@@ -92,7 +85,6 @@ export const useSessionStore = defineStore("session", {
 
 			try {
 				const response = await API.post(`/session/create`);
-				console.log("API Response:", response.data); // Debugging log
 				this.sessionId = response.data.session_id;
 				this.setSession(response.data.session);
 				router.push({ path: `/${this.sessionId}` });
@@ -114,8 +106,6 @@ export const useSessionStore = defineStore("session", {
 					`/session/join/${this.sessionId}`,
 					data
 				);
-
-				console.log("API Response:", response.data); // Debugging log
 
 				this.setSession(response.data.session);
 
