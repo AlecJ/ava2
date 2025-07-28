@@ -91,4 +91,13 @@ canvas {
 	position: fixed;
 	top: 0;
 	left: 0;
+	/* Prevent drag and drop behavior */
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }

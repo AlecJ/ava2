@@ -20,10 +20,11 @@ A Territory is:
 
 
 class GameState:
-    def __init__(self, session_id, territories=None, battles=None):
+    def __init__(self, session_id, territories=None, battles=None, factory_production_counts=None):
         self.session_id = session_id
         self.territories = territories if territories is not None else {}
         self.battles = battles if battles is not None else []
+        self.factory_production_counts = factory_production_counts if factory_production_counts is not None else {}
 
         if not self.territories:
             self.territories = self.initialize_territories()
@@ -38,9 +39,12 @@ class GameState:
         Converts the Session object to a dictionary for JSON serialization.
         """
 
-        result = {'session_id': self.session_id,
-                  'territories': {},
-                  'battles': self.battles}
+        result = {
+            'session_id': self.session_id,
+            'territories': {},
+            'battles': self.battles,
+            'factory_production_counts': self.factory_production_counts,
+        }
 
         for territory_name, territory in self.territories.items():
             result['territories'][territory_name] = territory.to_dict()
@@ -62,6 +66,8 @@ class GameState:
                 territories={territory_name: Territory.from_dict(territory)
                              for territory_name, territory in data['territories'].items()},
                 battles=data.get('battles'),
+                factory_production_counts=data.get(
+                    'factory_production_counts'),
             )
         except KeyError as e:
             # TODO log error

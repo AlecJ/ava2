@@ -28,9 +28,7 @@ export function useGlobe() {
 			const dataForTile = tileData[countryName];
 
 			if (!dataForTile) {
-				console.log(countryName, "not found in tileData");
-
-				return; // TODO stopgap while territories.json is missing data (i.e., mexcio, central america)
+				return;
 			}
 
 			const { team } = dataForTile;
@@ -138,6 +136,9 @@ export function useGlobe() {
 				outlineGeometry,
 				outlineMaterial
 			);
+
+			// Disable raycasting for outline to prevent interference
+			outline.raycast = () => {};
 
 			// Add the mesh and outline to the country group
 			mesh.add(outline); // Add outline as a child of the mesh
