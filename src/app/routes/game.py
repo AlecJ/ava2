@@ -48,8 +48,10 @@ def handle_purchase_unit(session_id):
     data = request.get_json()
     unit_type_to_purchase = data.get('unitType')
 
-    if not purchase_unit(game_state, player, unit_type_to_purchase):
-        return jsonify({'status': 'Purchase failed. Player does not have sufficient funds.'}), 400
+    result, message = purchase_unit(game_state, player, unit_type_to_purchase)
+
+    if not result:
+        return jsonify({'status': 'Purchase failed. ' + message}), 400
 
     session.update()
 

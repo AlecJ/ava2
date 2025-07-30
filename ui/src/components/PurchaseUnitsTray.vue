@@ -12,8 +12,21 @@ export default {
 			type: Function,
 			required: true,
 		},
+		currentPhaseNum: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
+		isThisPlayersTurn: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	computed: {
+		isPurchasingUnits() {
+			return this.isThisPlayersTurn && this.currentPhaseNum === 0;
+		},
 		units() {
 			return Object.keys(unitData).map((unit) => {
 				return { type: unit, ...unitData[unit] };
@@ -32,8 +45,11 @@ export default {
 
 <template>
 	<div class="purchase-tray">
-		<div class="purchase-tray-title">Purchase Units</div>
-		<div class="purchase-tray-desc">
+		<div v-if="isPurchasingUnits" class="purchase-tray-title">
+			Purchase Units
+		</div>
+		<div v-else class="purchase-tray-title">Unit Descriptions</div>
+		<div v-if="isPurchasingUnits" class="purchase-tray-desc">
 			Units purchased now will be placed during the mobilization phase at
 			the end of your turn.
 		</div>
@@ -43,6 +59,7 @@ export default {
 				v-for="unit in units"
 				:key="`${unit.type}`"
 				@click="purchaseUnit(unit.type)"
+				:disabled="!isPurchasingUnits"
 			>
 				<div class="unit-name-and-cost">
 					<p class="cost">{{ unit.cost }}</p>
@@ -105,6 +122,15 @@ export default {
 			display: grid;
 			place-items: center;
 			grid-template-rows: 20% 35% 15% 30%;
+
+			&:disabled {
+				cursor: unset;
+				background-color: #1a1a1a;
+			}
+
+			// &:hover &:disabled {
+			// 	background-color: #000000;
+			// }
 
 			.unit-name-and-cost {
 				display: grid;

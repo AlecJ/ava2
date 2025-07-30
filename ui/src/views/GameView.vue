@@ -1,7 +1,6 @@
 <script>
 import { useSessionStore } from "@/stores/session";
 import { useWorldStore } from "@/stores/world";
-import { countries } from "@/data/countries";
 import BackgroundStars from "@/components/BackgroundStars.vue";
 import LandingPopUp from "@/components/LandingPopUp.vue";
 import TeamSelectPopUp from "@/components/TeamSelectPopUp.vue";
@@ -262,6 +261,7 @@ export default {
 		:isPlacingMobilizationUnits="isPlacingMobilizationUnits"
 		:setIsSelectingTerritory="setIsSelectingTerritory"
 		:selectedTerritory="selectedTerritory"
+		:isThisPlayersTurn="isThisPlayersTurn"
 	/>
 
 	<PlayerBoard

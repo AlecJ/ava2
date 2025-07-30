@@ -29,7 +29,8 @@ export default {
 			}
 		"
 	>
-		Purchase Units
+		<div v-if="active">Purchase Units</div>
+		<div v-else>View Unit Info</div>
 	</button>
 </template>
 

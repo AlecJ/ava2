@@ -38,21 +38,13 @@ Run tests with:
 
 ## To Do
 
--   toast popup with api error status
--   toast message for purchasing unit
--   toast message for each phase
-
 -   ui to show production of a factory and how many are remaining
--   can you amphibious assault via land bridge?
--   way to see unit details (anytime)
--   change "Purchase Units" to "View Unit Details" when not in purchase phase
 
 -   west russia border removed
 
 -   if rejoining, show loading spinner if session ID provided, otherwise straight to landing page
 
 -   clear "place units" after placing units
--   anti-aircraft cannot be placed
 
 -   remove console logs
 -   add logging
@@ -60,6 +52,10 @@ Run tests with:
 -   backend tests
 -   check TODOs
 -   type checking functions
+
+## Potential Issues
+
+-   anti-aircraft cannot be placed
 
 ## Future Work
 
@@ -79,7 +75,6 @@ Run tests with:
 
 -   mobile design
 
--   scheduled tasks
 -   skip players turn after certain time
 
 -   game log so players can see what happened (where combat happened, territories flipped)
@@ -94,7 +89,6 @@ Run tests with:
 -   sort friendly and enemy units in territory (UnitTray)
 -   highlight territories that you may move units to
 -   hint for saving bookmark to return to game
--   home base 3d object on home countries (capitals?)
 
 -   Submarines can submerge
 -   Develop weapons stage and Research Dice

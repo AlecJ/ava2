@@ -3,6 +3,7 @@ import * as THREE from "three";
 
 import { API } from "@/services/api";
 import { useSessionStore } from "@/stores/session";
+import { useToastStore } from "@/stores/toast";
 
 import tileData from "@/data/territories.json" assert { type: "json" };
 import { countries } from "@/data/countries";
@@ -409,6 +410,26 @@ export const useWorldStore = defineStore("world", {
 			// Apply visibility settings once at the end
 			this.toggleSpriteVisibility();
 		},
+		handleApiError(error, defaultMessage = "An error occurred") {
+			const toastStore = useToastStore();
+			let errorMessage = defaultMessage;
+
+			if (error?.response?.data?.status) {
+				errorMessage = error.response.data.status;
+			} else if (error?.response?.data?.message) {
+				errorMessage = error.response.data.message;
+			} else if (error?.message) {
+				errorMessage = error.message;
+			}
+
+			console.error("API Error:", errorMessage);
+			toastStore.error(errorMessage);
+		},
+		// Test method for toast notifications (can be removed later)
+		testToast(type = "error", message = "Test notification") {
+			const toastStore = useToastStore();
+			toastStore[type](message);
+		},
 		async getWorldData() {
 			// this should be triggered once the game starts and after any updates
 			const sessionStore = useSessionStore();
@@ -425,7 +446,7 @@ export const useWorldStore = defineStore("world", {
 					await this.initializeAllSprites();
 				}
 			} catch (error) {
-				console.error("API Error:", error);
+				this.handleApiError(error, "Failed to load game data");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -447,8 +468,14 @@ export const useWorldStore = defineStore("world", {
 				);
 
 				sessionStore.setSession(response.data.session);
+
+				// Show success message
+				const toastStore = useToastStore();
+				toastStore.success(
+					`Successfully purchased ${unitType.toLowerCase()}`
+				);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to purchase unit");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -472,8 +499,14 @@ export const useWorldStore = defineStore("world", {
 
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld(response.data.game_state);
+
+				// Show success message
+				const toastStore = useToastStore();
+				toastStore.success(
+					`Successfully mobilized ${units.length} unit(s) to ${selectedTerritory}`
+				);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to mobilize units");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -498,7 +531,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to move units");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -523,7 +556,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to load transport");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -548,7 +581,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to unload transport");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -570,7 +603,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to attack");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -592,7 +625,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to retreat");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -615,8 +648,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error);
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to select casualties");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -634,7 +666,7 @@ export const useWorldStore = defineStore("world", {
 
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to undo phase");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -654,8 +686,7 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld();
 			} catch (error) {
-				console.error("API Error:", error);
-				// console.error("API Error:", error.response.data.status);
+				this.handleApiError(error, "Failed to end phase");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}
@@ -675,7 +706,7 @@ export const useWorldStore = defineStore("world", {
 				sessionStore.setSession(response.data.session);
 				await this.updateGameWorld(response.data.game_state);
 			} catch (error) {
-				console.error("API Error:", error);
+				this.handleApiError(error, "Failed to end turn");
 			} finally {
 				sessionStore.setIsLoading(false);
 			}

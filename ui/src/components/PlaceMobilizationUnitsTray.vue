@@ -97,7 +97,7 @@ export default {
 	<div class="mobilization-tray">
 		<div class="mobilization-tray-title">Mobilize Units</div>
 		<LoadingSpinner v-if="isLoading" />
-		<div v-else>
+		<div class="mobilization-tray-content" v-else>
 			<div class="mobilization-tray-desc" v-if="mobilizationUnits.length">
 				Place your purchased units on territories you control with an
 				industrial complex. Sea units are placed in a sea zone adjacent
@@ -113,7 +113,7 @@ export default {
 				:units="playerUnits"
 			>
 			</UnitBox>
-			<div v-if="mobilizationUnits.length">
+			<div v-if="mobilizationUnits.length" class="selected-territory">
 				Selected territory:
 				{{ selectedTerritory || "None" }}
 			</div>
@@ -121,6 +121,7 @@ export default {
 				v-if="mobilizationUnits.length"
 				:disabled="!selectedTerritory"
 				@click="placeUnits"
+				class="place-units-button"
 			>
 				Place Units
 			</button>
@@ -132,25 +133,34 @@ export default {
 .mobilization-tray {
 	width: 24rem;
 	height: 100%;
-	justify-self: start;
 
-	display: grid;
-	grid-template-rows: 1fr 1fr 7fr 1fr 1fr;
+	.mobilization-tray-title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		text-align: center;
+	}
 
-	.unit-board {
-		width: 100%;
-
+	.mobilization-tray-content {
+		height: 90%;
 		display: grid;
-		grid-template-columns: repeat(auto-fill, 150px);
+		align-items: center;
+		justify-items: center;
 
-		.purchase-unit-button {
-			width: 150px;
-			height: 200px;
+		.mobilization-tray-desc {
+			font-size: 1rem;
+			text-align: center;
+		}
 
-			.unit-icon {
-				width: 3rem;
-				height: auto;
-			}
+		.mobilization-tray-units {
+		}
+
+		.selected-territory {
+			font-size: 1.2rem;
+			text-align: center;
+		}
+
+		.place-units-button {
+			width: 10rem;
 		}
 	}
 }

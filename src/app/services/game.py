@@ -14,6 +14,7 @@ from app.services.game_helpers import (
     is_hostile_territory,
     territory_has_hostile_units,
     player_can_purchase_industrial_complex,
+    get_total_production_capacity_for_player,
     has_unresolved_aa_fire,
     has_unresolved_sea_combat,
     surviving_battleships_from_casualties,
@@ -44,18 +45,30 @@ def purchase_unit(game_state, player, unit_type_to_purchase):
     # if they have no where to place it
     if unit_type_to_purchase == "INDUSTRIAL-COMPLEX":
         if not player_can_purchase_industrial_complex(game_state, player):
-            return False
+            return False, "Player cannot purchase an industrial complex. No valid territories to place it on."
 
     # player must have sufficient funds
     if player.ipcs < new_unit_data['cost']:
-        return False
+        return False, "Player does not have sufficient funds."
+
+    # check that the player doesn't exceed their total production capacity
+    # calculate total units already purchased this turn
+    total_units_purchased = len(player.mobilization_units)
+
+    # calculate player's total production capacity
+    total_production_capacity = get_total_production_capacity_for_player(
+        game_state, player)
+
+    # prevent purchasing more units than can be produced
+    if total_units_purchased >= total_production_capacity:
+        return False, "Player has reached their total production capacity for this turn."
 
     player.ipcs -= new_unit_data['cost']
 
     # add unit to player
     player.mobilization_units.append(unit_type_to_purchase)
 
-    return True
+    return True, None
 
 
 def move_units(session, game_state, player, territory_a_name, territory_b_name, units_to_move):

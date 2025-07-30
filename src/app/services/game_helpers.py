@@ -236,6 +236,25 @@ def number_of_industrial_complexes_owned_by_player(game_state, player):
     return count
 
 
+def get_total_production_capacity_for_player(game_state, player):
+    """
+    Calculate the total production capacity for a player by summing the power
+    of all territories they control that have industrial complexes.
+
+    :game_state: The current game state.
+    :player: The player to check.
+    :return int: The total production capacity.
+    """
+    total_capacity = 0
+
+    for territory_name, territory in game_state.territories.items():
+        if territory.team == player.team_num and territory.has_factory:
+            territory_power = TERRITORY_DATA[territory_name]['power']
+            total_capacity += territory_power
+
+    return total_capacity
+
+
 def player_can_purchase_industrial_complex(game_state, player):
     """
     Players can only purchase an industrial complex if they have more controlled territories

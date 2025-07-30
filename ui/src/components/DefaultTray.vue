@@ -67,6 +67,11 @@ export default {
 			type: String,
 			required: false,
 		},
+		isThisPlayersTurn: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -141,6 +146,8 @@ export default {
 		<PurchaseUnitsTray
 			v-if="isPurchasingUnits && !forceClose"
 			:purchaseUnit="purchaseUnit"
+			:isThisPlayersTurn="isThisPlayersTurn"
+			:currentPhaseNum="currentPhaseNum"
 		/>
 
 		<CombatTray
