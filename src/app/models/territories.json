@@ -1167,7 +1167,7 @@
 			"Central America",
 			"ocean_tile_19",
 			"ocean_tile_21",
-			"ocean_Tile_54"
+			"ocean_tile_54"
 		],
 		"starting_units": [{ "type": "DESTROYER", "count": 1 }]
 	},

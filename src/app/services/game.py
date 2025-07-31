@@ -843,10 +843,12 @@ def combat_auto_select_defender_casualties(territory, battle, defending_team_num
     # for each battleship in the list, check if it has been hit
     # if it hasn't been hit, add it to the list of hit battleships
     # and reduce casualty count by one
-    for unit in defending_units:
-        if unit.unit_type == "BATTLESHIP" and unit.unit_id not in battle['hit_battleships']:
-            battle['hit_battleships'].append(unit.unit_id)
-            defender_casualty_count -= 1
+    # Only process battleships if there are actually casualties to assign
+    if defender_casualty_count > 0:
+        for unit in defending_units:
+            if unit.unit_type == "BATTLESHIP" and unit.unit_id not in battle['hit_battleships']:
+                battle['hit_battleships'].append(unit.unit_id)
+                defender_casualty_count -= 1
 
     # now start selecting units as casualties
     for unit in defending_units:
