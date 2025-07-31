@@ -341,8 +341,8 @@ def unload_transport(game_state, player, sea_territory_name, selected_territory_
     # Transports unload to adjacent land territories
     if transport.unit_type == "TRANSPORT":
 
-        if transport.movement == 0:
-            return False, "Transport has no movement left."
+        # if transport.movement == 0:
+        #     return False, "Transport has no movement left."
 
         # selected territory is land
         selected_territory = game_state.territories[selected_territory_name]
