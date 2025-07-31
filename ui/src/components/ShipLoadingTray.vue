@@ -195,9 +195,7 @@ export default {
 				v-if="!transportToUnload && transport.unit_type === 'TRANSPORT'"
 				class="ship-unload-button"
 				:disabled="
-					!transport.cargo?.length ||
-					transport.movement < 1 ||
-					!hasAdjacentLandTerritory
+					!transport.cargo?.length || !hasAdjacentLandTerritory
 				"
 				@click="unloadUnits(transport)"
 			>
