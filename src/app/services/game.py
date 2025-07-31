@@ -1034,7 +1034,10 @@ def mobilize_units(game_state, player, units_to_mobilize, selected_territory):
     units_placed_this_turn = game_state.factory_production_counts.get(
         selected_territory, 0)
 
-    if units_placed_this_turn + len(units_to_mobilize) > territory_production:
+    # Sloppy
+    is_ocean = selected_territory_generic_data['is_ocean']
+
+    if not is_ocean and units_placed_this_turn + len(units_to_mobilize) > territory_production:
         remaining_capacity = territory_production - units_placed_this_turn
         return False, (
             f"Cannot place more units than the territory's production value. "
