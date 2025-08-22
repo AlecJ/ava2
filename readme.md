@@ -38,6 +38,28 @@ Run tests with:
 
 ## To Do
 
+-   AA battles may not be happening
+
+-   move phase -- chance of shot down (already exists)
+-   add message if survived or shot down
+
+-   opening fire is its own turn
+-   bombers have ability to retreat (to any territory)
+
+-   bombers should be able to do a factory attack and retreat immediately
+    (part of opening fire)
+    (button to see AA fire)
+
+-   auto launch fighters on battleships during fights
+-   way to see units you have purchased
+-   production updated immediately
+
+-   cannot see troops on transports (unless its your turn)
+
+-   game log
+
+-   see other battles in action
+
 -   ui to show production of a factory and how many are remaining
 
 -   west russia border removed
@@ -59,6 +81,7 @@ Run tests with:
 
 ## Future Work
 
+-   show unit tiles (vs flags) and numbers
 -   increase polling only during mobilization phase
 -   allow undo during mobilization/purchase phases?
 
