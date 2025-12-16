@@ -81,7 +81,7 @@ Run tests with:
 
 ## Future Work
 
--   sesion id is 6 characters? 4?
+-   shorten sesion id (6 characters?)
 
 -   show unit tiles (vs flags) and numbers
 -   increase polling only during mobilization phase
