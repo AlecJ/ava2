@@ -75,7 +75,10 @@ export const useSessionStore = defineStore("session", {
 					await worldStore.getWorldData();
 				}
 			} catch (error) {
-				console.error("API Error:", error.response?.data?.status);
+				console.error(
+					"API Error:",
+					error.response?.data?.status || error
+				);
 			}
 
 			this.isLoading = false;
@@ -89,7 +92,10 @@ export const useSessionStore = defineStore("session", {
 				this.setSession(response.data.session);
 				router.push({ path: `/${this.sessionId}` });
 			} catch (error) {
-				console.error("API Error:", error.response?.data?.status);
+				console.error(
+					"API Error:",
+					error.response?.data?.status || error
+				);
 			}
 
 			this.isLoading = false;
